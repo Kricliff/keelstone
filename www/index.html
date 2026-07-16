@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0">
+<title>Keelstone</title>
+<meta name="theme-color" content="#1b4965">
+<style>
+  :root{
+    --blue:#1b4965; --blue-d:#12283a; --sand:#E4C989; --sand-d:#5a4715;
+    --bg:#F5F2EA; --card:#ffffff; --text:#1f2d3a; --soft:#6b7a86;
+    --border:#e6e0d3; --line:#efe9dc; --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#dcdad6;color:var(--text);display:flex;justify-content:center}
+  #app{width:100%;max-width:460px;min-height:100vh;background:var(--bg);display:flex;flex-direction:column;position:relative}
+  .top{background:var(--blue);color:#fff;padding:18px 20px 16px}
+  .top .row{display:flex;justify-content:space-between;align-items:center}
+  .brand{font-size:19px;font-weight:600;letter-spacing:.02em}
+  .pill{font-size:12px;background:#2c5c7a;color:#cfe2ee;padding:4px 11px;border-radius:20px}
+  .topsub{font-size:12.5px;color:#bcd3e0;margin-top:4px}
+  main{flex:1;padding:18px;overflow-y:auto}
+  .nav{display:flex;background:var(--card);border-top:0.5px solid var(--border);position:sticky;bottom:0}
+  .nav button{flex:1;border:none;background:none;padding:9px 0 9px;font-family:inherit;font-size:10.5px;color:#9a988e;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
+  .nav button.on{color:var(--blue)}
+  .nav .ic{font-size:20px;line-height:1}
+  h1{font-size:23px;font-weight:600;margin-bottom:3px}
+  .sub{font-size:13px;color:var(--soft);margin-bottom:16px}
+  .card{background:var(--card);border-radius:var(--radius);padding:15px;margin-bottom:12px}
+  .lab{font-size:11px;color:#9a988e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+  .h{font-size:15px;font-weight:600;color:var(--text)}
+  .csub{font-size:13px;color:var(--soft);line-height:1.55}
+  .chips{display:flex;gap:7px;flex-wrap:wrap}
+  .chip{border:0.5px solid var(--border);border-radius:20px;padding:6px 13px;font-size:12.5px;color:#4a5a67;background:var(--card);cursor:pointer}
+  .chip.sel{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .scale{margin-bottom:11px}
+  .btn{background:var(--blue);color:#fff;border:none;border-radius:11px;padding:12px;font-family:inherit;font-size:14px;width:100%;cursor:pointer;font-weight:500}
+  .btn.sand{background:var(--sand);color:var(--sand-d)}
+  .btn.ghost{background:none;border:0.5px solid var(--border);color:var(--blue)}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:0.5px solid var(--line)}
+  .row:last-child{border-bottom:none}
+  .bar{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:2px}
+  .bar span{display:block;height:100%;background:var(--sand)}
+  input[type=text]{width:100%;padding:11px;border:0.5px solid var(--border);border-radius:11px;font-family:inherit;font-size:14px;background:var(--card);color:var(--text)}
+  .seg{display:inline-flex;border:0.5px solid #2c5c7a;border-radius:9px;overflow:hidden}
+  .seg button{border:none;background:transparent;padding:5px 12px;font-size:12px;font-family:inherit;color:#bcd3e0;cursor:pointer}
+  .seg button.on{background:#fff;color:var(--blue)}
+  .modalWrap{position:fixed;inset:0;background:rgba(18,40,58,.5);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+  .modal{background:var(--card);width:100%;max-width:460px;border-radius:20px 20px 0 0;padding:22px 20px 30px}
+  .modal h3{font-size:18px;font-weight:600;margin-bottom:6px}
+  .toast{position:fixed;bottom:78px;left:50%;transform:translateX(-50%);background:var(--blue-d);color:#fff;padding:11px 18px;border-radius:22px;font-size:13px;z-index:60;opacity:0;transition:opacity .2s}
+  .toast.show{opacity:1}
+  .onb{padding:40px 26px;display:flex;flex-direction:column;min-height:100vh;justify-content:center;gap:14px}
+  .rolecard{border:0.5px solid var(--border);background:var(--card);border-radius:var(--radius);padding:18px;cursor:pointer;text-align:left}
+  .rolecard b{font-size:16px}
+  .rolecard p{font-size:13px;color:var(--soft);margin-top:4px;line-height:1.5}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="root"></div>
+</div>
+<div id="toast" class="toast"></div>
+<script>
+/* ---------- state ---------- */
+const LS="keelstone_state_v1";
+const todayStr=()=>new Date().toISOString().slice(0,10);
+const defaultState={role:null,lang:null,checkins:{},goal:"",completed:[],settings:{}};
+let state=load();
+function load(){try{const r=localStorage.getItem(LS);if(r)return Object.assign(structuredClone(defaultState),JSON.parse(r));}catch(e){}return structuredClone(defaultState);}
+function save(){localStorage.setItem(LS,JSON.stringify(state));}
+function detectLang(){const l=(navigator.language||"en").toLowerCase();return (l.startsWith("nb")||l.startsWith("nn")||l.startsWith("no"))?"no":"en";}
+if(!state.lang)state.lang=detectLang();
+
+/* ---------- i18n ---------- */
+const T={
+  no:{
+    greet:"God morgen",appname:"Keelstone",
+    nav:{hjem:"Hjem",trening:"Trening",prestasjon:"Prestasjon",laere:"Lære",profil:"Profil"},
+    onbTitle:"Velkommen til Keelstone",onbSub:"Mental balanse og prestasjon, tilpasset din hverdag. Hvem er du?",
+    roleAnsattT:"Ansatt / fagperson",roleAnsattD:"Prester bedre og ha det bedre på jobb, uten lederansvar.",
+    roleLederT:"Leder",roleLederD:"Alt en ansatt har, pluss verktøy for å lede og prestere under press.",
+    changeRole:"Bytt rolle",language:"Språk",
+    checkin:"Dagens innsjekk",mood:"Humør",energy:"Energi",stress:"Stress",saved:"Lagret",
+    levels:["Lav","Ok","God","Høy"],
+    focus:"Dagens fokus",suggest:"Forslag til deg",start:"Start",open:"Åpne",
+    weekgoal:"Ukens mål",setgoal:"Sett et prosessmål for uken",savegoal:"Lagre mål",progress:"fremdrift",
+    prep:"Pre-performance-rutine",prepd:"Pust, self-talk og visualisering før en viktig situasjon.",build:"Bygg rutine",
+    exercises:"Øvelser",programs:"Program",articles:"Utvalgte artikler",
+    trend:"Din trend",checkinsN:"innsjekk",coaching:"Vei til mer",
+    coachingd:"Vil du gå dypere? Book en 1:1-samtale med Kristian.",coachbtn:"Se coaching",
+    soon:"Kommer snart i denne versjonen.",pickone:"Velg et nivå for alle tre.",goalsaved:"Mål lagret.",
+    ansatt:{pill:"Ansatt",
+      focus:"Du har en presentasjon i dag. Kjør en pre-performance-rutine først.",
+      sugg:"Høyt stress flere dager på rad. Prøv «Fra utbrent til bærekraftig».",
+      goalPh:"F.eks. Ta tre bevisste pauser hver dag",
+      third:"Etter-refleksjon",thirdd:"Logg kort hvordan det gikk.",thirdbtn:"Reflekter",
+      exs:["Boksepust · 3 min","Fokus-reset · 4 min","Self-talk-vending · 5 min","Fysiologisk sukk · 2 min"],
+      progs:["Prestasjon under press · 14 dager","Fra utbrent til bærekraftig · 21 dager","Fokus og flyt · 14 dager"],
+      arts:["Fokus i en avbruddskultur","Restitusjon som prestasjonsverktøy","Håndtere tilbakeslag"]},
+    leder:{pill:"Leder",
+      focus:"1:1 med en i teamet i dag. Forbered en trygg, tydelig samtale.",
+      sugg:"Vedvarende høyt stress. Se «Lederens egen restitusjon».",
+      goalPh:"F.eks. Gi konkret tilbakemelding til to i teamet",
+      third:"Forbered vanskelig samtale",thirdd:"Mål, motpartens perspektiv, åpningssetning.",thirdbtn:"Start forberedelse",
+      exs:["Lederpust · 3 min","Self-talk-vending · 5 min","Visualisering · 6 min","Boksepust · 3 min"],
+      progs:["Trygg leder under press · 21 dager","Mestre vanskelige samtaler · 14 dager","Bygg psykologisk trygghet · 21 dager"],
+      arts:["Psykologisk trygghet i praksis","Gi tilbakemelding som bygger","Lede uten å brenne ut"]}
+  },
+  en:{
+    greet:"Good morning",appname:"Keelstone",
+    nav:{hjem:"Home",trening:"Train",prestasjon:"Perform",laere:"Learn",profil:"Profile"},
+    onbTitle:"Welcome to Keelstone",onbSub:"Mental balance and performance, built for your workday. Who are you?",
+    roleAnsattT:"Employee / professional",roleAnsattD:"Perform better and feel better at work, without a leadership role.",
+    roleLederT:"Leader",roleLederD:"Everything an employee has, plus tools to lead and perform under pressure.",
+    changeRole:"Switch role",language:"Language",
+    checkin:"Today's check-in",mood:"Mood",energy:"Energy",stress:"Stress",saved:"Saved",
+    levels:["Low","Ok","Good","High"],
+    focus:"Today's focus",suggest:"For you",start:"Start",open:"Open",
+    weekgoal:"This week's goal",setgoal:"Set a process goal for the week",savegoal:"Save goal",progress:"progress",
+    prep:"Pre-performance routine",prepd:"Breath, self-talk and visualization before a high-stakes moment.",build:"Build routine",
+    exercises:"Exercises",programs:"Program",articles:"Featured reads",
+    trend:"Your trend",checkinsN:"check-ins",coaching:"Go further",
+    coachingd:"Want to go deeper? Book a 1:1 session with Kristian.",coachbtn:"See coaching",
+    soon:"Coming in a later version.",pickone:"Pick a level for all three.",goalsaved:"Goal saved.",
+    ansatt:{pill:"Employee",
+      focus:"You have a presentation today. Run a pre-performance routine first.",
+      sugg:"High stress several days running. Try \"From burnout to sustainable\".",
+      goalPh:"E.g. Take three deliberate breaks each day",
+      third:"Post-event reflection",thirdd:"Briefly log how it went.",thirdbtn:"Reflect",
+      exs:["Box breathing · 3 min","Focus reset · 4 min","Self-talk reframe · 5 min","Physiological sigh · 2 min"],
+      progs:["Performance under pressure · 14 days","From burnout to sustainable · 21 days","Focus and flow · 14 days"],
+      arts:["Focus in a culture of interruption","Recovery as a performance tool","Bouncing back from setbacks"]},
+    leder:{pill:"Leader",
+      focus:"1:1 with a team member today. Prepare a calm, clear conversation.",
+      sugg:"Sustained high stress. See \"The leader's own recovery\".",
+      goalPh:"E.g. Give concrete feedback to two team members",
+      third:"Prepare a difficult conversation",thirdd:"Goal, their perspective, opening line.",thirdbtn:"Start prep",
+      exs:["Leader's breath · 3 min","Self-talk reframe · 5 min","Visualization · 6 min","Box breathing · 3 min"],
+      progs:["Steady leader under pressure · 21 days","Master difficult conversations · 14 days","Build psychological safety · 21 days"],
+      arts:["Psychological safety in practice","Feedback that builds","Leading without burning out"]}
+  }
+};
+function t(k){return T[state.lang][k];}
+function tr(){return T[state.lang][state.role];}
+
+/* ---------- helpers ---------- */
+const root=document.getElementById("root");
+let tab="hjem";
+function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML;}
+function toast(m){const el=document.getElementById("toast");el.textContent=m;el.classList.add("show");clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove("show"),1900);}
+function openModal(h){closeModal();const w=document.createElement("div");w.className="modalWrap";w.id="mw";w.innerHTML='<div class="modal">'+h+'</div>';w.onclick=e=>{if(e.target===w)closeModal();};document.getElementById("app").appendChild(w);}
+function closeModal(){const w=document.getElementById("mw");if(w)w.remove();}
+
+/* ---------- render ---------- */
+function render(){
+  if(!state.role){root.innerHTML=onboarding();return;}
+  const r=tr();
+  let h='<div class="top"><div class="row"><span class="brand">'+t("appname")+'</span><span class="pill">'+r.pill+'</span></div><div class="topsub">'+t("greet")+'</div></div><main id="main"></main>';
+  h+='<div class="nav" id="nav"></div>';
+  root.innerHTML=h;
+  const m=document.getElementById("main");
+  if(tab==="hjem")m.innerHTML=vHome();
+  else if(tab==="prestasjon")m.innerHTML=vPerform();
+  else if(tab==="trening")m.innerHTML=vTrain();
+  else if(tab==="laere")m.innerHTML=vLearn();
+  else m.innerHTML=vProfile();
+  const nav=document.getElementById("nav");const ic={hjem:"🏠",trening:"🧭",prestasjon:"🎯",laere:"📖",profil:"👤"};
+  nav.innerHTML=["hjem","trening","prestasjon","laere","profil"].map(k=>'<button data-t="'+k+'" class="'+(tab===k?"on":"")+'"><span class="ic">'+ic[k]+'</span>'+t("nav")[k]+'</button>').join("");
+  nav.querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;render();m&&(document.getElementById("main").scrollTop=0);});
+}
+function onboarding(){
+  return '<div class="onb"><div><h1>'+t("onbTitle")+'</h1><div class="sub">'+t("onbSub")+'</div></div>'+
+    '<button class="rolecard" onclick="pickRole(\'ansatt\')"><b>'+t("roleAnsattT")+'</b><p>'+t("roleAnsattD")+'</p></button>'+
+    '<button class="rolecard" onclick="pickRole(\'leder\')"><b>'+t("roleLederT")+'</b><p>'+t("roleLederD")+'</p></button>'+
+    '<div style="text-align:center;margin-top:8px"><span class="seg" style="border-color:var(--border)"><button class="'+(state.lang==="no"?"on":"")+'" style="color:var(--soft)" onclick="setLang(\'no\')">Norsk</button><button class="'+(state.lang==="en"?"on":"")+'" style="color:var(--soft)" onclick="setLang(\'en\')">English</button></span></div></div>';
+}
+function pickRole(r){state.role=r;save();tab="hjem";render();}
+function setLang(l){state.lang=l;save();render();}
+
+function scaleRow(key,idx){
+  const chips=t("levels").map((o,i)=>'<span class="chip'+(idx===i?" sel":"")+'" onclick="setScale(\''+key+'\','+i+')">'+o+'</span>').join("");
+  return '<div class="scale"><div class="lab" style="margin-bottom:6px">'+t(key)+'</div><div class="chips">'+chips+'</div></div>';
+}
+function setScale(key,i){const d=todayStr();const c=state.checkins[d]||(state.checkins[d]={});c[key]=i;save();render();}
+function vHome(){
+  const r=tr();const c=state.checkins[todayStr()]||{};
+  let h='<div class="card"><div class="h" style="margin-bottom:12px">'+t("checkin")+'</div>'+
+    scaleRow("mood",c.mood)+scaleRow("energy",c.energy)+scaleRow("stress",c.stress)+
+    (c.mood!=null&&c.energy!=null&&c.stress!=null?'<div class="csub" style="color:var(--blue);margin-top:2px">✓ '+t("saved")+'</div>':'')+'</div>';
+  h+='<div class="card"><div class="lab">'+t("focus")+'</div><div class="csub" style="color:var(--text);font-size:14px;margin-bottom:11px">'+esc(r.focus)+'</div><button class="btn sand" onclick="toast(t(\'soon\'))">'+t("start")+'</button></div>';
+  h+='<div class="card"><div class="lab">'+t("suggest")+'</div><div class="csub" style="margin-bottom:11px">'+esc(r.sugg)+'</div><button class="btn" onclick="tab=\'trening\';render()">'+t("open")+'</button></div>';
+  return h;
+}
+function vPerform(){
+  const r=tr();
+  let h='<h1>'+t("nav").prestasjon+'</h1><div class="sub">'+t("weekgoal")+'</div>';
+  if(state.goal){
+    h+='<div class="card"><div class="lab">'+t("weekgoal")+'</div><div class="h" style="font-size:14px;margin-bottom:10px">'+esc(state.goal)+'</div><div class="bar"><span style="width:45%"></span></div><div class="csub" style="margin-top:5px">45% '+t("progress")+'</div><button class="btn ghost" style="margin-top:11px" onclick="editGoal()">'+t("setgoal")+'</button></div>';
+  }else{
+    h+='<div class="card"><div class="lab">'+t("weekgoal")+'</div><input type="text" id="goalInput" placeholder="'+esc(r.goalPh)+'" style="margin-bottom:11px"><button class="btn" onclick="saveGoal()">'+t("savegoal")+'</button></div>';
+  }
+  h+='<div class="card"><div class="h" style="margin-bottom:4px">'+t("prep")+'</div><div class="csub" style="margin-bottom:11px">'+t("prepd")+'</div><button class="btn sand" onclick="toast(t(\'soon\'))">'+t("build")+'</button></div>';
+  h+='<div class="card"><div class="h" style="margin-bottom:4px">'+esc(r.third)+'</div><div class="csub" style="margin-bottom:11px">'+esc(r.thirdd)+'</div><button class="btn" onclick="toast(t(\'soon\'))">'+esc(r.thirdbtn)+'</button></div>';
+  return h;
+}
+function editGoal(){state.goal="";save();render();}
+function saveGoal(){const v=document.getElementById("goalInput").value.trim();if(!v)return;state.goal=v;save();toast(t("goalsaved"));render();}
+function vTrain(){
+  const r=tr();
+  let h='<h1>'+t("nav").trening+'</h1><div class="sub">'+t("exercises")+'</div>';
+  h+='<div class="card">'+r.exs.map(e=>'<div class="row" onclick="toast(t(\'soon\'))"><span style="font-size:14px">'+esc(e)+'</span><span style="color:var(--blue);font-size:18px">▶</span></div>').join("")+'</div>';
+  h+='<div class="sub" style="margin-top:6px">'+t("programs")+'</div>';
+  h+='<div class="card">'+r.progs.map(p=>'<div class="row" onclick="toast(t(\'soon\'))"><span style="font-size:14px">'+esc(p)+'</span><span style="color:var(--blue);font-size:16px">→</span></div>').join("")+'</div>';
+  return h;
+}
+function vLearn(){
+  const r=tr();
+  let h='<h1>'+t("nav").laere+'</h1><div class="sub">'+t("articles")+'</div>';
+  h+='<div class="card">'+r.arts.map(a=>'<div class="row" onclick="toast(t(\'soon\'))"><span style="font-size:14px">'+esc(a)+'</span><span style="color:var(--blue);font-size:16px">→</span></div>').join("")+'</div>';
+  return h;
+}
+function vProfile(){
+  const n=Object.keys(state.checkins).length;
+  let h='<h1>'+t("nav").profil+'</h1><div class="sub">'+t("trend")+'</div>';
+  h+='<div class="card"><div class="lab">'+t("trend")+'</div><div style="font-size:26px;font-weight:600;color:var(--blue)">'+n+'</div><div class="csub">'+t("checkinsN")+'</div></div>';
+  h+='<div class="card"><div class="row"><span style="font-size:14px">'+t("language")+'</span><span class="seg" style="border-color:var(--border)"><button class="'+(state.lang==="no"?"on":"")+'" style="color:var(--soft)" onclick="setLang(\'no\')">NO</button><button class="'+(state.lang==="en"?"on":"")+'" style="color:var(--soft)" onclick="setLang(\'en\')">EN</button></span></div>'+
+    '<div class="row"><span style="font-size:14px">'+t("changeRole")+'</span><button class="chip" onclick="state.role=null;save();render()">'+tr().pill+'</button></div></div>';
+  h+='<div class="card" style="background:var(--blue)"><div class="lab" style="color:#bcd3e0">'+t("coaching")+'</div><div class="csub" style="color:#e7eef3;margin-bottom:11px">'+t("coachingd")+'</div><a class="btn sand" style="display:block;text-align:center;text-decoration:none" href="https://cliffordcoaching.no" target="_blank">'+t("coachbtn")+'</a></div>';
+  return h;
+}
+render();
+</script>
+</body>
+</html>

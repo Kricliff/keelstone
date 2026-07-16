@@ -1,0 +1,17 @@
+{
+  "name": "keelstone",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Keelstone — performance psychology and mental health for leaders and employees",
+  "scripts": {
+    "serve": "powershell -NoProfile -ExecutionPolicy Bypass -File serve.ps1 -Port 8124"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/cli": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
+    "@capacitor/local-notifications": "^8.0.0",
+    "@revenuecat/purchases-capacitor": "^9.2.2"
+  }
+}
