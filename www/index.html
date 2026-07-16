@@ -55,6 +55,26 @@
   .rolecard{border:0.5px solid var(--border);background:var(--card);border-radius:var(--radius);padding:18px;cursor:pointer;text-align:left}
   .rolecard b{font-size:16px}
   .rolecard p{font-size:13px;color:var(--soft);margin-top:4px;line-height:1.5}
+  #breathOv{position:absolute;inset:0;background:radial-gradient(circle at 50% 36%,#1b4965,#0e2131 72%);z-index:80;display:flex;flex-direction:column;color:#eaf1f5;overflow:hidden}
+  #breathOv .cx{position:absolute;top:calc(14px + env(safe-area-inset-top));right:16px;z-index:5;background:rgba(255,255,255,.12);border:none;color:#fff;width:38px;height:38px;border-radius:50%;font-size:15px;cursor:pointer}
+  #breathStage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;position:relative;z-index:2}
+  .orbWrap{position:relative;width:260px;height:260px;display:flex;align-items:center;justify-content:center}
+  .aura{position:absolute;left:50%;top:50%;width:200px;height:200px;border-radius:50%;border:1px solid rgba(228,201,137,.4);transform:translate(-50%,-50%) scale(.6);opacity:.2}
+  .orb{position:absolute;left:50%;top:50%;width:168px;height:168px;border-radius:50%;background:radial-gradient(circle at 42% 36%,#ffffff,#E4C989 80%);transform:translate(-50%,-50%) scale(.5);box-shadow:0 0 40px 6px rgba(228,201,137,.28)}
+  #breathRingS{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+  .orbTxt{position:relative;z-index:3;text-align:center;pointer-events:none}
+  .orbPhase{font-size:16px;font-weight:600;letter-spacing:.02em;color:rgba(18,40,58,.85)}
+  .orbCount{font-size:50px;font-weight:700;line-height:1;margin-top:2px;min-height:.9em;color:#12283a}
+  .bParticle{position:absolute;border-radius:50%;background:#fff;opacity:0;animation:bdrift linear infinite}
+  @keyframes bdrift{0%{opacity:0;transform:translateY(16px)}25%{opacity:.5}75%{opacity:.35}100%{opacity:0;transform:translateY(-56px)}}
+  .bRound{font-size:12.5px;color:rgba(234,241,245,.6);min-height:1.2em;z-index:2}
+  .breathCtl{padding:0 24px calc(28px + env(safe-area-inset-bottom));z-index:2;width:100%;max-width:420px;margin:0 auto}
+  .breathTempo{text-align:center;font-size:13px;color:rgba(234,241,245,.75);margin-bottom:15px}
+  .breathTempo input{width:100%;margin-top:8px;accent-color:#E4C989}
+  .breathBtns{display:flex;gap:11px}
+  .breathBtns button{flex:1;padding:13px;border-radius:12px;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;border:none}
+  .bStart{background:#E4C989;color:#5a4715}
+  .bEnd{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.42)}
 </style>
 </head>
 <body>
@@ -91,12 +111,13 @@ const T={
     trend:"Din trend",checkinsN:"innsjekk",coaching:"Vei til mer",
     coachingd:"Vil du gå dypere? Book en 1:1-samtale med Kristian.",coachbtn:"Se coaching",
     soon:"Kommer snart i denne versjonen.",pickone:"Velg et nivå for alle tre.",goalsaved:"Mål lagret.",
+    breath:{phases:["Pust inn","Hold","Pust ut","Hold"],press:"Trykk start",pace:"Tempo",sec:"sek per fase",start:"Start",pause:"Pause",cont:"Fortsett",end:"Avslutt",round:"Runde",paused:"Pause",done:"Bra jobba."},
     ansatt:{pill:"Ansatt",
       focus:"Du har en presentasjon i dag. Kjør en pre-performance-rutine først.",
       sugg:"Høyt stress flere dager på rad. Prøv «Fra utbrent til bærekraftig».",
       goalPh:"F.eks. Ta tre bevisste pauser hver dag",
       third:"Etter-refleksjon",thirdd:"Logg kort hvordan det gikk.",thirdbtn:"Reflekter",
-      exs:["Boksepust · 3 min","Fokus-reset · 4 min","Self-talk-vending · 5 min","Fysiologisk sukk · 2 min"],
+      exs:[{id:"breath",l:"Boksepust · 3 min"},{id:"soon",l:"Fokus-reset · 4 min"},{id:"soon",l:"Self-talk-vending · 5 min"},{id:"soon",l:"Fysiologisk sukk · 2 min"}],
       progs:["Prestasjon under press · 14 dager","Fra utbrent til bærekraftig · 21 dager","Fokus og flyt · 14 dager"],
       arts:["Fokus i en avbruddskultur","Restitusjon som prestasjonsverktøy","Håndtere tilbakeslag"]},
     leder:{pill:"Leder",
@@ -104,7 +125,7 @@ const T={
       sugg:"Vedvarende høyt stress. Se «Lederens egen restitusjon».",
       goalPh:"F.eks. Gi konkret tilbakemelding til to i teamet",
       third:"Forbered vanskelig samtale",thirdd:"Mål, motpartens perspektiv, åpningssetning.",thirdbtn:"Start forberedelse",
-      exs:["Lederpust · 3 min","Self-talk-vending · 5 min","Visualisering · 6 min","Boksepust · 3 min"],
+      exs:[{id:"breath",l:"Lederpust · 3 min"},{id:"soon",l:"Self-talk-vending · 5 min"},{id:"soon",l:"Visualisering · 6 min"},{id:"breath",l:"Boksepust · 3 min"}],
       progs:["Trygg leder under press · 21 dager","Mestre vanskelige samtaler · 14 dager","Bygg psykologisk trygghet · 21 dager"],
       arts:["Psykologisk trygghet i praksis","Gi tilbakemelding som bygger","Lede uten å brenne ut"]}
   },
@@ -124,12 +145,13 @@ const T={
     trend:"Your trend",checkinsN:"check-ins",coaching:"Go further",
     coachingd:"Want to go deeper? Book a 1:1 session with Kristian.",coachbtn:"See coaching",
     soon:"Coming in a later version.",pickone:"Pick a level for all three.",goalsaved:"Goal saved.",
+    breath:{phases:["Breathe in","Hold","Breathe out","Hold"],press:"Press start",pace:"Pace",sec:"sec per phase",start:"Start",pause:"Pause",cont:"Continue",end:"End",round:"Round",paused:"Paused",done:"Well done."},
     ansatt:{pill:"Employee",
       focus:"You have a presentation today. Run a pre-performance routine first.",
       sugg:"High stress several days running. Try \"From burnout to sustainable\".",
       goalPh:"E.g. Take three deliberate breaks each day",
       third:"Post-event reflection",thirdd:"Briefly log how it went.",thirdbtn:"Reflect",
-      exs:["Box breathing · 3 min","Focus reset · 4 min","Self-talk reframe · 5 min","Physiological sigh · 2 min"],
+      exs:[{id:"breath",l:"Box breathing · 3 min"},{id:"soon",l:"Focus reset · 4 min"},{id:"soon",l:"Self-talk reframe · 5 min"},{id:"soon",l:"Physiological sigh · 2 min"}],
       progs:["Performance under pressure · 14 days","From burnout to sustainable · 21 days","Focus and flow · 14 days"],
       arts:["Focus in a culture of interruption","Recovery as a performance tool","Bouncing back from setbacks"]},
     leder:{pill:"Leader",
@@ -137,7 +159,7 @@ const T={
       sugg:"Sustained high stress. See \"The leader's own recovery\".",
       goalPh:"E.g. Give concrete feedback to two team members",
       third:"Prepare a difficult conversation",thirdd:"Goal, their perspective, opening line.",thirdbtn:"Start prep",
-      exs:["Leader's breath · 3 min","Self-talk reframe · 5 min","Visualization · 6 min","Box breathing · 3 min"],
+      exs:[{id:"breath",l:"Leader's breath · 3 min"},{id:"soon",l:"Self-talk reframe · 5 min"},{id:"soon",l:"Visualization · 6 min"},{id:"breath",l:"Box breathing · 3 min"}],
       progs:["Steady leader under pressure · 21 days","Master difficult conversations · 14 days","Build psychological safety · 21 days"],
       arts:["Psychological safety in practice","Feedback that builds","Leading without burning out"]}
   }
@@ -189,7 +211,7 @@ function vHome(){
   let h='<div class="card"><div class="h" style="margin-bottom:12px">'+t("checkin")+'</div>'+
     scaleRow("mood",c.mood)+scaleRow("energy",c.energy)+scaleRow("stress",c.stress)+
     (c.mood!=null&&c.energy!=null&&c.stress!=null?'<div class="csub" style="color:var(--blue);margin-top:2px">✓ '+t("saved")+'</div>':'')+'</div>';
-  h+='<div class="card"><div class="lab">'+t("focus")+'</div><div class="csub" style="color:var(--text);font-size:14px;margin-bottom:11px">'+esc(r.focus)+'</div><button class="btn sand" onclick="toast(t(\'soon\'))">'+t("start")+'</button></div>';
+  h+='<div class="card"><div class="lab">'+t("focus")+'</div><div class="csub" style="color:var(--text);font-size:14px;margin-bottom:11px">'+esc(r.focus)+'</div><button class="btn sand" onclick="openBreath()">'+t("start")+'</button></div>';
   h+='<div class="card"><div class="lab">'+t("suggest")+'</div><div class="csub" style="margin-bottom:11px">'+esc(r.sugg)+'</div><button class="btn" onclick="tab=\'trening\';render()">'+t("open")+'</button></div>';
   return h;
 }
@@ -210,7 +232,7 @@ function saveGoal(){const v=document.getElementById("goalInput").value.trim();if
 function vTrain(){
   const r=tr();
   let h='<h1>'+t("nav").trening+'</h1><div class="sub">'+t("exercises")+'</div>';
-  h+='<div class="card">'+r.exs.map(e=>'<div class="row" onclick="toast(t(\'soon\'))"><span style="font-size:14px">'+esc(e)+'</span><span style="color:var(--blue);font-size:18px">▶</span></div>').join("")+'</div>';
+  h+='<div class="card">'+r.exs.map(e=>'<div class="row" onclick="openExercise(\''+e.id+'\')"><span style="font-size:14px">'+esc(e.l)+'</span><span style="color:var(--blue);font-size:18px">▶</span></div>').join("")+'</div>';
   h+='<div class="sub" style="margin-top:6px">'+t("programs")+'</div>';
   h+='<div class="card">'+r.progs.map(p=>'<div class="row" onclick="toast(t(\'soon\'))"><span style="font-size:14px">'+esc(p)+'</span><span style="color:var(--blue);font-size:16px">→</span></div>').join("")+'</div>';
   return h;
@@ -221,6 +243,64 @@ function vLearn(){
   h+='<div class="card">'+r.arts.map(a=>'<div class="row" onclick="toast(t(\'soon\'))"><span style="font-size:14px">'+esc(a)+'</span><span style="color:var(--blue);font-size:16px">→</span></div>').join("")+'</div>';
   return h;
 }
+/* ---------- breathing exercise (animated) ---------- */
+const BR_R=96, BR_C=2*Math.PI*BR_R;
+let brRaf=null, brPhase=0;
+function easeInOut(t){return t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
+function openExercise(id){ if(id==="breath")openBreath(); else toast(t("soon")); }
+function openBreath(){
+  brPhase=0; const b=T[state.lang].breath;
+  const ov=document.createElement("div"); ov.id="breathOv";
+  let parts="";
+  for(let i=0;i<16;i++){const l=Math.round(Math.random()*100),bo=Math.round(8+Math.random()*72),d=(6+Math.random()*7).toFixed(1),dl=(Math.random()*8).toFixed(1),s=(2+Math.random()*2.5).toFixed(1);
+    parts+='<div class="bParticle" style="left:'+l+'%;bottom:'+bo+'%;width:'+s+'px;height:'+s+'px;animation-duration:'+d+'s;animation-delay:'+dl+'s"></div>';}
+  ov.innerHTML=parts+
+    '<button class="cx" onclick="closeBreath()">✕</button>'+
+    '<div id="breathStage"><div class="orbWrap">'+
+      '<div class="aura" id="aura2"></div><div class="aura" id="aura1"></div>'+
+      '<div class="orb" id="brOrb"></div>'+
+      '<svg id="breathRingS" width="232" height="232" viewBox="0 0 232 232"><circle cx="116" cy="116" r="'+BR_R+'" fill="none" stroke="rgba(255,255,255,.13)" stroke-width="4"/>'+
+      '<circle id="brRing" cx="116" cy="116" r="'+BR_R+'" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-dasharray="'+BR_C.toFixed(1)+'" stroke-dashoffset="'+BR_C.toFixed(1)+'" transform="rotate(-90 116 116)"/></svg>'+
+      '<div class="orbTxt"><div class="orbPhase" id="brPhaseTxt">'+b.press+'</div><div class="orbCount" id="brCountTxt"></div></div>'+
+    '</div><div class="bRound" id="brRoundTxt"></div></div>'+
+    '<div class="breathCtl"><div class="breathTempo">'+b.pace+': <b id="brTempoVal">4</b> '+b.sec+'<input type="range" id="brTempo" min="3" max="6" step="0.5" value="4"></div>'+
+      '<div class="breathBtns"><button class="bStart" id="brStart">'+b.start+'</button><button class="bEnd" onclick="endBreath()">'+b.end+'</button></div></div>';
+  document.getElementById("app").appendChild(ov);
+  document.getElementById("brTempo").oninput=e=>document.getElementById("brTempoVal").textContent=e.target.value;
+  document.getElementById("brStart").onclick=toggleBreath;
+}
+function toggleBreath(){
+  const btn=document.getElementById("brStart"); const b=T[state.lang].breath;
+  if(brRaf){ stopBreath(); btn.textContent=b.cont; document.getElementById("brPhaseTxt").textContent=b.paused; document.getElementById("brCountTxt").textContent=""; return; }
+  btn.textContent=b.pause; runBreath();
+}
+function runBreath(){
+  let start=null; const b=T[state.lang].breath;
+  const tick=ts=>{
+    const orb=document.getElementById("brOrb"); if(!orb){brRaf=null;return;}
+    const tempo=parseFloat(document.getElementById("brTempo").value)*1000;
+    if(start===null)start=ts;
+    const t=Math.min((ts-start)/tempo,1), ph=brPhase%4;
+    let bv; if(ph===0)bv=easeInOut(t); else if(ph===1)bv=1; else if(ph===2)bv=easeInOut(1-t); else bv=0;
+    orb.style.transform="translate(-50%,-50%) scale("+(0.5+0.5*bv).toFixed(3)+")";
+    orb.style.boxShadow="0 0 "+Math.round(38+52*bv)+"px "+Math.round(6+10*bv)+"px rgba(228,201,137,"+(0.24+0.32*bv).toFixed(2)+")";
+    const a1=document.getElementById("aura1"), a2=document.getElementById("aura2");
+    a1.style.transform="translate(-50%,-50%) scale("+(0.6+0.5*bv).toFixed(3)+")"; a1.style.opacity=(0.14+0.34*bv).toFixed(2);
+    a2.style.transform="translate(-50%,-50%) scale("+(0.72+0.82*bv).toFixed(3)+")"; a2.style.opacity=(0.08+0.2*bv).toFixed(2);
+    document.getElementById("brRing").style.strokeDashoffset=(BR_C*(1-bv)).toFixed(1);
+    document.getElementById("brPhaseTxt").textContent=b.phases[ph];
+    const secs=Math.ceil((tempo-(ts-start))/1000);
+    document.getElementById("brCountTxt").textContent=secs>0?secs:"";
+    document.getElementById("brRoundTxt").textContent=b.round+" "+(Math.floor(brPhase/4)+1);
+    if(t>=1){brPhase++;start=null;}
+    brRaf=requestAnimationFrame(tick);
+  };
+  brRaf=requestAnimationFrame(tick);
+}
+function stopBreath(){ if(brRaf){cancelAnimationFrame(brRaf);brRaf=null;} }
+function endBreath(){ if(!state.completed.includes("breath"))state.completed.push("breath"); save(); closeBreath(); toast(T[state.lang].breath.done); }
+function closeBreath(){ stopBreath(); const ov=document.getElementById("breathOv"); if(ov)ov.remove(); }
+
 function vProfile(){
   const n=Object.keys(state.checkins).length;
   let h='<h1>'+t("nav").profil+'</h1><div class="sub">'+t("trend")+'</div>';
