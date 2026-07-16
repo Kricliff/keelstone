@@ -63,7 +63,19 @@
   .rolecard b{font-size:16px}
   .rolecard p{font-size:13px;color:var(--soft);margin-top:4px;line-height:1.5}
   #breathOv{position:absolute;inset:0;background:radial-gradient(circle at 50% 36%,#1b4965,#0e2131 72%);z-index:80;display:flex;flex-direction:column;color:#eaf1f5;overflow:hidden}
-  #breathOv .cx{position:absolute;top:calc(14px + env(safe-area-inset-top));right:16px;z-index:5;background:rgba(255,255,255,.12);border:none;color:#fff;width:38px;height:38px;border-radius:50%;font-size:15px;cursor:pointer}
+  #breathOv .cx,#routineOv .cx{position:absolute;top:calc(14px + env(safe-area-inset-top));right:16px;z-index:5;background:rgba(255,255,255,.12);border:none;color:#fff;width:38px;height:38px;border-radius:50%;font-size:15px;cursor:pointer}
+  #routineOv{position:absolute;inset:0;background:radial-gradient(circle at 50% 34%,#1b4965,#0e2131 74%);z-index:80;display:flex;flex-direction:column;color:#eaf1f5}
+  .rStage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:22px;z-index:2}
+  .rDots{display:flex;gap:7px}
+  .rDot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25)}
+  .rDot.on{background:#E4C989}
+  .rLabel{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#E4C989}
+  .rInstr{font-size:19px;line-height:1.55;max-width:340px;color:#eef3f6}
+  .rSelf{font-size:23px;font-weight:600;line-height:1.4;max-width:360px;color:#fff}
+  .blockRow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:0.5px solid var(--line);cursor:pointer}
+  .blockRow:last-child{border-bottom:none}
+  .chk{width:24px;height:24px;border-radius:7px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;color:#fff}
+  .chk.on{background:var(--blue);border-color:var(--blue)}
   #breathStage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;position:relative;z-index:2}
   .orbWrap{position:relative;width:260px;height:260px;display:flex;align-items:center;justify-content:center}
   .aura{position:absolute;left:50%;top:50%;width:200px;height:200px;border-radius:50%;border:1px solid rgba(228,201,137,.4);transform:translate(-50%,-50%) scale(.6);opacity:.2}
@@ -93,7 +105,7 @@
 /* ---------- state ---------- */
 const LS="keelstone_state_v1";
 const todayStr=()=>new Date().toISOString().slice(0,10);
-const defaultState={role:null,lang:null,checkins:{},goal:"",completed:[],programs:{},settings:{}};
+const defaultState={role:null,lang:null,checkins:{},goal:"",completed:[],programs:{},routine:null,settings:{}};
 let state=load();
 function load(){try{const r=localStorage.getItem(LS);if(r)return Object.assign(structuredClone(defaultState),JSON.parse(r));}catch(e){}return structuredClone(defaultState);}
 function save(){localStorage.setItem(LS,JSON.stringify(state));}
@@ -120,6 +132,12 @@ const T={
     soon:"Kommer snart i denne versjonen.",pickone:"Velg et nivå for alle tre.",goalsaved:"Mål lagret.",
     breath:{phases:["Pust inn","Hold","Pust ut","Hold"],press:"Trykk start",pace:"Tempo",sec:"sek per fase",start:"Start",pause:"Pause",cont:"Fortsett",end:"Avslutt",round:"Runde",paused:"Pause",done:"Bra jobba."},
     prog:{start:"Start program",day:"Dag",of:"av",complete:"Fullfør dag",reflection:"Din refleksjon",reflectPh:"Skriv noen ord til deg selv...",back:"Tilbake",locked:"Låst",cdone:"Fullført",exercise:"Øvelse",startBreath:"Start pusteøvelse",progress:"fullført",finished:"Programmet er fullført. Sterkt jobba."},
+    routine:{build:"Bygg rutine",edit:"Rediger",run:"Kjør rutine",save:"Lagre rutine",builderTitle:"Bygg din pre-performance-rutine",builderIntro:"Velg byggeklossene du vil ha før en viktig situasjon.",selfTalkPh:"F.eks. Jeg har forberedt meg. Jeg tar det rolig.",notBuilt:"Bygg en rutine du kan kjøre før viktige situasjoner.",next:"Neste",finish:"Ferdig",breathBtn:"Start pusteøvelse",routineDone:"Rutine fullført. Du er klar.",savedMsg:"Rutine lagret.",blocks:{
+      ground:{label:"Forankring",desc:"Reis deg rakt, føttene i gulvet, et fysisk anker.",instr:"Reis deg eller sitt rakt. Kjenn føttene mot gulvet. Press tommel og pekefinger sammen som ditt anker."},
+      breath:{label:"Pust",desc:"Ro ned med boksepust.",instr:"Senk pusten. Ta noen rolige boksepust."},
+      selftalk:{label:"Self-talk",desc:"Din presterende setning.",instr:"Si dette til deg selv, rolig og tydelig:",emptyFallback:"Gi deg selv én oppmuntrende setning."},
+      visualize:{label:"Visualisering",desc:"Kjør gjennom det som skal skje.",instr:"Lukk øynene. Kjør gjennom situasjonen steg for steg. Se den gå bra."}
+    }},
     ansatt:{pill:"Ansatt",
       focus:"Du har en presentasjon i dag. Kjør en pre-performance-rutine først.",
       sugg:"Høyt stress flere dager på rad. Prøv «Fra utbrent til bærekraftig».",
@@ -155,6 +173,12 @@ const T={
     soon:"Coming in a later version.",pickone:"Pick a level for all three.",goalsaved:"Goal saved.",
     breath:{phases:["Breathe in","Hold","Breathe out","Hold"],press:"Press start",pace:"Pace",sec:"sec per phase",start:"Start",pause:"Pause",cont:"Continue",end:"End",round:"Round",paused:"Paused",done:"Well done."},
     prog:{start:"Start program",day:"Day",of:"of",complete:"Complete day",reflection:"Your reflection",reflectPh:"Write a few words to yourself...",back:"Back",locked:"Locked",cdone:"Completed",exercise:"Exercise",startBreath:"Start breathing",progress:"complete",finished:"Program complete. Strong work."},
+    routine:{build:"Build routine",edit:"Edit",run:"Run routine",save:"Save routine",builderTitle:"Build your pre-performance routine",builderIntro:"Choose the building blocks you want before a high-stakes moment.",selfTalkPh:"E.g. I'm prepared. I'll take it calm.",notBuilt:"Build a routine you can run before high-stakes moments.",next:"Next",finish:"Done",breathBtn:"Start breathing",routineDone:"Routine complete. You're ready.",savedMsg:"Routine saved.",blocks:{
+      ground:{label:"Ground",desc:"Stand tall, feet on the floor, a physical anchor.",instr:"Stand or sit tall. Feel your feet on the floor. Press thumb and finger together as your anchor."},
+      breath:{label:"Breath",desc:"Downregulate with box breathing.",instr:"Slow your breathing. Take a few calm box breaths."},
+      selftalk:{label:"Self-talk",desc:"Your performing statement.",instr:"Say this to yourself, calm and clear:",emptyFallback:"Give yourself one encouraging statement."},
+      visualize:{label:"Visualization",desc:"Run through what's about to happen.",instr:"Close your eyes. Run through the situation step by step. See it go well."}
+    }},
     ansatt:{pill:"Employee",
       focus:"You have a presentation today. Run a pre-performance routine first.",
       sugg:"High stress several days running. Try \"From burnout to sustainable\".",
@@ -263,6 +287,7 @@ function vHome(){
   return h;
 }
 function vPerform(){
+  if(routineEdit) return vRoutineBuilder();
   const r=tr();
   let h='<h1>'+t("nav").prestasjon+'</h1><div class="sub">'+t("weekgoal")+'</div>';
   if(state.goal){
@@ -270,7 +295,7 @@ function vPerform(){
   }else{
     h+='<div class="card"><div class="lab">'+t("weekgoal")+'</div><input type="text" id="goalInput" placeholder="'+esc(r.goalPh)+'" style="margin-bottom:11px"><button class="btn" onclick="saveGoal()">'+t("savegoal")+'</button></div>';
   }
-  h+='<div class="card"><div class="h" style="margin-bottom:4px">'+t("prep")+'</div><div class="csub" style="margin-bottom:11px">'+t("prepd")+'</div><button class="btn sand" onclick="toast(t(\'soon\'))">'+t("build")+'</button></div>';
+  h+=routineCard();
   h+='<div class="card"><div class="h" style="margin-bottom:4px">'+esc(r.third)+'</div><div class="csub" style="margin-bottom:11px">'+esc(r.thirdd)+'</div><button class="btn" onclick="toast(t(\'soon\'))">'+esc(r.thirdbtn)+'</button></div>';
   return h;
 }
@@ -290,6 +315,69 @@ function vLearn(){
   h+='<div class="card">'+r.arts.map(a=>'<div class="row" onclick="toast(t(\'soon\'))"><span style="font-size:14px">'+esc(a)+'</span><span style="color:var(--blue);font-size:16px">→</span></div>').join("")+'</div>';
   return h;
 }
+/* ---------- pre-performance routine ---------- */
+const ROUTINE_BLOCKS=["ground","breath","selftalk","visualize"];
+let routineEdit=false, routineDraft=null, routineRun=null;
+function routineCard(){
+  const R=T[state.lang].routine;
+  if(!state.routine)
+    return '<div class="card"><div class="h" style="margin-bottom:4px">'+t("prep")+'</div><div class="csub" style="margin-bottom:11px">'+R.notBuilt+'</div><button class="btn sand" onclick="openRoutineBuilder()">'+R.build+'</button></div>';
+  const inc=ROUTINE_BLOCKS.filter(id=>state.routine.blocks[id]);
+  const summary=inc.map(id=>R.blocks[id].label).join(" · ")||"—";
+  return '<div class="card"><div class="h" style="margin-bottom:4px">'+t("prep")+'</div><div class="csub" style="margin-bottom:11px">'+esc(summary)+'</div>'+
+    '<button class="btn sand" style="margin-bottom:8px" onclick="openRoutine()">'+R.run+'</button>'+
+    '<button class="btn ghost" onclick="openRoutineBuilder()">'+R.edit+'</button></div>';
+}
+function openRoutineBuilder(){
+  routineDraft=state.routine?JSON.parse(JSON.stringify(state.routine)):{blocks:{ground:true,breath:true,selftalk:true,visualize:true},selfTalk:""};
+  routineEdit=true;render();const m=document.getElementById("main");if(m)m.scrollTop=0;
+}
+function toggleBlock(id){ routineDraft.blocks[id]=!routineDraft.blocks[id]; render(); }
+function cancelRoutine(){ routineEdit=false;routineDraft=null;render(); }
+function saveRoutine(){
+  const ta=document.getElementById("rSelfTalk");if(ta)routineDraft.selfTalk=ta.value.trim();
+  state.routine=routineDraft;routineEdit=false;routineDraft=null;save();render();
+  toast(T[state.lang].routine.savedMsg);
+}
+function vRoutineBuilder(){
+  const R=T[state.lang].routine;
+  let h='<button class="back" onclick="cancelRoutine()">← '+t("nav").prestasjon+'</button>';
+  h+='<h1>'+R.builderTitle+'</h1><div class="sub">'+R.builderIntro+'</div>';
+  h+='<div class="card">'+ROUTINE_BLOCKS.map(id=>{
+    const on=routineDraft.blocks[id],b=R.blocks[id];
+    return '<div class="blockRow" onclick="toggleBlock(\''+id+'\')"><div class="chk'+(on?" on":"")+'">'+(on?"✓":"")+'</div><div style="flex:1"><div style="font-size:14px;font-weight:500">'+b.label+'</div><div class="csub" style="font-size:12.5px">'+esc(b.desc)+'</div></div></div>';
+  }).join("")+'</div>';
+  h+='<div class="card"><div class="lab">'+R.blocks.selftalk.label+'</div><input type="text" id="rSelfTalk" placeholder="'+esc(R.selfTalkPh)+'" value="'+esc(routineDraft.selfTalk||"")+'"></div>';
+  h+='<button class="btn" onclick="saveRoutine()">'+R.save+'</button>';
+  return h;
+}
+function openRoutine(){
+  const inc=ROUTINE_BLOCKS.filter(id=>state.routine.blocks[id]);
+  if(!inc.length){toast(t("soon"));return;}
+  routineRun={steps:inc,i:0};
+  const ov=document.createElement("div");ov.id="routineOv";
+  ov.innerHTML='<button class="cx" onclick="closeRoutine()">✕</button><div class="rStage" id="rStage"></div><div class="breathCtl"><div class="breathBtns" id="rCtl"></div></div>';
+  document.getElementById("app").appendChild(ov);
+  renderRoutineStep();
+}
+function renderRoutineStep(){
+  const R=T[state.lang].routine,id=routineRun.steps[routineRun.i],b=R.blocks[id];
+  let inner='<div class="rDots">'+routineRun.steps.map((s,i)=>'<div class="rDot'+(i===routineRun.i?" on":"")+'"></div>').join("")+'</div><div class="rLabel">'+b.label+'</div>';
+  if(id==="selftalk")inner+='<div class="rSelf">'+esc(state.routine.selfTalk||b.emptyFallback)+'</div>';
+  else inner+='<div class="rInstr">'+esc(b.instr)+'</div>';
+  document.getElementById("rStage").innerHTML=inner;
+  const last=routineRun.i>=routineRun.steps.length-1;
+  let c="";
+  if(id==="breath")c+='<button class="bEnd" onclick="openBreath()">'+R.breathBtn+'</button>';
+  c+='<button class="bStart" onclick="nextRoutineStep()">'+(last?R.finish:R.next)+'</button>';
+  document.getElementById("rCtl").innerHTML=c;
+}
+function nextRoutineStep(){
+  if(routineRun.i>=routineRun.steps.length-1){closeRoutine();toast(T[state.lang].routine.routineDone);return;}
+  routineRun.i++;renderRoutineStep();
+}
+function closeRoutine(){ const ov=document.getElementById("routineOv");if(ov)ov.remove();routineRun=null; }
+
 /* ---------- program views ---------- */
 let progId=null, progDay=null;
 function pData(){return PROGRAMS[progId][state.lang];}
