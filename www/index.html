@@ -43,6 +43,13 @@
   .bar{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:2px}
   .bar span{display:block;height:100%;background:var(--sand)}
   input[type=text]{width:100%;padding:11px;border:0.5px solid var(--border);border-radius:11px;font-family:inherit;font-size:14px;background:var(--card);color:var(--text)}
+  textarea{width:100%;padding:11px;border:0.5px solid var(--border);border-radius:11px;font-family:inherit;font-size:14px;background:var(--card);color:var(--text);min-height:92px;resize:vertical}
+  .back{background:none;border:none;font-family:inherit;font-size:14px;color:var(--blue);cursor:pointer;padding:0;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+  .dayrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:0.5px solid var(--line)}
+  .dayrow:last-child{border-bottom:none}
+  .daynum{width:30px;height:30px;border-radius:50%;background:var(--line);color:var(--soft);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
+  .daynum.done{background:var(--blue);color:#fff}
+  .daynum.cur{background:var(--sand);color:var(--sand-d)}
   .seg{display:inline-flex;border:0.5px solid #2c5c7a;border-radius:9px;overflow:hidden}
   .seg button{border:none;background:transparent;padding:5px 12px;font-size:12px;font-family:inherit;color:#bcd3e0;cursor:pointer}
   .seg button.on{background:#fff;color:var(--blue)}
@@ -86,7 +93,7 @@
 /* ---------- state ---------- */
 const LS="keelstone_state_v1";
 const todayStr=()=>new Date().toISOString().slice(0,10);
-const defaultState={role:null,lang:null,checkins:{},goal:"",completed:[],settings:{}};
+const defaultState={role:null,lang:null,checkins:{},goal:"",completed:[],programs:{},settings:{}};
 let state=load();
 function load(){try{const r=localStorage.getItem(LS);if(r)return Object.assign(structuredClone(defaultState),JSON.parse(r));}catch(e){}return structuredClone(defaultState);}
 function save(){localStorage.setItem(LS,JSON.stringify(state));}
@@ -112,13 +119,14 @@ const T={
     coachingd:"Vil du gå dypere? Book en 1:1-samtale med Kristian.",coachbtn:"Se coaching",
     soon:"Kommer snart i denne versjonen.",pickone:"Velg et nivå for alle tre.",goalsaved:"Mål lagret.",
     breath:{phases:["Pust inn","Hold","Pust ut","Hold"],press:"Trykk start",pace:"Tempo",sec:"sek per fase",start:"Start",pause:"Pause",cont:"Fortsett",end:"Avslutt",round:"Runde",paused:"Pause",done:"Bra jobba."},
+    prog:{start:"Start program",day:"Dag",of:"av",complete:"Fullfør dag",reflection:"Din refleksjon",reflectPh:"Skriv noen ord til deg selv...",back:"Tilbake",locked:"Låst",cdone:"Fullført",exercise:"Øvelse",startBreath:"Start pusteøvelse",progress:"fullført",finished:"Programmet er fullført. Sterkt jobba."},
     ansatt:{pill:"Ansatt",
       focus:"Du har en presentasjon i dag. Kjør en pre-performance-rutine først.",
       sugg:"Høyt stress flere dager på rad. Prøv «Fra utbrent til bærekraftig».",
       goalPh:"F.eks. Ta tre bevisste pauser hver dag",
       third:"Etter-refleksjon",thirdd:"Logg kort hvordan det gikk.",thirdbtn:"Reflekter",
       exs:[{id:"breath",l:"Boksepust · 3 min"},{id:"soon",l:"Fokus-reset · 4 min"},{id:"soon",l:"Self-talk-vending · 5 min"},{id:"soon",l:"Fysiologisk sukk · 2 min"}],
-      progs:["Prestasjon under press · 14 dager","Fra utbrent til bærekraftig · 21 dager","Fokus og flyt · 14 dager"],
+      progs:[{id:"soon",l:"Prestasjon under press · 14 dager"},{id:"soon",l:"Fra utbrent til bærekraftig · 21 dager"},{id:"soon",l:"Fokus og flyt · 14 dager"}],
       arts:["Fokus i en avbruddskultur","Restitusjon som prestasjonsverktøy","Håndtere tilbakeslag"]},
     leder:{pill:"Leder",
       focus:"1:1 med en i teamet i dag. Forbered en trygg, tydelig samtale.",
@@ -126,7 +134,7 @@ const T={
       goalPh:"F.eks. Gi konkret tilbakemelding til to i teamet",
       third:"Forbered vanskelig samtale",thirdd:"Mål, motpartens perspektiv, åpningssetning.",thirdbtn:"Start forberedelse",
       exs:[{id:"breath",l:"Lederpust · 3 min"},{id:"soon",l:"Self-talk-vending · 5 min"},{id:"soon",l:"Visualisering · 6 min"},{id:"breath",l:"Boksepust · 3 min"}],
-      progs:["Trygg leder under press · 21 dager","Mestre vanskelige samtaler · 14 dager","Bygg psykologisk trygghet · 21 dager"],
+      progs:[{id:"soon",l:"Trygg leder under press · 21 dager"},{id:"difficult",l:"Mestre vanskelige samtaler · 14 dager"},{id:"soon",l:"Bygg psykologisk trygghet · 21 dager"}],
       arts:["Psykologisk trygghet i praksis","Gi tilbakemelding som bygger","Lede uten å brenne ut"]}
   },
   en:{
@@ -146,13 +154,14 @@ const T={
     coachingd:"Want to go deeper? Book a 1:1 session with Kristian.",coachbtn:"See coaching",
     soon:"Coming in a later version.",pickone:"Pick a level for all three.",goalsaved:"Goal saved.",
     breath:{phases:["Breathe in","Hold","Breathe out","Hold"],press:"Press start",pace:"Pace",sec:"sec per phase",start:"Start",pause:"Pause",cont:"Continue",end:"End",round:"Round",paused:"Paused",done:"Well done."},
+    prog:{start:"Start program",day:"Day",of:"of",complete:"Complete day",reflection:"Your reflection",reflectPh:"Write a few words to yourself...",back:"Back",locked:"Locked",cdone:"Completed",exercise:"Exercise",startBreath:"Start breathing",progress:"complete",finished:"Program complete. Strong work."},
     ansatt:{pill:"Employee",
       focus:"You have a presentation today. Run a pre-performance routine first.",
       sugg:"High stress several days running. Try \"From burnout to sustainable\".",
       goalPh:"E.g. Take three deliberate breaks each day",
       third:"Post-event reflection",thirdd:"Briefly log how it went.",thirdbtn:"Reflect",
       exs:[{id:"breath",l:"Box breathing · 3 min"},{id:"soon",l:"Focus reset · 4 min"},{id:"soon",l:"Self-talk reframe · 5 min"},{id:"soon",l:"Physiological sigh · 2 min"}],
-      progs:["Performance under pressure · 14 days","From burnout to sustainable · 21 days","Focus and flow · 14 days"],
+      progs:[{id:"soon",l:"Performance under pressure · 14 days"},{id:"soon",l:"From burnout to sustainable · 21 days"},{id:"soon",l:"Focus and flow · 14 days"}],
       arts:["Focus in a culture of interruption","Recovery as a performance tool","Bouncing back from setbacks"]},
     leder:{pill:"Leader",
       focus:"1:1 with a team member today. Prepare a calm, clear conversation.",
@@ -160,12 +169,50 @@ const T={
       goalPh:"E.g. Give concrete feedback to two team members",
       third:"Prepare a difficult conversation",thirdd:"Goal, their perspective, opening line.",thirdbtn:"Start prep",
       exs:[{id:"breath",l:"Leader's breath · 3 min"},{id:"soon",l:"Self-talk reframe · 5 min"},{id:"soon",l:"Visualization · 6 min"},{id:"breath",l:"Box breathing · 3 min"}],
-      progs:["Steady leader under pressure · 21 days","Master difficult conversations · 14 days","Build psychological safety · 21 days"],
+      progs:[{id:"soon",l:"Steady leader under pressure · 21 days"},{id:"difficult",l:"Master difficult conversations · 14 days"},{id:"soon",l:"Build psychological safety · 21 days"}],
       arts:["Psychological safety in practice","Feedback that builds","Leading without burning out"]}
   }
 };
 function t(k){return T[state.lang][k];}
 function tr(){return T[state.lang][state.role];}
+
+/* ---------- programs ---------- */
+const PROGRAMS={
+  difficult:{
+    no:{title:"Mestre vanskelige samtaler",desc:"14 dager som gjør deg trygg i samtalene du helst vil unngå. Forberedelse, regulering og konkrete verktøy.",days:[
+      {t:"Hvorfor vi unngår",body:"Vanskelige samtaler utsettes fordi de føles utrygge, ikke fordi de er uviktige. Å utsette dem koster mer over tid, både for deg og teamet.",ex:"Skriv ned én samtale du unngår akkurat nå.",reflect:"Hva er du redd for skal skje om du tar den?"},
+      {t:"Reguler deg selv først",body:"Din ro smitter. Klarer du å senke ditt eget stressnivå, senker du temperaturen i hele samtalen.",ex:"Kjør boksepust i tre minutter.",reflect:"Hvor i kroppen merker du stress før krevende samtaler?",breath:true},
+      {t:"Ett tydelig mål",body:"En samtale uten mål sklir ut. Formuler hva du vil oppnå i én setning.",ex:"Skriv målet ditt som én setning.",reflect:"Hva er det egentlige utfallet du ønsker?"},
+      {t:"Se det fra deres side",body:"Folk forsvarer seg når de føler seg misforstått. Å forstå deres perspektiv er ikke å være enig, men å la dem bli hørt.",ex:"Skriv tre setninger fra motpartens ståsted.",reflect:"Hvordan ser situasjonen ut for dem?"},
+      {t:"Åpningssetningen",body:"De første ti sekundene setter tonen. En god åpning er tydelig, respektfull og uten anklage.",ex:"Skriv åpningssetningen din.",reflect:"Inviterer åpningen til dialog, eller til forsvar?"},
+      {t:"Lytt mer enn du snakker",body:"Åpne spørsmål gir deg informasjon og gir dem verdighet. Du styrer samtalen best ved å lytte.",ex:"Formuler ett åpent spørsmål du vil stille.",reflect:"Hva vet du egentlig ikke om situasjonen ennå?"},
+      {t:"Vær konkret, ikke merkelapp",body:"Beskriv atferd og fakta, ikke karakter. «Du kom for sent tre ganger» lander bedre enn «du er upålitelig».",ex:"Skriv om en merkelapp til en konkret observasjon.",reflect:"Hvor lett er det å skli over i karakteristikk?"},
+      {t:"Håndter følelser",body:"Følelser er data, ikke støy. Når det blir varmt, senk tempoet i stedet for å trappe opp.",ex:"Planlegg hva du sier hvis de blir defensive.",reflect:"Hva trigger deg selv i en opphetet samtale?"},
+      {t:"Bruk stillhet",body:"Pauser gir rom for tanke og signaliserer ro. Ikke fyll hver stillhet.",ex:"Merk deg ett sted du bevisst skal pause.",reflect:"Hvor ukomfortabel er stillhet for deg?"},
+      {t:"Øv: tilbakemelding",body:"Konstruktiv tilbakemelding kobler observasjon, effekt og ønske. Øv den i hodet nå.",ex:"Kjør gjennom en tilbakemelding steg for steg.",reflect:"Var den tydelig uten å være hard?"},
+      {t:"Øv: uenighet",body:"Uenighet er ikke konflikt. Du kan stå fast på sak og mykt på person samtidig.",ex:"Visualiser en samtale der dere er uenige, og du holder deg rolig.",reflect:"Klarer du å være tydelig og varm på én gang?"},
+      {t:"Øv: den tyngste",body:"Noen samtaler er alvorlige (nedbemanning, brudd på tillit). Forberedelse og respekt betyr mest her.",ex:"Skriv de tre punktene du absolutt må få frem.",reflect:"Hvordan vil du at de skal føle seg ivaretatt, selv i en tung beskjed?"},
+      {t:"Etterarbeidet",body:"En samtale er ikke ferdig når den er over. Oppsummer, avtal neste steg, og følg opp.",ex:"Skriv hvordan du vil avslutte og følge opp.",reflect:"Hva er ditt konkrete neste steg etter samtalen?"},
+      {t:"Din spillebok",body:"Du har nå et rammeverk: reguler deg, sett mål, forstå dem, vær konkret, lytt, følg opp. Gjør det til en vane.",ex:"Skriv dine tre viktigste lærdommer.",reflect:"Hvilken samtale tar du nå som du har utsatt?"}
+    ]},
+    en:{title:"Master difficult conversations",desc:"14 days to make you confident in the conversations you'd rather avoid. Preparation, regulation and concrete tools.",days:[
+      {t:"Why we avoid",body:"Difficult conversations get postponed because they feel unsafe, not because they're unimportant. Delaying them costs more over time, for you and the team.",ex:"Write down one conversation you're avoiding right now.",reflect:"What are you afraid will happen if you have it?"},
+      {t:"Regulate yourself first",body:"Your calm is contagious. If you can lower your own stress, you lower the temperature of the whole conversation.",ex:"Do box breathing for three minutes.",reflect:"Where in your body do you feel stress before hard talks?",breath:true},
+      {t:"One clear goal",body:"A conversation without a goal drifts. State what you want to achieve in one sentence.",ex:"Write your goal as a single sentence.",reflect:"What's the real outcome you want?"},
+      {t:"See it from their side",body:"People defend themselves when they feel misunderstood. Understanding their view isn't agreeing, it's letting them be heard.",ex:"Write three sentences from their point of view.",reflect:"What does the situation look like to them?"},
+      {t:"The opening line",body:"The first ten seconds set the tone. A good opening is clear, respectful and free of accusation.",ex:"Write your opening line.",reflect:"Does your opening invite dialogue, or defense?"},
+      {t:"Listen more than you talk",body:"Open questions give you information and give them dignity. You lead best by listening.",ex:"Write one open question you'll ask.",reflect:"What do you actually not yet know about the situation?"},
+      {t:"Be specific, not a label",body:"Describe behavior and facts, not character. \"You were late three times\" lands better than \"you're unreliable\".",ex:"Rewrite a label into a concrete observation.",reflect:"How easy is it to slip into character judgments?"},
+      {t:"Handle emotions",body:"Emotions are data, not noise. When it heats up, slow down instead of escalating.",ex:"Plan what you'll say if they get defensive.",reflect:"What triggers you in a heated conversation?"},
+      {t:"Use silence",body:"Pauses make room for thought and signal calm. Don't fill every silence.",ex:"Note one place you'll deliberately pause.",reflect:"How uncomfortable is silence for you?"},
+      {t:"Practice: feedback",body:"Constructive feedback links observation, effect and request. Rehearse it now.",ex:"Run through a piece of feedback step by step.",reflect:"Was it clear without being harsh?"},
+      {t:"Practice: disagreement",body:"Disagreement isn't conflict. You can be firm on the issue and soft on the person at once.",ex:"Visualize a conversation where you disagree and stay calm.",reflect:"Can you be clear and warm at the same time?"},
+      {t:"Practice: the hardest",body:"Some conversations are serious (layoffs, broken trust). Preparation and respect matter most here.",ex:"Write the three points you absolutely must convey.",reflect:"How do you want them to feel cared for, even in hard news?"},
+      {t:"The follow-up",body:"A conversation isn't over when it ends. Summarize, agree on next steps, and follow up.",ex:"Write how you'll close and follow up.",reflect:"What's your concrete next step after the talk?"},
+      {t:"Your playbook",body:"You now have a framework: regulate, set a goal, understand them, be specific, listen, follow up. Make it a habit.",ex:"Write your three most important takeaways.",reflect:"Which conversation will you have now that you've been postponing?"}
+    ]}
+  }
+};
 
 /* ---------- helpers ---------- */
 const root=document.getElementById("root");
@@ -185,12 +232,12 @@ function render(){
   const m=document.getElementById("main");
   if(tab==="hjem")m.innerHTML=vHome();
   else if(tab==="prestasjon")m.innerHTML=vPerform();
-  else if(tab==="trening")m.innerHTML=vTrain();
+  else if(tab==="trening")m.innerHTML=(progId&&progDay)?vProgramDay():(progId?vProgramOverview():vTrain());
   else if(tab==="laere")m.innerHTML=vLearn();
   else m.innerHTML=vProfile();
   const nav=document.getElementById("nav");const ic={hjem:"🏠",trening:"🧭",prestasjon:"🎯",laere:"📖",profil:"👤"};
   nav.innerHTML=["hjem","trening","prestasjon","laere","profil"].map(k=>'<button data-t="'+k+'" class="'+(tab===k?"on":"")+'"><span class="ic">'+ic[k]+'</span>'+t("nav")[k]+'</button>').join("");
-  nav.querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;render();m&&(document.getElementById("main").scrollTop=0);});
+  nav.querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;progId=null;progDay=null;render();m&&(document.getElementById("main").scrollTop=0);});
 }
 function onboarding(){
   return '<div class="onb"><div><h1>'+t("onbTitle")+'</h1><div class="sub">'+t("onbSub")+'</div></div>'+
@@ -234,7 +281,7 @@ function vTrain(){
   let h='<h1>'+t("nav").trening+'</h1><div class="sub">'+t("exercises")+'</div>';
   h+='<div class="card">'+r.exs.map(e=>'<div class="row" onclick="openExercise(\''+e.id+'\')"><span style="font-size:14px">'+esc(e.l)+'</span><span style="color:var(--blue);font-size:18px">▶</span></div>').join("")+'</div>';
   h+='<div class="sub" style="margin-top:6px">'+t("programs")+'</div>';
-  h+='<div class="card">'+r.progs.map(p=>'<div class="row" onclick="toast(t(\'soon\'))"><span style="font-size:14px">'+esc(p)+'</span><span style="color:var(--blue);font-size:16px">→</span></div>').join("")+'</div>';
+  h+='<div class="card">'+r.progs.map(p=>'<div class="row" onclick="openProgram(\''+p.id+'\')"><span style="font-size:14px">'+esc(p.l)+'</span><span style="color:var(--blue);font-size:16px">→</span></div>').join("")+'</div>';
   return h;
 }
 function vLearn(){
@@ -243,6 +290,58 @@ function vLearn(){
   h+='<div class="card">'+r.arts.map(a=>'<div class="row" onclick="toast(t(\'soon\'))"><span style="font-size:14px">'+esc(a)+'</span><span style="color:var(--blue);font-size:16px">→</span></div>').join("")+'</div>';
   return h;
 }
+/* ---------- program views ---------- */
+let progId=null, progDay=null;
+function pData(){return PROGRAMS[progId][state.lang];}
+function pSt(){return state.programs[progId];}
+function openProgram(id){ if(id==="soon"||!PROGRAMS[id]){toast(t("soon"));return;} progId=id;progDay=null;render();const m=document.getElementById("main");if(m)m.scrollTop=0; }
+function startProgram(){ state.programs[progId]={started:todayStr(),done:[],reflect:{}};save();render(); }
+function openDay(n){ progDay=n;render();const m=document.getElementById("main");if(m)m.scrollTop=0; }
+function backToOverview(){ progDay=null;render(); }
+function backToTrain(){ progId=null;progDay=null;render(); }
+function completeDay(){
+  const st=pSt(),ta=document.getElementById("progReflect");
+  if(ta)st.reflect[progDay]=ta.value.trim();
+  if(!st.done.includes(progDay))st.done.push(progDay);
+  save();
+  const finished=st.done.length>=pData().days.length;
+  progDay=null;render();
+  toast(finished?T[state.lang].prog.finished:T[state.lang].prog.cdone);
+}
+function vProgramOverview(){
+  const p=pData(),P=T[state.lang].prog,st=pSt(),total=p.days.length;
+  let h='<button class="back" onclick="backToTrain()">← '+t("nav").trening+'</button>';
+  h+='<h1>'+esc(p.title)+'</h1><div class="sub">'+esc(p.desc)+'</div>';
+  if(!st){
+    h+='<div class="card"><div class="csub" style="margin-bottom:12px">'+total+' '+P.day.toLowerCase()+'</div><button class="btn" onclick="startProgram()">'+P.start+'</button></div>';
+    return h;
+  }
+  const doneN=st.done.length,pct=Math.round(doneN/total*100);
+  h+='<div class="card"><div class="lab">'+doneN+'/'+total+' '+P.progress+'</div><div class="bar" style="margin-top:6px"><span style="width:'+pct+'%"></span></div></div>';
+  h+='<div class="card">'+p.days.map((d,i)=>{
+    const n=i+1,done=st.done.includes(n),cur=!done&&n===doneN+1,unlocked=done||cur;
+    const cls=done?"done":(cur?"cur":"");
+    const badge=done?"✓":(unlocked?n:"🔒");
+    return '<div class="dayrow" '+(unlocked?'onclick="openDay('+n+')" style="cursor:pointer"':'style="opacity:.5"')+'>'+
+      '<div class="daynum '+cls+'">'+badge+'</div>'+
+      '<div style="flex:1"><div style="font-size:14px;font-weight:500">'+P.day+' '+n+'</div><div class="csub" style="font-size:12.5px">'+esc(d.t)+'</div></div>'+
+      (unlocked?'<span style="color:var(--blue);font-size:16px">→</span>':'')+'</div>';
+  }).join("")+'</div>';
+  return h;
+}
+function vProgramDay(){
+  const p=pData(),P=T[state.lang].prog,st=pSt(),d=p.days[progDay-1],total=p.days.length;
+  const prev=st.reflect[progDay]||"";
+  let h='<button class="back" onclick="backToOverview()">← '+esc(p.title)+'</button>';
+  h+='<div class="lab">'+P.day+' '+progDay+' '+P.of+' '+total+'</div><h1 style="margin-bottom:14px">'+esc(d.t)+'</h1>';
+  h+='<div class="card"><div class="csub" style="color:var(--text);font-size:14px;line-height:1.6">'+esc(d.body)+'</div></div>';
+  h+='<div class="card"><div class="lab">'+P.exercise+'</div><div class="csub" style="color:var(--text);font-size:14px;margin-bottom:'+(d.breath?'11px':'0')+'">'+esc(d.ex)+'</div>'+
+    (d.breath?'<button class="btn sand" onclick="openBreath()">'+P.startBreath+'</button>':'')+'</div>';
+  h+='<div class="card"><div class="lab">'+P.reflection+'</div><textarea id="progReflect" placeholder="'+esc(P.reflectPh)+'">'+esc(prev)+'</textarea></div>';
+  h+='<button class="btn" style="margin-bottom:8px" onclick="completeDay()">'+(st.done.includes(progDay)?"✓ "+P.cdone:P.complete)+'</button>';
+  return h;
+}
+
 /* ---------- breathing exercise (animated) ---------- */
 const BR_R=96, BR_C=2*Math.PI*BR_R;
 let brRaf=null, brPhase=0;
