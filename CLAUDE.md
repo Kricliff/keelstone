@@ -2,31 +2,40 @@
 
 ## Prosjektoversikt
 
-Kristian Clifford (coach og mental trener) bygger **Keelstone**, den internasjonale (tospråklige) søsterappen til **Mentalt Sterkere** (`C:\Users\KristianClifford\Projects\mentaltsterkere`, kun norsk). Fra 2026-07-22 deler de to appene samme konsept og innhold: mental trening og prestasjonspsykologi for idrettsutøvere, studenter og ledere/fagfolk, ikke en arbeidslivs-/rollebasert app. **Hold dem synkronisert** — nytt innhold i den ene bør speiles i den andre, med samme øvelse-id-er.
+Kristian Clifford (coach og mental trener) bygger **Keelstone** — mental trening og prestasjonspsykologi for idrettsutøvere, studenter og ledere/fagfolk, **én app, to språk** (norsk + engelsk), ikke en arbeidslivs-/rollebasert app.
+
+**2026-07-22: Keelstone og Mentalt Sterkere er slått sammen til én app.** De startet som to separate prosjekter (se historikk i `Prosjekthistorikk` under), fikk identisk innhold samme dag, og ble deretter besluttet slått sammen: **Keelstone er nå den eneste gjenlevende appen**, og dekker det norske markedet via sitt eksisterende språk-auto-deteksjon (ikke en egen norsk app lenger). `Projects\mentaltsterkere` er lagt ned som eget produkt — repoet står igjen som arkiv/historikk, ikke i aktiv drift. Ikke gjenoppliv det som en egen app med mindre brukeren eksplisitt ber om det.
 
 - **Navn:** Keelstone (App Store-sjekket rent juli 2026; bør reserveres i App Store Connect for endelig bekreftelse)
 - **Bundle ID (planlagt):** com.kricliff.keelstone
-- **Support/kontakt:** keelstone@cliffordcoaching.no (alias må opprettes, samme mønster som together@ og mentaltsterkere@)
+- **Support/kontakt:** keelstone@cliffordcoaching.no (alias må opprettes, samme mønster som together@)
 - **Coaching-funnel:** Clifford Coaching (https://cliffordcoaching.no)
-- **Søsterapper:** «Together» (menns mentale helse, engelsk) i `Projects\sammen`, «Mentalt Sterkere» (norsk, samme innhold som Keelstone) i `Projects\mentaltsterkere`
+- **Søsterapp:** «Together» (menns mentale helse, engelsk) i `Projects\sammen` — egen app, egen bundle-ID, ikke del av sammenslåingen over
 
 ## Nøkkelbeslutninger (juli 2026, oppdatert 2026-07-22)
 
-- **Tospråklig fra start (norsk + engelsk):** all tekst ligger i en i18n-ordbok (`T[lang]`), aldri hardkodet. Språk auto-detekteres ved første oppstart (norsk enhet → no, ellers en), med manuell bytte i Profil (NO/EN-brytere).
-- **Samme konsept og innhold som Mentalt Sterkere:** 20 øvelser jevnt fordelt på fire kategorier (Fokus/Focus, Ro/Calm, Selvtillit/Confidence, Restitusjon/Recovery), streak, dagbok (3 spørsmål), Pro-gating (2 gratis øvelser). Den tidligere Leder/Ansatt-rollesplitten, rutinebyggeren og 14-dagers-programmet er fjernet, erstattet med dette biblioteket, oversatt til engelsk (norsk er identisk med Mentalt Sterkere).
+- **Tospråklig, én app (norsk + engelsk):** all tekst ligger i en i18n-ordbok (`T[lang]`), aldri hardkodet. Språk auto-detekteres ved første oppstart (norsk enhet → no, ellers en), med manuell bytte i Profil (NO/EN-brytere). Dette er den offisielle løsningen for å dekke både det norske og internasjonale markedet — bevisst valgt fremfor to separate apper (se «Prosjekthistorikk»).
+- **20 øvelser, fire kategorier:** Fokus/Focus, Ro/Calm, Selvtillit/Confidence, Restitusjon/Recovery, streak, dagbok (3 spørsmål), Pro-gating (2 gratis øvelser).
 - **Ingen fellesskap/UGC i v1:** dette er et personlig treningsverktøy, ikke en community-app. Unngår hele Apple 1.2-moderasjonskravet som Together måtte gjennom.
-- **Beholdt fra tidligere versjon:** den animerte pusteøvelsen (SVG-ring, justerbart tempo) er penere enn Mentalt Sterkeres enklere variant og er beholdt i Keelstone som en kvalitetsdifferensiering for det internasjonale markedet, samme boksepust-konsept.
+- **Animert pusteøvelse** (SVG-ring, justerbart tempo) som en kvalitetsdetalj i appen.
 
-## Merkevare (delt med Mentalt Sterkere og cliffordcoaching.no)
+## Prosjekthistorikk (for kontekst — ikke reverser disse beslutningene uten eksplisitt beskjed)
 
-Fra 2026-07-22 er fargepaletten hentet direkte fra cliffordcoaching.no for å skape en rød tråd mellom nettside og app: primær `#2F4F4F` (dyp skifergrønn/teal, header og knapper), bakgrunn `#f9f9f9`, tekst nær-svart. Gull `#D9B25C` er en tillagt aksentfarge (siden selv har ingen egen aksent). Skrift: **PT Sans** (samme som siden, lastet via Google Fonts). App-ikon: konsentriske ringer i teal/gull (pusteøvelse-motiv), samme design som Mentalt Sterkere. Samme palett gjelder Mentalt Sterkere identisk.
+1. **16. juli 2026:** Keelstone lanseres som arbeidslivsfokusert, rollebasert app (Leder/Ansatt-spor, rutinebygger, 14-dagers program).
+2. **22. juli 2026, tidlig:** Et separat prosjekt, «Mentalt Sterkere» (kun norsk, ingen rollesplitt), startes uavhengig av en annen samtale, uten kjennskap til Keelstone.
+3. **22. juli 2026, midt på dagen:** Oppdaget som duplisert arbeid. Besluttet: Keelstone adopterer Mentalt Sterkere sitt innhold (øvelsesbibliotek, ikke rollesplitten), oversatt til engelsk. Begge apper kjøres videre som separate produkter for hvert sitt marked, men med identisk innhold. Felles merkevare hentet fra cliffordcoaching.no (se «Merkevare» under) og full UX-redesign (se `www/index.html`-historikk) gjøres i begge.
+4. **22. juli 2026, sent:** Besluttet at «to separate apper med identisk innhold» er unødvendig — Keelstone er allerede tospråklig med auto-deteksjon, så det dekker det norske markedet uten en egen app. **Mentalt Sterkere legges ned som eget produkt.** Keelstone er nå den eneste gjenlevende appen. `Projects\mentaltsterkere`-repoet beholdes som arkiv, ikke slettet.
+
+## Merkevare (delt med cliffordcoaching.no)
+
+Fra 2026-07-22 er fargepaletten hentet direkte fra cliffordcoaching.no for å skape en rød tråd mellom nettside og app: primær `#2F4F4F` (dyp skifergrønn/teal, header og knapper), bakgrunn `#f9f9f9`, tekst nær-svart. Gull `#D9B25C` er en tillagt aksentfarge (siden selv har ingen egen aksent). Skrift: **PT Sans** (samme som siden, lastet via Google Fonts). App-ikon: konsentriske ringer i teal/gull (pusteøvelse-motiv).
 
 ## Filstruktur
 
 | Fil/mappe | Beskrivelse |
 |---|---|
-| `www/index.html` | Appen (produksjon, dette bygges). Vanilla JS + localStorage + i18n, samme arkitektur som Mentalt Sterkere |
-| `www/manifest.webmanifest`, `www/sw.js` | PWA-filer, samme mønster som Mentalt Sterkere |
+| `www/index.html` | Appen (produksjon, dette bygges). Vanilla JS + localStorage + i18n |
+| `www/manifest.webmanifest`, `www/sw.js` | PWA-filer |
 | `www/assets/audio/no/`, `www/assets/audio/en/` | Lydfiler per språk, id-er matcher `content/manus.md` (ingen filer lagt inn ennå) |
 | `content/manus.md` | Manus til alle 20 øvelser, norsk og engelsk side om side |
 | `capacitor.config.json` | App ID `com.kricliff.keelstone`, webDir `www` |
@@ -36,7 +45,7 @@ Fra 2026-07-22 er fargepaletten hentet direkte fra cliffordcoaching.no for å sk
 
 ## Arkitektur
 
-- Vanilla JS + localStorage, ingen rammeverk (samme filosofi som Together og Mentalt Sterkere)
+- Vanilla JS + localStorage, ingen rammeverk (samme filosofi som Together)
 - i18n: `T[lang][key]` + `t(key)`; `CATEGORIES[lang]` og `EXERCISES[lang]` er parallelle strukturer med samme id-er og rekkefølge på tvers av språk
 - Fire faner: Hjem, Utforsk, Fremgang, Profil (se «UX-redesign» under for detaljer per fane)
 - `LS_KEY = 'keelstone_state_v1'`, `FREE_EXERCISE_IDS = new Set(['fokus-1', 'ro-1'])`
@@ -45,7 +54,7 @@ Fra 2026-07-22 er fargepaletten hentet direkte fra cliffordcoaching.no for å sk
 
 ## UX-redesign (2026-07-22)
 
-Fullstendig UX-oppgradering utover innholdssynkroniseringen over, gjort etter research på ledende meditasjons-/mental trenings-apper (Calm, Headspace, Balance-mønstre). Samme struktur som Mentalt Sterkere, kun tekst/språk skiller dem:
+Fullstendig UX-oppgradering, gjort etter research på ledende meditasjons-/mental trenings-apper (Calm, Headspace, Balance-mønstre):
 
 - **Onboarding ved første oppstart:** velg ett fokusområde (én av de 4 kategoriene) eller hopp over. Lagres i `state.goal`, styrer «Anbefalt for deg» på Hjem og kan endres når som helst i Profil.
 - **Hjem:** sirkulær SVG-fremdriftsring (aktive dager siste 7 dager, ikke bare streak-tall), dagens humør-innsjekk (5 emoji, lagres i `state.checkins[dato]`), anbefalt øvelse (goal-basert med fallback til dato-rotasjon, respekterer Pro-lås — dette var en reell bug i den gamle versjonen som ikke sjekket lås på hjem-kortet).
@@ -57,7 +66,7 @@ Fullstendig UX-oppgradering utover innholdssynkroniseringen over, gjort etter re
 
 ## Status (2026-07-22)
 
-Innhold, struktur og UX er nå identisk med Mentalt Sterkere (bortsett fra språk og den penere pusteanimasjonen), verifisert grundig i nettleser-preview (onboarding, hjem, søk/filter/favoritter, innsikt-diagrammer, spiller, profil-innstillinger, lys/mørk modus, alle uten konsollfeil). Gjenstår: ekte native app-ikoner i Xcode/Android-prosjekt (web-PNG-ene finnes i `www/assets/`), lydinnspilling (begge språk), `npx cap add ios/android`, App Store Connect-app, signering, RevenueCat-produkt (`com.kricliff.keelstone.pro.monthly`).
+Innhold og UX verifisert grundig i nettleser-preview (onboarding, hjem, søk/filter/favoritter, innsikt-diagrammer, spiller, profil-innstillinger, NO/EN-bytte, lys/mørk modus, alle uten konsollfeil). Gjenstår: ekte native app-ikoner i Xcode/Android-prosjekt (web-PNG-ene finnes i `www/assets/`), lydinnspilling (begge språk), `npx cap add ios/android`, App Store Connect-app, signering, RevenueCat-produkt (`com.kricliff.keelstone.pro.monthly`).
 
 ## Build-lærdommer (arvet fra Together — ikke gjenta feilene)
 
