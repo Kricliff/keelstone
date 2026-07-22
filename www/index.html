@@ -153,6 +153,9 @@
   .segFull { display: flex; width: 100%; margin-bottom: 18px; }
   .segFull button { flex: 1; padding: 9px 0; }
   .onbCard { display: flex; align-items: center; gap: 14px; cursor: pointer; }
+  .goalGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; width: 100%; margin-top: 10px; }
+  .goalBtn { display: flex; align-items: center; gap: 7px; border: 1px solid var(--border); background: var(--card); border-radius: 10px; padding: 9px 10px; font-size: 0.82rem; font-family: inherit; color: var(--text-soft); cursor: pointer; }
+  .goalBtn.on { background: var(--blue); border-color: var(--blue); color: #fff; }
   #breathOverlay { position: absolute; inset: 0; background: radial-gradient(circle at 50% 36%, var(--blue), var(--blue-d) 78%); z-index: 40; display: none; flex-direction: column; align-items: center; color: #eaf1f5; padding: calc(20px + env(safe-area-inset-top)) 20px 20px; overflow: hidden; }
   #breathOverlay.show { display: flex; }
   #breathOverlay .closeRow { width: 100%; display: flex; justify-content: flex-end; z-index: 5; }
@@ -802,9 +805,9 @@ function renderProfile() {
         <div class="switch ${state.notifOn ? 'on' : ''}" onclick="toggleNotif()"><div class="dot"></div></div>
       </div>
       ${state.notifOn ? `<div class="toggleRow"><span>${t('reminderTimeLabel')}</span><input type="time" value="${state.reminderTime}" onchange="setReminderTime(this.value)"></div>` : ''}
-      <div class="toggleRow">
+      <div class="toggleRow" style="flex-direction:column;align-items:stretch;">
         <span>${t('goalLabel')}</span>
-        <span class="seg">${cats().map(c => `<button class="${state.goal === c.id ? 'on' : ''}" onclick="setGoal('${c.id}')">${icon(c.id, 16)}</button>`).join('')}</span>
+        <div class="goalGrid">${cats().map(c => `<button class="goalBtn ${state.goal === c.id ? 'on' : ''}" onclick="setGoal('${c.id}')">${icon(c.id, 17)}<span>${c.label}</span></button>`).join('')}</div>
       </div>
       <div class="toggleRow">
         <span>${t('language')}</span>
