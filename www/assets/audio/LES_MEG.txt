@@ -1,0 +1,12 @@
+Legg lydfiler her, i undermapper per språk:
+assets/audio/no/<id>.mp3  (norsk)
+assets/audio/en/<id>.mp3  (engelsk)
+
+Øvelse-ider (samme for begge språk):
+fokus-1.mp3, fokus-2.mp3, fokus-3.mp3, fokus-4.mp3, fokus-5.mp3
+ro-1.mp3, ro-2.mp3, ro-3.mp3, ro-4.mp3, ro-5.mp3
+selvtillit-1.mp3, selvtillit-2.mp3, selvtillit-3.mp3, selvtillit-4.mp3, selvtillit-5.mp3
+restitusjon-1.mp3, restitusjon-2.mp3, restitusjon-3.mp3, restitusjon-4.mp3, restitusjon-5.mp3
+
+Manus til alle 20 øvelser, på begge språk, ligger i content/manus.md.
+Tips: start med de 2 gratis-øvelsene (fokus-1 og ro-1) i begge språk, siden det er dem nye brukere møter først.

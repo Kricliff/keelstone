@@ -4,500 +4,670 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0">
 <title>Keelstone</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="22" fill="%2312283A"/><path d="M50 22 L74 34 V54 C74 70 62 80 50 84 C38 80 26 70 26 54 V34 Z" fill="none" stroke="%23E4C989" stroke-width="4"/><circle cx="50" cy="52" r="12" fill="%23E4C989"/></svg>'>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/ikon-180.png">
 <meta name="theme-color" content="#1b4965">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Keelstone">
 <style>
-  :root{
-    --blue:#1b4965; --blue-d:#12283a; --sand:#E4C989; --sand-d:#5a4715;
-    --bg:#F5F2EA; --card:#ffffff; --text:#1f2d3a; --soft:#6b7a86;
-    --border:#e6e0d3; --line:#efe9dc; --radius:14px;
+  :root {
+    --blue: #1b4965;
+    --blue-d: #12283a;
+    --blue-light: #e7eef3;
+    --sand: #ab8322;
+    --sand-light: #faf3e0;
+    --bg: #f5f2ea;
+    --card: #ffffff;
+    --text: #1f2d3a;
+    --text-soft: #6b7a86;
+    --border: #e6e0d3;
+    --radius: 16px;
+    --shadow: 0 1px 3px rgba(18,40,58,0.06), 0 4px 14px rgba(18,40,58,0.09);
+    --page-bg: #dcdad6;
   }
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#dcdad6;color:var(--text);display:flex;justify-content:center}
-  #app{width:100%;max-width:460px;min-height:100vh;background:var(--bg);display:flex;flex-direction:column;position:relative}
-  .top{background:var(--blue);color:#fff;padding:18px 20px 16px}
-  .top .row{display:flex;justify-content:space-between;align-items:center}
-  .brand{font-size:19px;font-weight:600;letter-spacing:.02em}
-  .pill{font-size:12px;background:#2c5c7a;color:#cfe2ee;padding:4px 11px;border-radius:20px}
-  .topsub{font-size:12.5px;color:#bcd3e0;margin-top:4px}
-  main{flex:1;padding:18px;overflow-y:auto}
-  .nav{display:flex;background:var(--card);border-top:0.5px solid var(--border);position:sticky;bottom:0}
-  .nav button{flex:1;border:none;background:none;padding:9px 0 9px;font-family:inherit;font-size:10.5px;color:#9a988e;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
-  .nav button.on{color:var(--blue)}
-  .nav .ic{font-size:20px;line-height:1}
-  h1{font-size:23px;font-weight:600;margin-bottom:3px}
-  .sub{font-size:13px;color:var(--soft);margin-bottom:16px}
-  .card{background:var(--card);border-radius:var(--radius);padding:15px;margin-bottom:12px}
-  .lab{font-size:11px;color:#9a988e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
-  .h{font-size:15px;font-weight:600;color:var(--text)}
-  .csub{font-size:13px;color:var(--soft);line-height:1.55}
-  .chips{display:flex;gap:7px;flex-wrap:wrap}
-  .chip{border:0.5px solid var(--border);border-radius:20px;padding:6px 13px;font-size:12.5px;color:#4a5a67;background:var(--card);cursor:pointer}
-  .chip.sel{background:var(--blue);color:#fff;border-color:var(--blue)}
-  .scale{margin-bottom:11px}
-  .btn{background:var(--blue);color:#fff;border:none;border-radius:11px;padding:12px;font-family:inherit;font-size:14px;width:100%;cursor:pointer;font-weight:500}
-  .btn.sand{background:var(--sand);color:var(--sand-d)}
-  .btn.ghost{background:none;border:0.5px solid var(--border);color:var(--blue)}
-  .row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:0.5px solid var(--line)}
-  .row:last-child{border-bottom:none}
-  .bar{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:2px}
-  .bar span{display:block;height:100%;background:var(--sand)}
-  input[type=text]{width:100%;padding:11px;border:0.5px solid var(--border);border-radius:11px;font-family:inherit;font-size:14px;background:var(--card);color:var(--text)}
-  textarea{width:100%;padding:11px;border:0.5px solid var(--border);border-radius:11px;font-family:inherit;font-size:14px;background:var(--card);color:var(--text);min-height:92px;resize:vertical}
-  .back{background:none;border:none;font-family:inherit;font-size:14px;color:var(--blue);cursor:pointer;padding:0;margin-bottom:14px;display:flex;align-items:center;gap:6px}
-  .dayrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:0.5px solid var(--line)}
-  .dayrow:last-child{border-bottom:none}
-  .daynum{width:30px;height:30px;border-radius:50%;background:var(--line);color:var(--soft);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
-  .daynum.done{background:var(--blue);color:#fff}
-  .daynum.cur{background:var(--sand);color:var(--sand-d)}
-  .seg{display:inline-flex;border:0.5px solid #2c5c7a;border-radius:9px;overflow:hidden}
-  .seg button{border:none;background:transparent;padding:5px 12px;font-size:12px;font-family:inherit;color:#bcd3e0;cursor:pointer}
-  .seg button.on{background:#fff;color:var(--blue)}
-  .modalWrap{position:fixed;inset:0;background:rgba(18,40,58,.5);display:flex;align-items:flex-end;justify-content:center;z-index:50}
-  .modal{background:var(--card);width:100%;max-width:460px;border-radius:20px 20px 0 0;padding:22px 20px 30px}
-  .modal h3{font-size:18px;font-weight:600;margin-bottom:6px}
-  .toast{position:fixed;bottom:78px;left:50%;transform:translateX(-50%);background:var(--blue-d);color:#fff;padding:11px 18px;border-radius:22px;font-size:13px;z-index:60;opacity:0;transition:opacity .2s}
-  .toast.show{opacity:1}
-  .onb{padding:40px 26px;display:flex;flex-direction:column;min-height:100vh;justify-content:center;gap:14px}
-  .rolecard{border:0.5px solid var(--border);background:var(--card);border-radius:var(--radius);padding:18px;cursor:pointer;text-align:left}
-  .rolecard b{font-size:16px}
-  .rolecard p{font-size:13px;color:var(--soft);margin-top:4px;line-height:1.5}
-  #breathOv{position:absolute;inset:0;background:radial-gradient(circle at 50% 36%,#1b4965,#0e2131 72%);z-index:80;display:flex;flex-direction:column;color:#eaf1f5;overflow:hidden}
-  #breathOv .cx,#routineOv .cx{position:absolute;top:calc(14px + env(safe-area-inset-top));right:16px;z-index:5;background:rgba(255,255,255,.12);border:none;color:#fff;width:38px;height:38px;border-radius:50%;font-size:15px;cursor:pointer}
-  #routineOv{position:absolute;inset:0;background:radial-gradient(circle at 50% 34%,#1b4965,#0e2131 74%);z-index:80;display:flex;flex-direction:column;color:#eaf1f5}
-  .rStage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:22px;z-index:2}
-  .rDots{display:flex;gap:7px}
-  .rDot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25)}
-  .rDot.on{background:#E4C989}
-  .rLabel{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#E4C989}
-  .rInstr{font-size:19px;line-height:1.55;max-width:340px;color:#eef3f6}
-  .rSelf{font-size:23px;font-weight:600;line-height:1.4;max-width:360px;color:#fff}
-  .blockRow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:0.5px solid var(--line);cursor:pointer}
-  .blockRow:last-child{border-bottom:none}
-  .chk{width:24px;height:24px;border-radius:7px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;color:#fff}
-  .chk.on{background:var(--blue);border-color:var(--blue)}
-  #breathStage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;position:relative;z-index:2}
-  .orbWrap{position:relative;width:260px;height:260px;display:flex;align-items:center;justify-content:center}
-  .aura{position:absolute;left:50%;top:50%;width:200px;height:200px;border-radius:50%;border:1px solid rgba(228,201,137,.4);transform:translate(-50%,-50%) scale(.6);opacity:.2}
-  .orb{position:absolute;left:50%;top:50%;width:168px;height:168px;border-radius:50%;background:radial-gradient(circle at 42% 36%,#ffffff,#E4C989 80%);transform:translate(-50%,-50%) scale(.5);box-shadow:0 0 40px 6px rgba(228,201,137,.28)}
-  #breathRingS{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
-  .orbTxt{position:relative;z-index:3;text-align:center;pointer-events:none}
-  .orbPhase{font-size:16px;font-weight:600;letter-spacing:.02em;color:rgba(18,40,58,.85)}
-  .orbCount{font-size:50px;font-weight:700;line-height:1;margin-top:2px;min-height:.9em;color:#12283a}
-  .bParticle{position:absolute;border-radius:50%;background:#fff;opacity:0;animation:bdrift linear infinite}
-  @keyframes bdrift{0%{opacity:0;transform:translateY(16px)}25%{opacity:.5}75%{opacity:.35}100%{opacity:0;transform:translateY(-56px)}}
-  .bRound{font-size:12.5px;color:rgba(234,241,245,.6);min-height:1.2em;z-index:2}
-  .breathCtl{padding:0 24px calc(28px + env(safe-area-inset-bottom));z-index:2;width:100%;max-width:420px;margin:0 auto}
-  .breathTempo{text-align:center;font-size:13px;color:rgba(234,241,245,.75);margin-bottom:15px}
-  .breathTempo input{width:100%;margin-top:8px;accent-color:#E4C989}
-  .breathBtns{display:flex;gap:11px}
-  .breathBtns button{flex:1;padding:13px;border-radius:12px;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;border:none}
-  .bStart{background:#E4C989;color:#5a4715}
-  .bEnd{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.42)}
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --blue: #7fa8c9; --blue-d: #3d6a8c; --blue-light: #1c2a36;
+      --sand: #e0bb63; --sand-light: #362b12;
+      --bg: #141a20; --card: #1c242c; --text: #eef1f0; --text-soft: #9aa3ad;
+      --border: #2c343d; --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 14px rgba(0,0,0,0.35);
+      --page-bg: #0c0f14;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--page-bg); color: var(--text); display: flex; justify-content: center; }
+  #app { width: 100%; max-width: 460px; min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.15); }
+  main { flex: 1; overflow-y: auto; padding: 20px 18px 90px; }
+  h1 { font-size: 1.45rem; font-weight: 700; margin-bottom: 2px; letter-spacing: 0.2px; }
+  h2 { font-size: 1.05rem; font-weight: 600; margin: 22px 0 10px; }
+  .sub { color: var(--text-soft); font-size: 0.9rem; margin-bottom: 18px; }
+  .card { background: var(--card); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); margin-bottom: 14px; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+  .card:active { transform: scale(0.985); }
+  .btn { display: inline-block; border: none; border-radius: 12px; padding: 11px 18px; font-size: 0.95rem; font-weight: 600; cursor: pointer; background: var(--blue); color: #fff; font-family: inherit; transition: transform 0.12s ease; }
+  .btn:active { background: var(--blue-d); transform: scale(0.96); }
+  .btn.sand { background: var(--sand); color: #fff; }
+  .btn.secondary { background: var(--blue-light); color: var(--blue-d); }
+  .btn.ghost { background: transparent; color: var(--blue-d); padding: 8px 10px; }
+  .btn.small { padding: 7px 12px; font-size: 0.85rem; }
+  .btn.full { width: 100%; text-align: center; }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+  header { display: flex; justify-content: space-between; align-items: center; padding: calc(14px + env(safe-area-inset-top)) 18px 0; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--blue); font-size: 1.15rem; letter-spacing: 0.2px; }
+  .brand .mark { width: 30px; height: 30px; border-radius: 8px; background: var(--blue); color: var(--sand); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; flex-shrink: 0; }
+  .streakBadge { background: var(--sand-light); color: var(--sand); border-radius: 999px; padding: 6px 12px; font-size: 0.82rem; font-weight: 700; display: flex; align-items: center; gap: 5px; }
+  nav { position: absolute; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid var(--border); display: flex; padding: 6px 4px calc(8px + env(safe-area-inset-bottom)); }
+  nav button { flex: 1; background: none; border: none; font-family: inherit; font-size: 0.68rem; color: var(--text-soft); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 0; }
+  nav button .ico { font-size: 1.25rem; line-height: 1; border-radius: 8px; padding: 4px 12px; transition: background 0.18s; }
+  nav button.active { color: var(--blue-d); font-weight: 700; }
+  nav button.active .ico { background: var(--blue-light); }
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 6px; }
+  .chips button { border: 1px solid var(--border); background: var(--card); border-radius: 999px; padding: 7px 14px; font-size: 0.82rem; font-family: inherit; cursor: pointer; white-space: nowrap; color: var(--text-soft); }
+  .chips button.active { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 600; }
+  .exCard { display: flex; align-items: center; gap: 14px; cursor: pointer; }
+  .exIcon { width: 46px; height: 46px; border-radius: 12px; background: var(--blue-light); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+  .exCard .meta { flex: 1; }
+  .exCard .meta b { font-size: 0.95rem; display: block; }
+  .exCard .meta span { font-size: 0.8rem; color: var(--text-soft); }
+  .lockDot { font-size: 1.1rem; color: var(--text-soft); }
+  .tag { display: inline-block; font-size: 0.7rem; font-weight: 700; background: var(--blue-light); color: var(--blue-d); border-radius: 999px; padding: 3px 9px; margin-right: 5px; }
+  .tag.sand { background: var(--sand-light); color: var(--sand); }
+  .heroCard { background: linear-gradient(135deg, var(--blue), var(--blue-d)); color: #fff; }
+  .heroCard .tag { background: rgba(255,255,255,0.18); color: #fff; }
+  .heroCard p { font-size: 1.02rem; font-weight: 600; margin: 8px 0 12px; }
+  .statRow { display: flex; gap: 10px; margin-bottom: 14px; }
+  .statBox { flex: 1; background: var(--card); border-radius: var(--radius); padding: 14px; text-align: center; box-shadow: var(--shadow); }
+  .statBox b { font-size: 1.4rem; display: block; color: var(--blue); }
+  .statBox span { font-size: 0.75rem; color: var(--text-soft); }
+  textarea, input[type=text] { width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 10px; font-family: inherit; font-size: 0.92rem; resize: vertical; background: var(--card); color: var(--text); }
+  textarea:focus, input:focus { outline: 2px solid var(--blue-light); border-color: var(--blue); }
+  .journalEntry { border-left: 4px solid var(--sand); }
+  .journalEntry .date { font-size: 0.78rem; color: var(--text-soft); margin-bottom: 6px; }
+  .journalEntry p { font-size: 0.9rem; margin-bottom: 6px; line-height: 1.4; }
+  .journalEntry b { font-size: 0.82rem; color: var(--blue-d); }
+  .backRow { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .backRow button { background: var(--card); border: 1px solid var(--border); border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; }
+  .manus { font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap; background: var(--card); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+  audio { width: 100%; margin: 10px 0; }
+  .audioFallback { background: var(--sand-light); color: var(--sand); border-radius: 10px; padding: 10px 12px; font-size: 0.82rem; margin: 10px 0; }
+  .modalWrap { position: absolute; inset: 0; background: rgba(18,40,58,0.5); z-index: 50; display: none; align-items: flex-end; justify-content: center; }
+  .modalWrap.show { display: flex; }
+  .modalSheet { width: 100%; max-width: 460px; background: var(--card); border-radius: 20px 20px 0 0; padding: 22px 20px calc(24px + env(safe-area-inset-bottom)); max-height: 85vh; overflow-y: auto; }
+  .modalSheet h2 { margin-top: 0; }
+  .toast { position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%); background: var(--blue-d); color: #fff; padding: 10px 18px; border-radius: 999px; font-size: 0.85rem; z-index: 60; opacity: 0; transition: opacity 0.25s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+  .toggleRow { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .switch { position: relative; width: 44px; height: 26px; background: var(--border); border-radius: 999px; cursor: pointer; flex-shrink: 0; }
+  .switch.on { background: var(--blue); }
+  .switch .dot { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform 0.18s; }
+  .switch.on .dot { transform: translateX(18px); }
+  .qBlock { margin-bottom: 14px; }
+  .qBlock label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--blue-d); }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 9px; overflow: hidden; }
+  .seg button { border: none; background: var(--card); padding: 6px 14px; font-size: 0.8rem; font-family: inherit; color: var(--text-soft); cursor: pointer; }
+  .seg button.on { background: var(--blue); color: #fff; }
+  #breathOverlay { position: absolute; inset: 0; background: radial-gradient(circle at 50% 36%, var(--blue), var(--blue-d) 78%); z-index: 40; display: none; flex-direction: column; align-items: center; color: #eaf1f5; padding: calc(20px + env(safe-area-inset-top)) 20px 20px; overflow: hidden; }
+  #breathOverlay.show { display: flex; }
+  #breathOverlay .closeRow { width: 100%; display: flex; justify-content: flex-end; z-index: 5; }
+  #breathOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; }
+  #breathStage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; width: 100%; position: relative; }
+  .orbWrap { position: relative; width: 240px; height: 240px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .aura { position: absolute; left: 50%; top: 50%; width: 190px; height: 190px; border-radius: 50%; border: 1px solid rgba(228,201,137,.4); transform: translate(-50%,-50%) scale(.6); opacity: .2; }
+  .orb { position: absolute; left: 50%; top: 50%; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle at 42% 36%, #ffffff, var(--sand) 80%); transform: translate(-50%,-50%) scale(0.55); box-shadow: 0 0 40px 6px rgba(171,131,34,0.28); }
+  #breathRingS { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); }
+  .orbTxt { position: relative; z-index: 3; text-align: center; pointer-events: none; }
+  .orbPhase { font-size: 15px; font-weight: 600; letter-spacing: 0.02em; color: rgba(255,255,255,0.92); }
+  .orbCount { font-size: 46px; font-weight: 700; line-height: 1; margin-top: 2px; min-height: 0.9em; color: #fff; }
+  .bParticle { position: absolute; border-radius: 50%; background: #fff; opacity: 0; animation: bdrift linear infinite; }
+  @keyframes bdrift { 0%{opacity:0;transform:translateY(16px)} 25%{opacity:.5} 75%{opacity:.35} 100%{opacity:0;transform:translateY(-56px)} }
+  .bRound { font-size: 12.5px; color: rgba(234,241,245,.65); min-height: 1.2em; }
+  #breathOverlay .controls { padding-top: 10px; padding-bottom: 26px; width: 100%; max-width: 340px; }
+  #breathOverlay .tempoRow { text-align: center; font-size: 13px; color: rgba(234,241,245,.75); margin-bottom: 15px; }
+  #breathOverlay .tempoRow input { width: 100%; margin-top: 8px; accent-color: var(--sand); }
+  #breathOverlay .btnRow { display: flex; gap: 10px; }
+  #breathOverlay .btnRow button { flex: 1; padding: 12px; border-radius: 12px; font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; }
+  #breathOverlay .bStart { background: var(--sand); color: #fff; }
+  #breathOverlay .bEnd { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.4); }
 </style>
 </head>
 <body>
 <div id="app">
-  <div id="root"></div>
+  <header>
+    <div class="brand"><span class="mark">K</span> Keelstone</div>
+    <div class="streakBadge">🔥 <span id="streakNum">0</span></div>
+  </header>
+  <main id="main"></main>
+  <nav>
+    <button data-view="home" class="active"><span class="ico">🏠</span><span data-nav="home"></span></button>
+    <button data-view="exercises"><span class="ico">🧠</span><span data-nav="exercises"></span></button>
+    <button data-view="journal"><span class="ico">📓</span><span data-nav="journal"></span></button>
+    <button data-view="profile"><span class="ico">👤</span><span data-nav="profile"></span></button>
+  </nav>
+
+  <div id="breathOverlay">
+    <div class="closeRow"><button onclick="stopBreathing()">✕</button></div>
+    <div id="breathStage">
+      <div class="orbWrap">
+        <div class="aura" id="aura2"></div><div class="aura" id="aura1"></div>
+        <div class="orb" id="orb"></div>
+        <svg id="breathRingS" width="220" height="220" viewBox="0 0 220 220">
+          <circle cx="110" cy="110" r="92" fill="none" stroke="rgba(255,255,255,.13)" stroke-width="4"/>
+          <circle id="brRing" cx="110" cy="110" r="92" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-dasharray="578.1" stroke-dashoffset="578.1" transform="rotate(-90 110 110)"/>
+        </svg>
+        <div class="orbTxt"><div class="orbPhase" id="orbPhase"></div><div class="orbCount" id="orbCount"></div></div>
+      </div>
+      <div class="bRound" id="bRound"></div>
+    </div>
+    <div class="controls">
+      <div class="tempoRow" id="tempoLabel"></div>
+      <div class="btnRow"><button class="bStart" id="brStart"></button><button class="bEnd" onclick="stopBreathing()" id="brEnd"></button></div>
+    </div>
+  </div>
+
+  <div class="modalWrap" id="modalWrap"><div class="modalSheet" id="modalSheet"></div></div>
+  <div class="toast" id="toast"></div>
 </div>
-<div id="toast" class="toast"></div>
+
 <script>
-/* ---------- state ---------- */
-const LS="keelstone_state_v1";
-const todayStr=()=>new Date().toISOString().slice(0,10);
-const defaultState={role:null,lang:null,checkins:{},goal:"",completed:[],programs:{},routine:null,settings:{}};
-let state=load();
-function load(){try{const r=localStorage.getItem(LS);if(r)return Object.assign(structuredClone(defaultState),JSON.parse(r));}catch(e){}return structuredClone(defaultState);}
-function save(){localStorage.setItem(LS,JSON.stringify(state));}
-function detectLang(){const l=(navigator.language||"en").toLowerCase();return (l.startsWith("nb")||l.startsWith("nn")||l.startsWith("no"))?"no":"en";}
-if(!state.lang)state.lang=detectLang();
-
 /* ---------- i18n ---------- */
-const T={
-  no:{
-    greet:"God morgen",appname:"Keelstone",
-    nav:{hjem:"Hjem",trening:"Trening",prestasjon:"Prestasjon",laere:"Lære",profil:"Profil"},
-    onbTitle:"Velkommen til Keelstone",onbSub:"Mental balanse og prestasjon, tilpasset din hverdag. Hvem er du?",
-    roleAnsattT:"Ansatt / fagperson",roleAnsattD:"Prester bedre og ha det bedre på jobb, uten lederansvar.",
-    roleLederT:"Leder",roleLederD:"Alt en ansatt har, pluss verktøy for å lede og prestere under press.",
-    changeRole:"Bytt rolle",language:"Språk",
-    checkin:"Dagens innsjekk",mood:"Humør",energy:"Energi",stress:"Stress",saved:"Lagret",
-    levels:["Lav","Ok","God","Høy"],
-    focus:"Dagens fokus",suggest:"Forslag til deg",start:"Start",open:"Åpne",
-    weekgoal:"Ukens mål",setgoal:"Sett et prosessmål for uken",savegoal:"Lagre mål",progress:"fremdrift",
-    prep:"Pre-performance-rutine",prepd:"Pust, self-talk og visualisering før en viktig situasjon.",build:"Bygg rutine",
-    exercises:"Øvelser",programs:"Program",articles:"Utvalgte artikler",
-    trend:"Din trend",checkinsN:"innsjekk",coaching:"Vei til mer",
-    coachingd:"Vil du gå dypere? Book en 1:1-samtale med Kristian.",coachbtn:"Se coaching",
-    soon:"Kommer snart i denne versjonen.",pickone:"Velg et nivå for alle tre.",goalsaved:"Mål lagret.",
-    breath:{phases:["Pust inn","Hold","Pust ut","Hold"],press:"Trykk start",pace:"Tempo",sec:"sek per fase",start:"Start",pause:"Pause",cont:"Fortsett",end:"Avslutt",round:"Runde",paused:"Pause",done:"Bra jobba."},
-    prog:{start:"Start program",day:"Dag",of:"av",complete:"Fullfør dag",reflection:"Din refleksjon",reflectPh:"Skriv noen ord til deg selv...",back:"Tilbake",locked:"Låst",cdone:"Fullført",exercise:"Øvelse",startBreath:"Start pusteøvelse",progress:"fullført",finished:"Programmet er fullført. Sterkt jobba."},
-    routine:{build:"Bygg rutine",edit:"Rediger",run:"Kjør rutine",save:"Lagre rutine",builderTitle:"Bygg din pre-performance-rutine",builderIntro:"Velg byggeklossene du vil ha før en viktig situasjon.",selfTalkPh:"F.eks. Jeg har forberedt meg. Jeg tar det rolig.",notBuilt:"Bygg en rutine du kan kjøre før viktige situasjoner.",next:"Neste",finish:"Ferdig",breathBtn:"Start pusteøvelse",routineDone:"Rutine fullført. Du er klar.",savedMsg:"Rutine lagret.",blocks:{
-      ground:{label:"Forankring",desc:"Reis deg rakt, føttene i gulvet, et fysisk anker.",instr:"Reis deg eller sitt rakt. Kjenn føttene mot gulvet. Press tommel og pekefinger sammen som ditt anker."},
-      breath:{label:"Pust",desc:"Ro ned med boksepust.",instr:"Senk pusten. Ta noen rolige boksepust."},
-      selftalk:{label:"Self-talk",desc:"Din presterende setning.",instr:"Si dette til deg selv, rolig og tydelig:",emptyFallback:"Gi deg selv én oppmuntrende setning."},
-      visualize:{label:"Visualisering",desc:"Kjør gjennom det som skal skje.",instr:"Lukk øynene. Kjør gjennom situasjonen steg for steg. Se den gå bra."}
-    }},
-    ansatt:{pill:"Ansatt",
-      focus:"Du har en presentasjon i dag. Kjør en pre-performance-rutine først.",
-      sugg:"Høyt stress flere dager på rad. Prøv «Fra utbrent til bærekraftig».",
-      goalPh:"F.eks. Ta tre bevisste pauser hver dag",
-      third:"Etter-refleksjon",thirdd:"Logg kort hvordan det gikk.",thirdbtn:"Reflekter",
-      exs:[{id:"breath",l:"Boksepust · 3 min"},{id:"soon",l:"Fokus-reset · 4 min"},{id:"soon",l:"Self-talk-vending · 5 min"},{id:"soon",l:"Fysiologisk sukk · 2 min"}],
-      progs:[{id:"soon",l:"Prestasjon under press · 14 dager"},{id:"soon",l:"Fra utbrent til bærekraftig · 21 dager"},{id:"soon",l:"Fokus og flyt · 14 dager"}],
-      arts:["Fokus i en avbruddskultur","Restitusjon som prestasjonsverktøy","Håndtere tilbakeslag"]},
-    leder:{pill:"Leder",
-      focus:"1:1 med en i teamet i dag. Forbered en trygg, tydelig samtale.",
-      sugg:"Vedvarende høyt stress. Se «Lederens egen restitusjon».",
-      goalPh:"F.eks. Gi konkret tilbakemelding til to i teamet",
-      third:"Forbered vanskelig samtale",thirdd:"Mål, motpartens perspektiv, åpningssetning.",thirdbtn:"Start forberedelse",
-      exs:[{id:"breath",l:"Lederpust · 3 min"},{id:"soon",l:"Self-talk-vending · 5 min"},{id:"soon",l:"Visualisering · 6 min"},{id:"breath",l:"Boksepust · 3 min"}],
-      progs:[{id:"soon",l:"Trygg leder under press · 21 dager"},{id:"difficult",l:"Mestre vanskelige samtaler · 14 dager"},{id:"soon",l:"Bygg psykologisk trygghet · 21 dager"}],
-      arts:["Psykologisk trygghet i praksis","Gi tilbakemelding som bygger","Lede uten å brenne ut"]}
+const T = {
+  no: {
+    appname: 'Keelstone', navHome: 'Hjem', navExercises: 'Øvelser', navJournal: 'Dagbok', navProfile: 'Profil',
+    greet: 'Hei!', doneToday: 'Bra jobbet i dag. Du kan gjøre mer om du vil.', notDoneToday: 'Klar for dagens mentale trening?',
+    statDays: 'dager på rad', statExercises: 'øvelser fullført', statJournal: 'dagboknotater',
+    todaysExercise: 'Dagens øvelse', quickBreath: 'Rask pusteøvelse', quickBreathDesc: 'Boksepusting i 2 minutter — for ro her og nå.', startBreathBtn: 'Start pusteøvelse',
+    exTitle: 'Øvelser', exSub: 'Velg en kategori og en øvelse som passer akkurat nå.', all: 'Alle',
+    audioSoon: '🎧 Lydversjon kommer snart. Les manuset i mellomtiden, eller les det høyt for deg selv i ditt eget tempo.',
+    markDone: 'Merk som fullført', doneLabel: '✓ Fullført i dag',
+    journalTitle: 'Dagbok', journalSub: 'Tre spørsmål, hver dag. Bygger selvinnsikt over tid.',
+    qGood: 'Hva gikk bra i dag?', qHard: 'Hva var vanskelig?', qFocus: 'Hva vil du fokusere på i morgen?',
+    saveNote: 'Lagre notat', prevNotes: 'Tidligere notater', noNotes: 'Ingen notater ennå. Skriv ditt første under.',
+    noteSaved: 'Notat lagret', writeFirst: 'Skriv i minst ett felt først',
+    profileTitle: 'Profil', proTitle: '⭐ Keelstone Pro', freeTitle: 'Gratis versjon',
+    proDesc: 'Du har tilgang til alle øvelser. Takk for støtten!', freeDesc: 'Du har tilgang til 2 øvelser gratis. Oppgrader for full tilgang til alle kategorier.',
+    becomePro: 'Bli Pro', dailyReminder: 'Daglig påminnelse', restoreLabel: 'Gjenopprett kjøp', restoreBtn: 'Gjenopprett',
+    language: 'Språk', disclaimer: 'Keelstone er et støtteverktøy for mental trening og prestasjon. Det er ikke en erstatning for behandling eller terapi.',
+    modalTitle: 'Bli Pro', modalSub: 'Full tilgang til alle øvelser i Fokus, Ro, Selvtillit og Restitusjon.',
+    planName: 'Keelstone Pro', planDesc: 'Månedlig abonnement', startPro: 'Start Pro', notNow: 'Ikke nå',
+    streakToast: n => 'Bra jobbet! Streak: ' + n + ' dager', proWelcome: 'Velkommen til Pro!',
+    noSub: 'Fant ikke abonnement', restored: 'Pro-tilgang gjenopprettet', noActiveSub: 'Ingen aktivt abonnement funnet',
+    purchaseInAppOnly: 'Kjøp er bare tilgjengelig i appen', restoreInAppOnly: 'Bare tilgjengelig i appen',
+    breath: { phases: ['Pust inn','Hold','Pust ut','Hold'], press: 'Trykk start', pace: 'Tempo', sec: 'sek per fase', start: 'Start', pause: 'Pause', cont: 'Fortsett', end: 'Avslutt', round: 'Runde', paused: 'Pause' },
+    notifTitle: 'Keelstone', notifBody: 'Tid for dagens mentale trening.',
+    dateLocale: 'nb-NO',
   },
-  en:{
-    greet:"Good morning",appname:"Keelstone",
-    nav:{hjem:"Home",trening:"Train",prestasjon:"Perform",laere:"Learn",profil:"Profile"},
-    onbTitle:"Welcome to Keelstone",onbSub:"Mental balance and performance, built for your workday. Who are you?",
-    roleAnsattT:"Employee / professional",roleAnsattD:"Perform better and feel better at work, without a leadership role.",
-    roleLederT:"Leader",roleLederD:"Everything an employee has, plus tools to lead and perform under pressure.",
-    changeRole:"Switch role",language:"Language",
-    checkin:"Today's check-in",mood:"Mood",energy:"Energy",stress:"Stress",saved:"Saved",
-    levels:["Low","Ok","Good","High"],
-    focus:"Today's focus",suggest:"For you",start:"Start",open:"Open",
-    weekgoal:"This week's goal",setgoal:"Set a process goal for the week",savegoal:"Save goal",progress:"progress",
-    prep:"Pre-performance routine",prepd:"Breath, self-talk and visualization before a high-stakes moment.",build:"Build routine",
-    exercises:"Exercises",programs:"Program",articles:"Featured reads",
-    trend:"Your trend",checkinsN:"check-ins",coaching:"Go further",
-    coachingd:"Want to go deeper? Book a 1:1 session with Kristian.",coachbtn:"See coaching",
-    soon:"Coming in a later version.",pickone:"Pick a level for all three.",goalsaved:"Goal saved.",
-    breath:{phases:["Breathe in","Hold","Breathe out","Hold"],press:"Press start",pace:"Pace",sec:"sec per phase",start:"Start",pause:"Pause",cont:"Continue",end:"End",round:"Round",paused:"Paused",done:"Well done."},
-    prog:{start:"Start program",day:"Day",of:"of",complete:"Complete day",reflection:"Your reflection",reflectPh:"Write a few words to yourself...",back:"Back",locked:"Locked",cdone:"Completed",exercise:"Exercise",startBreath:"Start breathing",progress:"complete",finished:"Program complete. Strong work."},
-    routine:{build:"Build routine",edit:"Edit",run:"Run routine",save:"Save routine",builderTitle:"Build your pre-performance routine",builderIntro:"Choose the building blocks you want before a high-stakes moment.",selfTalkPh:"E.g. I'm prepared. I'll take it calm.",notBuilt:"Build a routine you can run before high-stakes moments.",next:"Next",finish:"Done",breathBtn:"Start breathing",routineDone:"Routine complete. You're ready.",savedMsg:"Routine saved.",blocks:{
-      ground:{label:"Ground",desc:"Stand tall, feet on the floor, a physical anchor.",instr:"Stand or sit tall. Feel your feet on the floor. Press thumb and finger together as your anchor."},
-      breath:{label:"Breath",desc:"Downregulate with box breathing.",instr:"Slow your breathing. Take a few calm box breaths."},
-      selftalk:{label:"Self-talk",desc:"Your performing statement.",instr:"Say this to yourself, calm and clear:",emptyFallback:"Give yourself one encouraging statement."},
-      visualize:{label:"Visualization",desc:"Run through what's about to happen.",instr:"Close your eyes. Run through the situation step by step. See it go well."}
-    }},
-    ansatt:{pill:"Employee",
-      focus:"You have a presentation today. Run a pre-performance routine first.",
-      sugg:"High stress several days running. Try \"From burnout to sustainable\".",
-      goalPh:"E.g. Take three deliberate breaks each day",
-      third:"Post-event reflection",thirdd:"Briefly log how it went.",thirdbtn:"Reflect",
-      exs:[{id:"breath",l:"Box breathing · 3 min"},{id:"soon",l:"Focus reset · 4 min"},{id:"soon",l:"Self-talk reframe · 5 min"},{id:"soon",l:"Physiological sigh · 2 min"}],
-      progs:[{id:"soon",l:"Performance under pressure · 14 days"},{id:"soon",l:"From burnout to sustainable · 21 days"},{id:"soon",l:"Focus and flow · 14 days"}],
-      arts:["Focus in a culture of interruption","Recovery as a performance tool","Bouncing back from setbacks"]},
-    leder:{pill:"Leader",
-      focus:"1:1 with a team member today. Prepare a calm, clear conversation.",
-      sugg:"Sustained high stress. See \"The leader's own recovery\".",
-      goalPh:"E.g. Give concrete feedback to two team members",
-      third:"Prepare a difficult conversation",thirdd:"Goal, their perspective, opening line.",thirdbtn:"Start prep",
-      exs:[{id:"breath",l:"Leader's breath · 3 min"},{id:"soon",l:"Self-talk reframe · 5 min"},{id:"soon",l:"Visualization · 6 min"},{id:"breath",l:"Box breathing · 3 min"}],
-      progs:[{id:"soon",l:"Steady leader under pressure · 21 days"},{id:"difficult",l:"Master difficult conversations · 14 days"},{id:"soon",l:"Build psychological safety · 21 days"}],
-      arts:["Psychological safety in practice","Feedback that builds","Leading without burning out"]}
-  }
+  en: {
+    appname: 'Keelstone', navHome: 'Home', navExercises: 'Exercises', navJournal: 'Journal', navProfile: 'Profile',
+    greet: 'Hi!', doneToday: 'Great work today. Feel free to do more if you\'d like.', notDoneToday: 'Ready for today\'s mental training?',
+    statDays: 'day streak', statExercises: 'exercises done', statJournal: 'journal entries',
+    todaysExercise: "Today's exercise", quickBreath: 'Quick breathing exercise', quickBreathDesc: 'Box breathing for 2 minutes, for calm right here, right now.', startBreathBtn: 'Start breathing exercise',
+    exTitle: 'Exercises', exSub: 'Pick a category and an exercise that fits right now.', all: 'All',
+    audioSoon: '🎧 Audio version coming soon. Read the script in the meantime, or read it aloud to yourself at your own pace.',
+    markDone: 'Mark as complete', doneLabel: '✓ Completed today',
+    journalTitle: 'Journal', journalSub: 'Three questions, every day. Builds self-awareness over time.',
+    qGood: 'What went well today?', qHard: 'What was hard?', qFocus: 'What will you focus on tomorrow?',
+    saveNote: 'Save entry', prevNotes: 'Previous entries', noNotes: 'No entries yet. Write your first one below.',
+    noteSaved: 'Entry saved', writeFirst: 'Write in at least one field first',
+    profileTitle: 'Profile', proTitle: '⭐ Keelstone Pro', freeTitle: 'Free version',
+    proDesc: 'You have access to all exercises. Thanks for your support!', freeDesc: 'You have access to 2 free exercises. Upgrade for full access to all categories.',
+    becomePro: 'Go Pro', dailyReminder: 'Daily reminder', restoreLabel: 'Restore purchases', restoreBtn: 'Restore',
+    language: 'Language', disclaimer: 'Keelstone is a support tool for mental training and performance. It is not a substitute for treatment or therapy.',
+    modalTitle: 'Go Pro', modalSub: 'Full access to all exercises in Focus, Calm, Confidence and Recovery.',
+    planName: 'Keelstone Pro', planDesc: 'Monthly subscription', startPro: 'Start Pro', notNow: 'Not now',
+    streakToast: n => 'Great work! Streak: ' + n + ' days', proWelcome: 'Welcome to Pro!',
+    noSub: 'Couldn\'t find a subscription', restored: 'Pro access restored', noActiveSub: 'No active subscription found',
+    purchaseInAppOnly: 'Purchases are only available in the app', restoreInAppOnly: 'Only available in the app',
+    breath: { phases: ['Breathe in','Hold','Breathe out','Hold'], press: 'Press start', pace: 'Pace', sec: 'sec per phase', start: 'Start', pause: 'Pause', cont: 'Continue', end: 'End', round: 'Round', paused: 'Paused' },
+    notifTitle: 'Keelstone', notifBody: "Time for today's mental training.",
+    dateLocale: 'en-US',
+  },
 };
-function t(k){return T[state.lang][k];}
-function tr(){return T[state.lang][state.role];}
+function t(k) { return T[state.lang][k]; }
 
-/* ---------- programs ---------- */
-const PROGRAMS={
-  difficult:{
-    no:{title:"Mestre vanskelige samtaler",desc:"14 dager som gjør deg trygg i samtalene du helst vil unngå. Forberedelse, regulering og konkrete verktøy.",days:[
-      {t:"Hvorfor vi unngår",body:"Vanskelige samtaler utsettes fordi de føles utrygge, ikke fordi de er uviktige. Å utsette dem koster mer over tid, både for deg og teamet.",ex:"Skriv ned én samtale du unngår akkurat nå.",reflect:"Hva er du redd for skal skje om du tar den?"},
-      {t:"Reguler deg selv først",body:"Din ro smitter. Klarer du å senke ditt eget stressnivå, senker du temperaturen i hele samtalen.",ex:"Kjør boksepust i tre minutter.",reflect:"Hvor i kroppen merker du stress før krevende samtaler?",breath:true},
-      {t:"Ett tydelig mål",body:"En samtale uten mål sklir ut. Formuler hva du vil oppnå i én setning.",ex:"Skriv målet ditt som én setning.",reflect:"Hva er det egentlige utfallet du ønsker?"},
-      {t:"Se det fra deres side",body:"Folk forsvarer seg når de føler seg misforstått. Å forstå deres perspektiv er ikke å være enig, men å la dem bli hørt.",ex:"Skriv tre setninger fra motpartens ståsted.",reflect:"Hvordan ser situasjonen ut for dem?"},
-      {t:"Åpningssetningen",body:"De første ti sekundene setter tonen. En god åpning er tydelig, respektfull og uten anklage.",ex:"Skriv åpningssetningen din.",reflect:"Inviterer åpningen til dialog, eller til forsvar?"},
-      {t:"Lytt mer enn du snakker",body:"Åpne spørsmål gir deg informasjon og gir dem verdighet. Du styrer samtalen best ved å lytte.",ex:"Formuler ett åpent spørsmål du vil stille.",reflect:"Hva vet du egentlig ikke om situasjonen ennå?"},
-      {t:"Vær konkret, ikke merkelapp",body:"Beskriv atferd og fakta, ikke karakter. «Du kom for sent tre ganger» lander bedre enn «du er upålitelig».",ex:"Skriv om en merkelapp til en konkret observasjon.",reflect:"Hvor lett er det å skli over i karakteristikk?"},
-      {t:"Håndter følelser",body:"Følelser er data, ikke støy. Når det blir varmt, senk tempoet i stedet for å trappe opp.",ex:"Planlegg hva du sier hvis de blir defensive.",reflect:"Hva trigger deg selv i en opphetet samtale?"},
-      {t:"Bruk stillhet",body:"Pauser gir rom for tanke og signaliserer ro. Ikke fyll hver stillhet.",ex:"Merk deg ett sted du bevisst skal pause.",reflect:"Hvor ukomfortabel er stillhet for deg?"},
-      {t:"Øv: tilbakemelding",body:"Konstruktiv tilbakemelding kobler observasjon, effekt og ønske. Øv den i hodet nå.",ex:"Kjør gjennom en tilbakemelding steg for steg.",reflect:"Var den tydelig uten å være hard?"},
-      {t:"Øv: uenighet",body:"Uenighet er ikke konflikt. Du kan stå fast på sak og mykt på person samtidig.",ex:"Visualiser en samtale der dere er uenige, og du holder deg rolig.",reflect:"Klarer du å være tydelig og varm på én gang?"},
-      {t:"Øv: den tyngste",body:"Noen samtaler er alvorlige (nedbemanning, brudd på tillit). Forberedelse og respekt betyr mest her.",ex:"Skriv de tre punktene du absolutt må få frem.",reflect:"Hvordan vil du at de skal føle seg ivaretatt, selv i en tung beskjed?"},
-      {t:"Etterarbeidet",body:"En samtale er ikke ferdig når den er over. Oppsummer, avtal neste steg, og følg opp.",ex:"Skriv hvordan du vil avslutte og følge opp.",reflect:"Hva er ditt konkrete neste steg etter samtalen?"},
-      {t:"Din spillebok",body:"Du har nå et rammeverk: reguler deg, sett mål, forstå dem, vær konkret, lytt, følg opp. Gjør det til en vane.",ex:"Skriv dine tre viktigste lærdommer.",reflect:"Hvilken samtale tar du nå som du har utsatt?"}
-    ]},
-    en:{title:"Master difficult conversations",desc:"14 days to make you confident in the conversations you'd rather avoid. Preparation, regulation and concrete tools.",days:[
-      {t:"Why we avoid",body:"Difficult conversations get postponed because they feel unsafe, not because they're unimportant. Delaying them costs more over time, for you and the team.",ex:"Write down one conversation you're avoiding right now.",reflect:"What are you afraid will happen if you have it?"},
-      {t:"Regulate yourself first",body:"Your calm is contagious. If you can lower your own stress, you lower the temperature of the whole conversation.",ex:"Do box breathing for three minutes.",reflect:"Where in your body do you feel stress before hard talks?",breath:true},
-      {t:"One clear goal",body:"A conversation without a goal drifts. State what you want to achieve in one sentence.",ex:"Write your goal as a single sentence.",reflect:"What's the real outcome you want?"},
-      {t:"See it from their side",body:"People defend themselves when they feel misunderstood. Understanding their view isn't agreeing, it's letting them be heard.",ex:"Write three sentences from their point of view.",reflect:"What does the situation look like to them?"},
-      {t:"The opening line",body:"The first ten seconds set the tone. A good opening is clear, respectful and free of accusation.",ex:"Write your opening line.",reflect:"Does your opening invite dialogue, or defense?"},
-      {t:"Listen more than you talk",body:"Open questions give you information and give them dignity. You lead best by listening.",ex:"Write one open question you'll ask.",reflect:"What do you actually not yet know about the situation?"},
-      {t:"Be specific, not a label",body:"Describe behavior and facts, not character. \"You were late three times\" lands better than \"you're unreliable\".",ex:"Rewrite a label into a concrete observation.",reflect:"How easy is it to slip into character judgments?"},
-      {t:"Handle emotions",body:"Emotions are data, not noise. When it heats up, slow down instead of escalating.",ex:"Plan what you'll say if they get defensive.",reflect:"What triggers you in a heated conversation?"},
-      {t:"Use silence",body:"Pauses make room for thought and signal calm. Don't fill every silence.",ex:"Note one place you'll deliberately pause.",reflect:"How uncomfortable is silence for you?"},
-      {t:"Practice: feedback",body:"Constructive feedback links observation, effect and request. Rehearse it now.",ex:"Run through a piece of feedback step by step.",reflect:"Was it clear without being harsh?"},
-      {t:"Practice: disagreement",body:"Disagreement isn't conflict. You can be firm on the issue and soft on the person at once.",ex:"Visualize a conversation where you disagree and stay calm.",reflect:"Can you be clear and warm at the same time?"},
-      {t:"Practice: the hardest",body:"Some conversations are serious (layoffs, broken trust). Preparation and respect matter most here.",ex:"Write the three points you absolutely must convey.",reflect:"How do you want them to feel cared for, even in hard news?"},
-      {t:"The follow-up",body:"A conversation isn't over when it ends. Summarize, agree on next steps, and follow up.",ex:"Write how you'll close and follow up.",reflect:"What's your concrete next step after the talk?"},
-      {t:"Your playbook",body:"You now have a framework: regulate, set a goal, understand them, be specific, listen, follow up. Make it a habit.",ex:"Write your three most important takeaways.",reflect:"Which conversation will you have now that you've been postponing?"}
-    ]}
-  }
+/* ---------- Data ---------- */
+const CATEGORIES = {
+  no: [
+    { id: 'fokus', label: 'Fokus', icon: '🎯' },
+    { id: 'ro', label: 'Ro', icon: '🌊' },
+    { id: 'selvtillit', label: 'Selvtillit', icon: '⭐' },
+    { id: 'restitusjon', label: 'Restitusjon', icon: '🌙' },
+  ],
+  en: [
+    { id: 'fokus', label: 'Focus', icon: '🎯' },
+    { id: 'ro', label: 'Calm', icon: '🌊' },
+    { id: 'selvtillit', label: 'Confidence', icon: '⭐' },
+    { id: 'restitusjon', label: 'Recovery', icon: '🌙' },
+  ],
 };
 
-/* ---------- helpers ---------- */
-const root=document.getElementById("root");
-let tab="hjem";
-function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML;}
-function toast(m){const el=document.getElementById("toast");el.textContent=m;el.classList.add("show");clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove("show"),1900);}
-function openModal(h){closeModal();const w=document.createElement("div");w.className="modalWrap";w.id="mw";w.innerHTML='<div class="modal">'+h+'</div>';w.onclick=e=>{if(e.target===w)closeModal();};document.getElementById("app").appendChild(w);}
-function closeModal(){const w=document.getElementById("mw");if(w)w.remove();}
+const EXERCISES = {
+  no: [
+    { id: 'fokus-1', category: 'fokus', title: 'Pre-konkurranse fokus', duration: '5 min',
+      manus: `Sett deg til rette, eller stå om det passer bedre før du skal prestere.\n\nTa tre dype åndedrag. Kjenn skuldrene falle litt hver gang du puster ut.\n\nSpør deg selv: hva er den ene tingen jeg skal fokusere på nå? Ikke resultatet. Ikke hva andre tenker. Bare den ene handlingen som er foran deg.\n\nSi den handlingen til deg selv, høyt eller inni deg. "Jeg fokuserer på ______."\n\nKjenn at kroppen er klar. Du har trent for dette. Du trenger ikke å være perfekt, du trenger bare å være til stede i det som skjer nå.\n\nNår du er klar, reis deg opp, eller åpne øynene, og gå inn i det som venter deg med det ene fokuset ditt.` },
+    { id: 'fokus-2', category: 'fokus', title: 'Konsentrasjon under press', duration: '7 min',
+      manus: `Press er ikke fienden din. Press er et tegn på at noe betyr noe for deg.\n\nLegg merke til hvor i kroppen du kjenner presset akkurat nå. Pust inn i det området, ikke bort fra det.\n\nNår tankene begynner å spinne, gjør dette: navngi tre ting du kan se, tre ting du kan høre, og legg merke til hvordan du sitter eller står. Dette bringer deg tilbake til nået.\n\nSpør deg selv: hva er innenfor min kontroll akkurat nå? Fokuser bare der.\n\nGjenta for deg selv: "Jeg trenger ikke kontrollere alt. Jeg trenger bare å gjøre neste riktige ting."\n\nTa ett dypt åndedrag til, og gå videre med et smalere, klarere fokus.` },
+    { id: 'fokus-3', category: 'fokus', title: 'Nullstill mellom oppgaver', duration: '4 min',
+      manus: `Denne øvelsen er for de øyeblikkene mellom ting — mellom møter, mellom sett, mellom eksamensoppgaver.\n\nLukk øynene om du kan. Ta et åndedrag som varer litt lenger enn vanlig.\n\nSe for deg at det du nettopp gjorde legges ned, som en boks du setter fra deg. Det er ferdig. Det trenger ikke følge deg videre.\n\nSpør deg selv: hva krever den neste oppgaven av meg? Hent frem den energien nå, ikke energien fra det som var.\n\nStrekk gjerne litt på kroppen. Rull skuldrene bakover én gang.\n\nDu er nullstilt. Klar for det neste.` },
+    { id: 'ro-1', category: 'ro', title: 'Boksepusting for ro', duration: '5 min',
+      manus: `Denne øvelsen bruker boksepusting: fire like deler — inn, hold, ut, hold.\n\nSett deg komfortabelt. Slipp skuldrene ned fra ørene.\n\nPust inn gjennom nesen i fire sekunder. Hold pusten i fire sekunder. Pust ut gjennom munnen i fire sekunder. Hold tom i fire sekunder.\n\nGjenta dette mønsteret. Du kan bruke pusteøvelsen i appen som en visuell guide til rytmen.\n\nHver runde du gjennomfører sender kroppen en beskjed: det er trygt å senke tempoet nå. Nervesystemet ditt lytter til pusten din.\n\nFortsett i ditt eget tempo til du kjenner at pulsen har roet seg.` },
+    { id: 'ro-2', category: 'ro', title: 'Slipp prestasjonsangsten', duration: '8 min',
+      manus: `Prestasjonsangst er ofte fremtiden som blander seg inn i nået. Vi skal bringe deg tilbake hit.\n\nLegg merke til den urolige følelsen uten å skyve den bort. Den er informasjon, ikke en fiende.\n\nSpør: hva er det verste som faktisk kan skje? Se det tydelig. Spør deretter: hva ville jeg gjort hvis det skjedde? Du har et svar. Det gjør det mindre skummelt.\n\nGjenta: "Jeg har forberedt meg. Jeg kan håndtere det som kommer, selv om det ikke blir perfekt."\n\nKjenn pusten din bli litt dypere. Skuldrene litt lavere.\n\nDu skal ikke bli angstfri. Du skal bli i stand til å handle med angsten i baksetet, ikke i førersetet.` },
+    { id: 'ro-3', category: 'ro', title: 'Ro før eksamen', duration: '6 min',
+      manus: `Om litt skal du vise hva du kan. Det du har lært, er allerede der inne i deg.\n\nTa tre langsomme åndedrag. La ut-pusten være lengre enn inn-pusten.\n\nSi til deg selv: "Jeg har gjort forberedelsene jeg kunne. Nå handler det om å hente ut det jeg vet, ett spørsmål i gangen."\n\nHvis panikken kommer under eksamen, husk denne øvelsen: tre dype åndedrag, si "ett spørsmål i gangen" til deg selv, og fortsett.\n\nDu trenger ikke å vite alt. Du trenger bare å vise det du vet, rolig og strukturert.\n\nKjenn at du er klar til å gå inn dit med et klart hode.` },
+    { id: 'selvtillit-1', category: 'selvtillit', title: 'Bygg indre selvtillit', duration: '6 min',
+      manus: `Selvtillit bygges ikke av at alt går bra. Den bygges av at du har møtt vansker før og kommet gjennom dem.\n\nTenk på en gang du klarte noe du var usikker på om du kunne klare. Se det for deg tydelig. Hvordan kjentes det i kroppen etterpå?\n\nDen samme kapasiteten er i deg nå. Den har ikke forsvunnet.\n\nSi til deg selv: "Jeg har klart vanskelige ting før. Jeg har det som trengs for å møte det som kommer nå."\n\nSelvtillit er ikke å vite at du vil lykkes. Det er å vite at du vil møte opp for deg selv, uansett utfall.\n\nBær denne følelsen med deg videre i dagen.` },
+    { id: 'selvtillit-2', category: 'selvtillit', title: 'Snakk til deg selv som en coach', duration: '5 min',
+      manus: `Legg merke til hvordan du snakker til deg selv når noe går dårlig. Ville du snakket til en du er glad i på den måten?\n\nEn god coach er ærlig, men aldri nedbrytende. En god coach peker på hva som gikk bra, og hva som kan justeres.\n\nTenk på noe du er kritisk til deg selv for akkurat nå. Prøv å si det på nytt, som en coach ville sagt det: "Det gikk ikke som planlagt. Hva kan du ta med deg videre?"\n\nGjenta: "Jeg kan være ærlig med meg selv uten å være hard mot meg selv."\n\nDenne stemmen, den rolige og konstruktive, er den du skal trene opp. Bruk den fra nå.` },
+    { id: 'selvtillit-3', category: 'selvtillit', title: 'Fra tvil til handling', duration: '7 min',
+      manus: `Tvil er normalt. Det betyr at du bryr deg om utfallet. Problemet er når tvilen får deg til å stå stille.\n\nHva er den tvilen som er mest til stede for deg akkurat nå? Sett ord på den, for deg selv.\n\nSpør: hva er den minste handlingen jeg kan gjøre akkurat nå, selv med denne tvilen til stede? Ikke den perfekte handlingen. Den minste.\n\nSe deg selv gjøre den handlingen, med tvilen fortsatt der, men uten at den stopper deg.\n\nSi: "Jeg trenger ikke fjerne tvilen for å handle. Jeg tar handlingen med meg, sammen med tvilen."\n\nNår du er klar, ta det første, lille steget.` },
+    { id: 'restitusjon-1', category: 'restitusjon', title: 'Mental nedkjøling etter prestasjon', duration: '6 min',
+      manus: `Uansett hvordan det gikk, er denne økten over nå. Kroppen og hodet ditt trenger å skru ned tempoet.\n\nTa noen lange åndedrag. La kjeven, pannen og hendene slappe av.\n\nTenk gjennom økten uten å dømme: hva skjedde? Bare observer, som om du så på en annen person.\n\nFinn én ting du kan lære av dette, og én ting du faktisk gjorde bra, uansett resultat.\n\nSi til deg selv: "Denne prestasjonen er ferdig. Jeg tar med meg lærdommen, og legger fra meg resten."\n\nLa kroppen din senke pulsen. Du har lov til å hvile nå.` },
+    { id: 'fokus-4', category: 'fokus', title: 'Visualisering før stor prestasjon', duration: '8 min',
+      manus: `Sett deg et sted du kan være uforstyrret et par minutter.\n\nSe for deg situasjonen som kommer, i detalj. Hvor er du? Hva ser du rundt deg? Hvem er der?\n\nSe deg selv gå inn i situasjonen rolig og forberedt. Legg merke til hvordan kroppen din beveger seg når du er i din beste tilstand.\n\nSpol gjennom de vanskeligste øyeblikkene i forkant. Se deg selv møte dem med det du har trent på. Du blir ikke satt ut. Du justerer, og fortsetter.\n\nSe deg selv komme gjennom det, uansett eksakt resultat, med hodet høyt fordi du var til stede og ga det du hadde.\n\nÅpne øynene. Kroppen din har nå en erfaring den kan kjenne igjen når den virkelige situasjonen kommer.` },
+    { id: 'fokus-5', category: 'fokus', title: 'Refokusering etter en feil', duration: '5 min',
+      manus: `Du gjorde nettopp en feil, eller noe gikk ikke som planlagt. Det som skjer i de neste ti sekundene bestemmer resten av prestasjonen din.\n\nTa ett bestemt åndedrag. Ikke tre, ikke fem. Ett er nok akkurat nå.\n\nSi til deg selv, kort og bestemt: "Det skjedde. Det er over. Nå handler det om det neste."\n\nIkke bruk tid på å analysere feilen mens du fortsatt er i situasjonen. Det kan du gjøre etterpå, med et klart hode.\n\nFlytt blikket, fysisk om du kan, til det som kommer nå. Rett oppmerksomheten dit.\n\nDu har trent for akkurat dette øyeblikket, ikke for å være feilfri, men for å komme deg videre raskt.` },
+    { id: 'ro-4', category: 'ro', title: 'Ro i venting og overgangsfaser', duration: '5 min',
+      manus: `Venting er ofte det vanskeligste, ikke selve prestasjonen. Denne øvelsen er for de minuttene før noe skal skje.\n\nLegg merke til at kroppen kanskje vil skynde seg, selv om det ikke er noe å skynde seg med akkurat nå.\n\nPust langsomt inn gjennom nesen. Tell til fire. Pust sakte ut. Tell til seks. Den lengre utpusten sender kroppen en beskjed om å senke tempoet.\n\nSi til deg selv: "Jeg trenger ikke gjøre noe med denne ventetiden. Jeg kan bare være i den."\n\nLegg merke til noe konkret rundt deg, en lyd, en temperatur, en tekstur. Det holder deg i nået i stedet for i bekymring om det som kommer.\n\nNår tiden er inne, vil du være klar. Akkurat nå er det bare lov å vente.` },
+    { id: 'ro-5', category: 'ro', title: 'Slippe kontrollbehovet', duration: '6 min',
+      manus: `Noen ganger er uroen ikke frykt for å mislykkes, men et sterkt behov for å kontrollere ting som egentlig ikke er i dine hender.\n\nTenk på situasjonen som bekymrer deg nå. Del den i to: det du faktisk kan påvirke, og det du ikke kan.\n\nLegg alt du ikke kan påvirke i en tenkt boks, og sett den til side. Det betyr ikke at det ikke betyr noe. Det betyr at å bære på det akkurat nå ikke hjelper deg.\n\nSe på det som er igjen, det du faktisk kan gjøre noe med. Er det mindre enn du trodde? Ofte er det det.\n\nSi til deg selv: "Jeg gjør det jeg kan med det jeg har kontroll over. Resten får være som det blir."\n\nKjenn at skuldrene senkes litt når du legger fra deg det som ikke er ditt å bære.` },
+    { id: 'selvtillit-4', category: 'selvtillit', title: 'Stå i kroppen din', duration: '5 min',
+      manus: `Kroppsholdning påvirker hvordan du kjenner deg selv, ikke bare hvordan andre ser deg.\n\nReis deg, om du kan. Stå med fotsålene godt i gulvet, skuldrene trukket litt bakover og ned, brystkassen åpen.\n\nHold denne posituren i ett minutt. Legg merke til om noe endrer seg i hvordan du tenker om deg selv, selv om det er en liten forskjell.\n\nSi til deg selv, mens du står slik: "Jeg tar plass. Jeg har rett til å være her, med det jeg kan og det jeg fortsatt lærer."\n\nDette er ikke skuespill. Kroppen din sender signaler til hjernen din, akkurat som hjernen sender signaler til kroppen.\n\nBruk denne holdningen aktivt i minuttene før noe som krever selvtillit av deg.` },
+    { id: 'selvtillit-5', category: 'selvtillit', title: 'Slutt å sammenligne deg med andre', duration: '6 min',
+      manus: `Sammenligning stjeler ofte mer energi enn den gir nytte. Denne øvelsen er for når andres prestasjoner fyller for mye plass i hodet ditt.\n\nTenk på personen eller personene du sammenligner deg med akkurat nå. Legg merke til hvordan kroppen reagerer når du tenker på dem.\n\nSpør deg selv: kjenner jeg hele historien deres, eller bare det jeg ser utenfra? Vanligvis er svaret at du ikke gjør det.\n\nFlytt blikket til din egen vei. Hvor stod du for et år siden? Hva har du bygget siden da, som ingen andre har bygget på akkurat samme måte?\n\nSi til deg selv: "Min utvikling måles mot meg selv i går, ikke mot noen andre i dag."\n\nDette er ikke for å slå av konkurranseinstinktet ditt. Det er for å rette det mot noe som faktisk gjør deg bedre.` },
+    { id: 'restitusjon-2', category: 'restitusjon', title: 'Kroppsskanning for avspenning', duration: '7 min',
+      manus: `Legg deg ned eller sitt godt tilbakelent et sted du kan være uforstyrret.\n\nStart ved føttene. Legg merke til om det er spenning der. Du trenger ikke gjøre noe med den, bare legge merke til den.\n\nFlytt oppmerksomheten oppover, gradvis: leggene, lårene, magen, brystet, hendene, armene, skuldrene, nakken, kjeven og ansiktet.\n\nHvert sted du legger merke til spenning, gi det et lite mentalt nikk: "Jeg ser deg. Du kan slappe av nå om du vil."\n\nDet er ingen konkurranse i denne øvelsen. Noen dager slapper kroppen lettere av enn andre.\n\nBli liggende eller sittende et minutt til, og legg merke til hvordan hele kroppen kjennes annerledes enn da du startet.` },
+    { id: 'restitusjon-3', category: 'restitusjon', title: 'Restitusjon etter tap eller nederlag', duration: '7 min',
+      manus: `Det gikk ikke som du ønsket. Denne øvelsen er ikke for å bortforklare det, men for å hjelpe deg videre uten å bære det som en stein i magen.\n\nTillat deg selv å kjenne skuffelsen. Den er der fordi noe betydde noe for deg, ikke fordi du er svak.\n\nSpør, når du er klar: hva var faktisk innenfor min kontroll denne gangen, og hva var det ikke? Vær ærlig, ikke hard.\n\nFinn én konkret ting du tar med deg videre, en lærdom, ikke en dom over deg selv som person.\n\nSi til deg selv: "Dette resultatet forteller noe om denne dagen. Det forteller ikke hele historien om hvem jeg er."\n\nLa pusten din bli dypere. Nederlaget er en del av veien, ikke enden på den.` },
+    { id: 'restitusjon-4', category: 'restitusjon', title: 'Mental forberedelse til søvn', duration: '6 min',
+      manus: `Denne øvelsen hjelper deg å legge fra deg dagen før du sover, slik at hodet ikke fortsetter å jobbe mens kroppen prøver å hvile.\n\nLigg komfortabelt. Ta tre åndedrag der utpusten er lengre enn innpusten.\n\nGå kort gjennom dagen, uten å dvele: hva skjedde av betydning i dag? Bare observer, som overskrifter, ikke detaljer.\n\nSpør: er det noe jeg må gjøre noe med akkurat nå? Om svaret er nei, si til deg selv: "Dette kan vente til i morgen. Akkurat nå er det ingenting jeg må løse."\n\nRett oppmerksomheten mot kroppens tyngde mot underlaget. La den bli tyngre for hvert åndedrag.\n\nDet er greit om tanker fortsatt dukker opp. Du trenger ikke jage dem bort, bare la dem passere som skyer.` },
+    { id: 'restitusjon-5', category: 'restitusjon', title: 'Ukentlig restart', duration: '5 min',
+      manus: `Bruk denne øvelsen én gang i uken, for eksempel søndag kveld, for å runde av og starte klar.\n\nTenk gjennom uken som har gått. Hva er du mest fornøyd med at du gjorde, uansett hvor stort eller lite det var?\n\nHva slet du med? Ikke for å dømme deg selv, men for å legge merke til et mønster du kan justere.\n\nSpør: hva er den ene tingen jeg vil gi mest oppmerksomhet neste uke?\n\nSi til deg selv: "Forrige uke er ferdig. Jeg tar med meg det som var nyttig, og starter den nye uken med et rent blad."\n\nTa et par dype åndedrag, og la roen fra denne økten følge deg inn i uken som kommer.` },
+  ],
+  en: [
+    { id: 'fokus-1', category: 'fokus', title: 'Pre-competition focus', duration: '5 min',
+      manus: `Settle into a comfortable position, or stand if that suits you better, before you perform.\n\nTake three deep breaths. Feel your shoulders drop a little each time you breathe out.\n\nAsk yourself: what is the one thing I need to focus on right now? Not the outcome. Not what others think. Just the single action in front of you.\n\nSay that action to yourself, out loud or silently. "I'm focusing on ______."\n\nFeel that your body is ready. You've trained for this. You don't need to be perfect, you just need to be present for what's happening now.\n\nWhen you're ready, stand up, or open your eyes, and step into what's waiting for you with that one focus.` },
+    { id: 'fokus-2', category: 'fokus', title: 'Concentration under pressure', duration: '7 min',
+      manus: `Pressure isn't your enemy. Pressure is a sign that something matters to you.\n\nNotice where in your body you feel the pressure right now. Breathe into that area, not away from it.\n\nWhen your thoughts start spinning, do this: name three things you can see, three things you can hear, and notice how you're sitting or standing. This brings you back to the present.\n\nAsk yourself: what is within my control right now? Focus only there.\n\nRepeat to yourself: "I don't need to control everything. I just need to do the next right thing."\n\nTake one more deep breath, and move forward with a narrower, clearer focus.` },
+    { id: 'fokus-3', category: 'fokus', title: 'Reset between tasks', duration: '4 min',
+      manus: `This exercise is for the moments in between things, between meetings, between sets, between exam questions.\n\nClose your eyes if you can. Take one breath that lasts a little longer than usual.\n\nImagine setting down what you just did, like a box you place aside. It's finished. It doesn't need to follow you forward.\n\nAsk yourself: what does the next task require of me? Bring up that energy now, not the energy from what came before.\n\nStretch your body a little if you'd like. Roll your shoulders back once.\n\nYou're reset. Ready for what's next.` },
+    { id: 'ro-1', category: 'ro', title: 'Box breathing for calm', duration: '5 min',
+      manus: `This exercise uses box breathing: four equal parts, in, hold, out, hold.\n\nGet comfortable. Let your shoulders drop away from your ears.\n\nBreathe in through your nose for four seconds. Hold for four seconds. Breathe out through your mouth for four seconds. Hold empty for four seconds.\n\nRepeat this pattern. You can use the breathing exercise in the app as a visual guide to the rhythm.\n\nEach round you complete sends your body a message: it's safe to slow down now. Your nervous system is listening to your breath.\n\nContinue at your own pace until you feel your pulse has settled.` },
+    { id: 'ro-2', category: 'ro', title: 'Letting go of performance anxiety', duration: '8 min',
+      manus: `Performance anxiety is often the future intruding on the present. Let's bring you back here.\n\nNotice the uneasy feeling without pushing it away. It's information, not an enemy.\n\nAsk: what's the worst that could actually happen? See it clearly. Then ask: what would I do if it happened? You have an answer. That makes it less frightening.\n\nRepeat: "I've prepared. I can handle what comes, even if it isn't perfect."\n\nFeel your breath get a little deeper. Your shoulders a little lower.\n\nYou're not aiming to become anxiety-free. You're aiming to be able to act with the anxiety in the back seat, not in the driver's seat.` },
+    { id: 'ro-3', category: 'ro', title: 'Calm before an exam', duration: '6 min',
+      manus: `In a little while you'll get to show what you know. What you've learned is already inside you.\n\nTake three slow breaths. Let the exhale be longer than the inhale.\n\nSay to yourself: "I've done the preparation I could. Now it's about retrieving what I know, one question at a time."\n\nIf panic hits during the exam, remember this exercise: three deep breaths, say "one question at a time" to yourself, and continue.\n\nYou don't need to know everything. You just need to show what you know, calmly and in order.\n\nFeel that you're ready to walk in there with a clear head.` },
+    { id: 'selvtillit-1', category: 'selvtillit', title: 'Build inner confidence', duration: '6 min',
+      manus: `Confidence isn't built by everything going well. It's built by having faced difficulty before and come through it.\n\nThink of a time you managed something you weren't sure you could. Picture it clearly. How did it feel in your body afterward?\n\nThat same capacity is in you now. It hasn't gone anywhere.\n\nSay to yourself: "I've managed hard things before. I have what it takes to meet what's coming now."\n\nConfidence isn't knowing you'll succeed. It's knowing you'll show up for yourself, regardless of outcome.\n\nCarry this feeling with you through the rest of the day.` },
+    { id: 'selvtillit-2', category: 'selvtillit', title: 'Talk to yourself like a coach', duration: '5 min',
+      manus: `Notice how you talk to yourself when something goes badly. Would you talk to someone you love that way?\n\nA good coach is honest, but never tears you down. A good coach points out what went well, and what can be adjusted.\n\nThink of something you're being critical of yourself for right now. Try saying it again, the way a coach would: "That didn't go as planned. What can you take with you from it?"\n\nRepeat: "I can be honest with myself without being hard on myself."\n\nThis voice, calm and constructive, is the one you're training. Use it from now on.` },
+    { id: 'selvtillit-3', category: 'selvtillit', title: 'From doubt to action', duration: '7 min',
+      manus: `Doubt is normal. It means you care about the outcome. The problem is when doubt makes you stand still.\n\nWhat's the doubt that's most present for you right now? Put it into words, just for yourself.\n\nAsk: what's the smallest action I can take right now, even with this doubt present? Not the perfect action. The smallest one.\n\nSee yourself taking that action, with the doubt still there, but without it stopping you.\n\nSay: "I don't need to remove the doubt to act. I bring the action with me, alongside the doubt."\n\nWhen you're ready, take that first, small step.` },
+    { id: 'restitusjon-1', category: 'restitusjon', title: 'Mental cool-down after performing', duration: '6 min',
+      manus: `Regardless of how it went, this session is over now. Your body and mind need to power down.\n\nTake a few long breaths. Let your jaw, forehead and hands relax.\n\nThink back through the session without judging it: what happened? Just observe, as if watching someone else.\n\nFind one thing you can learn from this, and one thing you actually did well, regardless of the result.\n\nSay to yourself: "This performance is finished. I take the lesson with me, and set down the rest."\n\nLet your pulse come down. You're allowed to rest now.` },
+    { id: 'fokus-4', category: 'fokus', title: 'Visualization before a big performance', duration: '8 min',
+      manus: `Find a place where you can be undisturbed for a couple of minutes.\n\nPicture the situation ahead of you, in detail. Where are you? What do you see around you? Who's there?\n\nSee yourself stepping into the situation calm and prepared. Notice how your body moves when you're at your best.\n\nFast-forward through the hardest moments in advance. See yourself meeting them with what you've trained for. You don't get thrown off. You adjust, and keep going.\n\nSee yourself coming through it, whatever the exact outcome, with your head held high because you showed up and gave what you had.\n\nOpen your eyes. Your body now has an experience it can recognize when the real situation arrives.` },
+    { id: 'fokus-5', category: 'fokus', title: 'Refocusing after a mistake', duration: '5 min',
+      manus: `You just made a mistake, or something didn't go as planned. What happens in the next ten seconds decides the rest of your performance.\n\nTake one deliberate breath. Not three, not five. One is enough right now.\n\nSay to yourself, short and firm: "That happened. It's over. Now it's about what's next."\n\nDon't spend time analyzing the mistake while you're still in the situation. You can do that afterward, with a clear head.\n\nShift your gaze, physically if you can, to what's coming now. Direct your attention there.\n\nYou've trained for exactly this moment, not to be flawless, but to move on quickly.` },
+    { id: 'ro-4', category: 'ro', title: 'Calm in waiting and transitions', duration: '5 min',
+      manus: `Waiting is often the hardest part, not the performance itself. This exercise is for those minutes before something is about to happen.\n\nNotice that your body might want to rush, even though there's nothing to rush right now.\n\nBreathe in slowly through your nose. Count to four. Breathe out slowly. Count to six. The longer exhale sends your body a message to slow down.\n\nSay to yourself: "I don't need to do anything about this waiting. I can just be in it."\n\nNotice something concrete around you, a sound, a temperature, a texture. It keeps you in the present instead of worrying about what's coming.\n\nWhen the time comes, you'll be ready. Right now, it's simply okay to wait.` },
+    { id: 'ro-5', category: 'ro', title: 'Releasing the need for control', duration: '6 min',
+      manus: `Sometimes the unease isn't fear of failing, but a strong need to control things that aren't actually in your hands.\n\nThink of the situation worrying you right now. Split it in two: what you can actually influence, and what you can't.\n\nPlace everything you can't influence into an imagined box, and set it aside. That doesn't mean it doesn't matter. It means carrying it right now isn't helping you.\n\nLook at what's left, what you can actually do something about. Is it smaller than you thought? Often it is.\n\nSay to yourself: "I do what I can with what I have control over. The rest gets to be what it is."\n\nFeel your shoulders drop a little as you set down what isn't yours to carry.` },
+    { id: 'selvtillit-4', category: 'selvtillit', title: 'Stand in your body', duration: '5 min',
+      manus: `Posture affects how you feel about yourself, not just how others see you.\n\nStand up, if you can. Plant your feet firmly on the floor, shoulders drawn slightly back and down, chest open.\n\nHold this posture for one minute. Notice if anything shifts in how you think about yourself, even a small difference.\n\nSay to yourself, while standing like this: "I take up space. I have the right to be here, with what I can do and what I'm still learning."\n\nThis isn't pretending. Your body sends signals to your brain, just as your brain sends signals to your body.\n\nUse this posture actively in the minutes before something that requires confidence of you.` },
+    { id: 'selvtillit-5', category: 'selvtillit', title: 'Stop comparing yourself to others', duration: '6 min',
+      manus: `Comparison often steals more energy than it gives value. This exercise is for when other people's performances take up too much space in your head.\n\nThink of the person or people you're comparing yourself to right now. Notice how your body reacts when you think of them.\n\nAsk yourself: do I know their whole story, or just what I see from the outside? Usually the answer is that you don't.\n\nShift your gaze to your own path. Where were you a year ago? What have you built since then, that no one else has built in quite the same way?\n\nSay to yourself: "My progress is measured against myself yesterday, not against anyone else today."\n\nThis isn't about switching off your competitive instinct. It's about pointing it at something that actually makes you better.` },
+    { id: 'restitusjon-2', category: 'restitusjon', title: 'Body scan for relaxation', duration: '7 min',
+      manus: `Lie down or sit back comfortably somewhere you can be undisturbed.\n\nStart at your feet. Notice if there's tension there. You don't need to do anything about it, just notice it.\n\nMove your attention upward, gradually: calves, thighs, stomach, chest, hands, arms, shoulders, neck, jaw and face.\n\nWherever you notice tension, give it a small mental nod: "I see you. You can relax now if you want to."\n\nThere's no competition in this exercise. Some days the body relaxes more easily than others.\n\nStay lying down or seated for one more minute, and notice how your whole body feels different from when you started.` },
+    { id: 'restitusjon-3', category: 'restitusjon', title: 'Recovering from a loss or setback', duration: '7 min',
+      manus: `It didn't go the way you wanted. This exercise isn't about explaining it away, but about helping you move forward without carrying it like a stone in your stomach.\n\nAllow yourself to feel the disappointment. It's there because something mattered to you, not because you're weak.\n\nAsk, when you're ready: what was actually within my control this time, and what wasn't? Be honest, not harsh.\n\nFind one concrete thing you're taking forward, a lesson, not a verdict on who you are as a person.\n\nSay to yourself: "This result says something about this day. It doesn't tell the whole story of who I am."\n\nLet your breath deepen. The setback is part of the path, not the end of it.` },
+    { id: 'restitusjon-4', category: 'restitusjon', title: 'Mental preparation for sleep', duration: '6 min',
+      manus: `This exercise helps you set the day down before sleep, so your mind doesn't keep working while your body tries to rest.\n\nLie down comfortably. Take three breaths where the exhale is longer than the inhale.\n\nBriefly move through the day, without dwelling: what happened that mattered today? Just observe, like headlines, not details.\n\nAsk: is there anything I need to deal with right now? If the answer is no, say to yourself: "This can wait until tomorrow. Right now there's nothing I need to solve."\n\nBring your attention to the weight of your body against the surface beneath you. Let it grow heavier with each breath.\n\nIt's fine if thoughts keep showing up. You don't need to chase them away, just let them pass like clouds.` },
+    { id: 'restitusjon-5', category: 'restitusjon', title: 'Weekly restart', duration: '5 min',
+      manus: `Use this exercise once a week, for example Sunday evening, to wrap up and start fresh.\n\nThink through the week that's passed. What are you most pleased you did, no matter how big or small it was?\n\nWhat did you struggle with? Not to judge yourself, but to notice a pattern you can adjust.\n\nAsk: what's the one thing I want to give the most attention next week?\n\nSay to yourself: "Last week is done. I take what was useful with me, and start the new week with a clean slate."\n\nTake a couple of deep breaths, and let the calm from this session follow you into the week ahead.` },
+  ],
+};
 
-/* ---------- render ---------- */
-function render(){
-  if(!state.role){root.innerHTML=onboarding();return;}
-  const r=tr();
-  let h='<div class="top"><div class="row"><span class="brand">'+t("appname")+'</span><span class="pill">'+r.pill+'</span></div><div class="topsub">'+t("greet")+'</div></div><main id="main"></main>';
-  h+='<div class="nav" id="nav"></div>';
-  root.innerHTML=h;
-  const m=document.getElementById("main");
-  if(tab==="hjem")m.innerHTML=vHome();
-  else if(tab==="prestasjon")m.innerHTML=vPerform();
-  else if(tab==="trening")m.innerHTML=(progId&&progDay)?vProgramDay():(progId?vProgramOverview():vTrain());
-  else if(tab==="laere")m.innerHTML=vLearn();
-  else m.innerHTML=vProfile();
-  const nav=document.getElementById("nav");const ic={hjem:"🏠",trening:"🧭",prestasjon:"🎯",laere:"📖",profil:"👤"};
-  nav.innerHTML=["hjem","trening","prestasjon","laere","profil"].map(k=>'<button data-t="'+k+'" class="'+(tab===k?"on":"")+'"><span class="ic">'+ic[k]+'</span>'+t("nav")[k]+'</button>').join("");
-  nav.querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;progId=null;progDay=null;render();m&&(document.getElementById("main").scrollTop=0);});
-}
-function onboarding(){
-  return '<div class="onb"><div><h1>'+t("onbTitle")+'</h1><div class="sub">'+t("onbSub")+'</div></div>'+
-    '<button class="rolecard" onclick="pickRole(\'ansatt\')"><b>'+t("roleAnsattT")+'</b><p>'+t("roleAnsattD")+'</p></button>'+
-    '<button class="rolecard" onclick="pickRole(\'leder\')"><b>'+t("roleLederT")+'</b><p>'+t("roleLederD")+'</p></button>'+
-    '<div style="text-align:center;margin-top:8px"><span class="seg" style="border-color:var(--border)"><button class="'+(state.lang==="no"?"on":"")+'" style="color:var(--soft)" onclick="setLang(\'no\')">Norsk</button><button class="'+(state.lang==="en"?"on":"")+'" style="color:var(--soft)" onclick="setLang(\'en\')">English</button></span></div></div>';
-}
-function pickRole(r){state.role=r;save();tab="hjem";render();}
-function setLang(l){state.lang=l;save();render();}
+const FREE_EXERCISE_IDS = new Set(['fokus-1', 'ro-1']);
+const LS_KEY = 'keelstone_state_v1';
+const SUPPORT_EMAIL = 'keelstone@cliffordcoaching.no';
 
-function scaleRow(key,idx){
-  const chips=t("levels").map((o,i)=>'<span class="chip'+(idx===i?" sel":"")+'" onclick="setScale(\''+key+'\','+i+')">'+o+'</span>').join("");
-  return '<div class="scale"><div class="lab" style="margin-bottom:6px">'+t(key)+'</div><div class="chips">'+chips+'</div></div>';
+/* ---------- State ---------- */
+function detectLang() { const l = (navigator.language || 'en').toLowerCase(); return (l.startsWith('nb') || l.startsWith('nn') || l.startsWith('no')) ? 'no' : 'en'; }
+let state = { streak: 0, lastCompletedDate: null, completedIds: [], journal: [], notifOn: false, lang: null };
+function load() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) state = Object.assign(state, JSON.parse(raw));
+  } catch (e) { console.warn('load()', e); }
+  if (!state.lang) state.lang = detectLang();
 }
-function setScale(key,i){const d=todayStr();const c=state.checkins[d]||(state.checkins[d]={});c[key]=i;save();render();}
-function vHome(){
-  const r=tr();const c=state.checkins[todayStr()]||{};
-  let h='<div class="card"><div class="h" style="margin-bottom:12px">'+t("checkin")+'</div>'+
-    scaleRow("mood",c.mood)+scaleRow("energy",c.energy)+scaleRow("stress",c.stress)+
-    (c.mood!=null&&c.energy!=null&&c.stress!=null?'<div class="csub" style="color:var(--blue);margin-top:2px">✓ '+t("saved")+'</div>':'')+'</div>';
-  h+='<div class="card"><div class="lab">'+t("focus")+'</div><div class="csub" style="color:var(--text);font-size:14px;margin-bottom:11px">'+esc(r.focus)+'</div><button class="btn sand" onclick="openBreath()">'+t("start")+'</button></div>';
-  h+='<div class="card"><div class="lab">'+t("suggest")+'</div><div class="csub" style="margin-bottom:11px">'+esc(r.sugg)+'</div><button class="btn" onclick="tab=\'trening\';render()">'+t("open")+'</button></div>';
-  return h;
+function save() { localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+
+let IS_PRO = false;
+let currentView = 'home';
+let currentExerciseId = null;
+
+/* ---------- Helpers ---------- */
+function cats() { return CATEGORIES[state.lang]; }
+function exs() { return EXERCISES[state.lang]; }
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2200);
 }
-function vPerform(){
-  if(routineEdit) return vRoutineBuilder();
-  const r=tr();
-  let h='<h1>'+t("nav").prestasjon+'</h1><div class="sub">'+t("weekgoal")+'</div>';
-  if(state.goal){
-    h+='<div class="card"><div class="lab">'+t("weekgoal")+'</div><div class="h" style="font-size:14px;margin-bottom:10px">'+esc(state.goal)+'</div><div class="bar"><span style="width:45%"></span></div><div class="csub" style="margin-top:5px">45% '+t("progress")+'</div><button class="btn ghost" style="margin-top:11px" onclick="editGoal()">'+t("setgoal")+'</button></div>';
-  }else{
-    h+='<div class="card"><div class="lab">'+t("weekgoal")+'</div><input type="text" id="goalInput" placeholder="'+esc(r.goalPh)+'" style="margin-bottom:11px"><button class="btn" onclick="saveGoal()">'+t("savegoal")+'</button></div>';
+function hapticSuccess() {
+  try { window.Capacitor?.Plugins?.Haptics?.notification({ type: 'SUCCESS' }); } catch (e) {}
+}
+function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ---------- Navigation / render ---------- */
+document.querySelectorAll('nav button').forEach(btn => {
+  btn.addEventListener('click', () => { navigate(btn.dataset.view); });
+});
+function navigate(view) {
+  currentView = view;
+  currentExerciseId = null;
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+  render();
+}
+function setLang(l) { state.lang = l; save(); window._catFilter = 'alle'; render(); }
+
+function render() {
+  document.documentElement.lang = state.lang;
+  document.getElementById('streakNum').textContent = state.streak;
+  document.querySelector('[data-nav="home"]').textContent = t('navHome');
+  document.querySelector('[data-nav="exercises"]').textContent = t('navExercises');
+  document.querySelector('[data-nav="journal"]').textContent = t('navJournal');
+  document.querySelector('[data-nav="profile"]').textContent = t('navProfile');
+  const main = document.getElementById('main');
+  if (currentExerciseId) { main.innerHTML = renderExerciseDetail(currentExerciseId); return; }
+  if (currentView === 'home') main.innerHTML = renderHome();
+  else if (currentView === 'exercises') main.innerHTML = renderExercises();
+  else if (currentView === 'journal') main.innerHTML = renderJournal();
+  else main.innerHTML = renderProfile();
+}
+
+function renderHome() {
+  const doneToday = state.lastCompletedDate === todayStr();
+  const list = exs();
+  const pick = list[new Date().getDate() % list.length];
+  const cat = cats().find(c => c.id === pick.category);
+  return `
+    <h1>${t('greet')}</h1>
+    <p class="sub">${doneToday ? t('doneToday') : t('notDoneToday')}</p>
+    <div class="statRow">
+      <div class="statBox"><b>${state.streak}</b><span>${t('statDays')}</span></div>
+      <div class="statBox"><b>${state.completedIds.length}</b><span>${t('statExercises')}</span></div>
+      <div class="statBox"><b>${state.journal.length}</b><span>${t('statJournal')}</span></div>
+    </div>
+    <div class="card heroCard" onclick="openExercise('${pick.id}')">
+      <span class="tag">${t('todaysExercise')}</span>
+      <p>${escapeHtml(pick.title)}</p>
+      <span style="font-size:0.85rem;opacity:0.85">${pick.duration} · ${cat.label}</span>
+    </div>
+    <h2>${t('quickBreath')}</h2>
+    <div class="card">
+      <p style="margin-bottom:10px;font-size:0.9rem;color:var(--text-soft)">${t('quickBreathDesc')}</p>
+      <button class="btn full sand" onclick="startBreathing()">${t('startBreathBtn')}</button>
+    </div>
+  `;
+}
+
+function renderExercises() {
+  window._catFilter = window._catFilter || 'alle';
+  const chips = `<div class="chips">
+    <button class="${window._catFilter==='alle'?'active':''}" onclick="setCatFilter('alle')">${t('all')}</button>
+    ${cats().map(c => `<button class="${window._catFilter===c.id?'active':''}" onclick="setCatFilter('${c.id}')">${c.icon} ${c.label}</button>`).join('')}
+  </div>`;
+  const list = exs().filter(e => window._catFilter === 'alle' || e.category === window._catFilter);
+  const cards = list.map(e => {
+    const locked = !IS_PRO && !FREE_EXERCISE_IDS.has(e.id);
+    const cat = cats().find(c => c.id === e.category);
+    return `<div class="card exCard" onclick="${locked ? 'showProModal()' : `openExercise('${e.id}')`}" style="${locked?'opacity:0.72':''}">
+      <div class="exIcon">${cat.icon}</div>
+      <div class="meta"><b>${escapeHtml(e.title)}</b><span>${e.duration} · ${cat.label}</span></div>
+      <div class="lockDot">${locked ? '🔒' : '›'}</div>
+    </div>`;
+  }).join('');
+  return `<h1>${t('exTitle')}</h1><p class="sub">${t('exSub')}</p>${chips}${cards}`;
+}
+function setCatFilter(id) { window._catFilter = id; render(); }
+
+function renderExerciseDetail(id) {
+  const e = exs().find(x => x.id === id);
+  const cat = cats().find(c => c.id === e.category);
+  const doneToday = state.completedIds.includes(id + ':' + todayStr());
+  return `
+    <div class="backRow"><button onclick="closeExercise()">←</button><b>${cat.icon} ${cat.label}</b></div>
+    <h1>${escapeHtml(e.title)}</h1>
+    <p class="sub">${e.duration}</p>
+    <div class="audioFallback">${t('audioSoon')}</div>
+    <audio controls preload="none" src="assets/audio/${state.lang}/${e.id}.mp3"></audio>
+    <div class="manus">${escapeHtml(e.manus)}</div>
+    <div style="height:14px"></div>
+    <button class="btn full ${doneToday?'secondary':''}" onclick="logCompletion('${e.id}')" ${doneToday?'disabled':''}>${doneToday ? t('doneLabel') : t('markDone')}</button>
+  `;
+}
+function openExercise(id) { currentExerciseId = id; render(); }
+function closeExercise() { currentExerciseId = null; render(); }
+
+function logCompletion(id) {
+  const key = id + ':' + todayStr();
+  if (state.completedIds.includes(key)) return;
+  state.completedIds.push(key);
+  const today = todayStr();
+  if (state.lastCompletedDate !== today) {
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    state.streak = (state.lastCompletedDate === yesterday) ? state.streak + 1 : 1;
+    state.lastCompletedDate = today;
   }
-  h+=routineCard();
-  h+='<div class="card"><div class="h" style="margin-bottom:4px">'+esc(r.third)+'</div><div class="csub" style="margin-bottom:11px">'+esc(r.thirdd)+'</div><button class="btn" onclick="toast(t(\'soon\'))">'+esc(r.thirdbtn)+'</button></div>';
-  return h;
-}
-function editGoal(){state.goal="";save();render();}
-function saveGoal(){const v=document.getElementById("goalInput").value.trim();if(!v)return;state.goal=v;save();toast(t("goalsaved"));render();}
-function vTrain(){
-  const r=tr();
-  let h='<h1>'+t("nav").trening+'</h1><div class="sub">'+t("exercises")+'</div>';
-  h+='<div class="card">'+r.exs.map(e=>'<div class="row" onclick="openExercise(\''+e.id+'\')"><span style="font-size:14px">'+esc(e.l)+'</span><span style="color:var(--blue);font-size:18px">▶</span></div>').join("")+'</div>';
-  h+='<div class="sub" style="margin-top:6px">'+t("programs")+'</div>';
-  h+='<div class="card">'+r.progs.map(p=>'<div class="row" onclick="openProgram(\''+p.id+'\')"><span style="font-size:14px">'+esc(p.l)+'</span><span style="color:var(--blue);font-size:16px">→</span></div>').join("")+'</div>';
-  return h;
-}
-function vLearn(){
-  const r=tr();
-  let h='<h1>'+t("nav").laere+'</h1><div class="sub">'+t("articles")+'</div>';
-  h+='<div class="card">'+r.arts.map(a=>'<div class="row" onclick="toast(t(\'soon\'))"><span style="font-size:14px">'+esc(a)+'</span><span style="color:var(--blue);font-size:16px">→</span></div>').join("")+'</div>';
-  return h;
-}
-/* ---------- pre-performance routine ---------- */
-const ROUTINE_BLOCKS=["ground","breath","selftalk","visualize"];
-let routineEdit=false, routineDraft=null, routineRun=null;
-function routineCard(){
-  const R=T[state.lang].routine;
-  if(!state.routine)
-    return '<div class="card"><div class="h" style="margin-bottom:4px">'+t("prep")+'</div><div class="csub" style="margin-bottom:11px">'+R.notBuilt+'</div><button class="btn sand" onclick="openRoutineBuilder()">'+R.build+'</button></div>';
-  const inc=ROUTINE_BLOCKS.filter(id=>state.routine.blocks[id]);
-  const summary=inc.map(id=>R.blocks[id].label).join(" · ")||"—";
-  return '<div class="card"><div class="h" style="margin-bottom:4px">'+t("prep")+'</div><div class="csub" style="margin-bottom:11px">'+esc(summary)+'</div>'+
-    '<button class="btn sand" style="margin-bottom:8px" onclick="openRoutine()">'+R.run+'</button>'+
-    '<button class="btn ghost" onclick="openRoutineBuilder()">'+R.edit+'</button></div>';
-}
-function openRoutineBuilder(){
-  routineDraft=state.routine?JSON.parse(JSON.stringify(state.routine)):{blocks:{ground:true,breath:true,selftalk:true,visualize:true},selfTalk:""};
-  routineEdit=true;render();const m=document.getElementById("main");if(m)m.scrollTop=0;
-}
-function toggleBlock(id){ routineDraft.blocks[id]=!routineDraft.blocks[id]; render(); }
-function cancelRoutine(){ routineEdit=false;routineDraft=null;render(); }
-function saveRoutine(){
-  const ta=document.getElementById("rSelfTalk");if(ta)routineDraft.selfTalk=ta.value.trim();
-  state.routine=routineDraft;routineEdit=false;routineDraft=null;save();render();
-  toast(T[state.lang].routine.savedMsg);
-}
-function vRoutineBuilder(){
-  const R=T[state.lang].routine;
-  let h='<button class="back" onclick="cancelRoutine()">← '+t("nav").prestasjon+'</button>';
-  h+='<h1>'+R.builderTitle+'</h1><div class="sub">'+R.builderIntro+'</div>';
-  h+='<div class="card">'+ROUTINE_BLOCKS.map(id=>{
-    const on=routineDraft.blocks[id],b=R.blocks[id];
-    return '<div class="blockRow" onclick="toggleBlock(\''+id+'\')"><div class="chk'+(on?" on":"")+'">'+(on?"✓":"")+'</div><div style="flex:1"><div style="font-size:14px;font-weight:500">'+b.label+'</div><div class="csub" style="font-size:12.5px">'+esc(b.desc)+'</div></div></div>';
-  }).join("")+'</div>';
-  h+='<div class="card"><div class="lab">'+R.blocks.selftalk.label+'</div><input type="text" id="rSelfTalk" placeholder="'+esc(R.selfTalkPh)+'" value="'+esc(routineDraft.selfTalk||"")+'"></div>';
-  h+='<button class="btn" onclick="saveRoutine()">'+R.save+'</button>';
-  return h;
-}
-function openRoutine(){
-  const inc=ROUTINE_BLOCKS.filter(id=>state.routine.blocks[id]);
-  if(!inc.length){toast(t("soon"));return;}
-  routineRun={steps:inc,i:0};
-  const ov=document.createElement("div");ov.id="routineOv";
-  ov.innerHTML='<button class="cx" onclick="closeRoutine()">✕</button><div class="rStage" id="rStage"></div><div class="breathCtl"><div class="breathBtns" id="rCtl"></div></div>';
-  document.getElementById("app").appendChild(ov);
-  renderRoutineStep();
-}
-function renderRoutineStep(){
-  const R=T[state.lang].routine,id=routineRun.steps[routineRun.i],b=R.blocks[id];
-  let inner='<div class="rDots">'+routineRun.steps.map((s,i)=>'<div class="rDot'+(i===routineRun.i?" on":"")+'"></div>').join("")+'</div><div class="rLabel">'+b.label+'</div>';
-  if(id==="selftalk")inner+='<div class="rSelf">'+esc(state.routine.selfTalk||b.emptyFallback)+'</div>';
-  else inner+='<div class="rInstr">'+esc(b.instr)+'</div>';
-  document.getElementById("rStage").innerHTML=inner;
-  const last=routineRun.i>=routineRun.steps.length-1;
-  let c="";
-  if(id==="breath")c+='<button class="bEnd" onclick="openBreath()">'+R.breathBtn+'</button>';
-  c+='<button class="bStart" onclick="nextRoutineStep()">'+(last?R.finish:R.next)+'</button>';
-  document.getElementById("rCtl").innerHTML=c;
-}
-function nextRoutineStep(){
-  if(routineRun.i>=routineRun.steps.length-1){closeRoutine();toast(T[state.lang].routine.routineDone);return;}
-  routineRun.i++;renderRoutineStep();
-}
-function closeRoutine(){ const ov=document.getElementById("routineOv");if(ov)ov.remove();routineRun=null; }
-
-/* ---------- program views ---------- */
-let progId=null, progDay=null;
-function pData(){return PROGRAMS[progId][state.lang];}
-function pSt(){return state.programs[progId];}
-function openProgram(id){ if(id==="soon"||!PROGRAMS[id]){toast(t("soon"));return;} progId=id;progDay=null;render();const m=document.getElementById("main");if(m)m.scrollTop=0; }
-function startProgram(){ state.programs[progId]={started:todayStr(),done:[],reflect:{}};save();render(); }
-function openDay(n){ progDay=n;render();const m=document.getElementById("main");if(m)m.scrollTop=0; }
-function backToOverview(){ progDay=null;render(); }
-function backToTrain(){ progId=null;progDay=null;render(); }
-function completeDay(){
-  const st=pSt(),ta=document.getElementById("progReflect");
-  if(ta)st.reflect[progDay]=ta.value.trim();
-  if(!st.done.includes(progDay))st.done.push(progDay);
   save();
-  const finished=st.done.length>=pData().days.length;
-  progDay=null;render();
-  toast(finished?T[state.lang].prog.finished:T[state.lang].prog.cdone);
+  hapticSuccess();
+  toast(t('streakToast')(state.streak));
+  render();
 }
-function vProgramOverview(){
-  const p=pData(),P=T[state.lang].prog,st=pSt(),total=p.days.length;
-  let h='<button class="back" onclick="backToTrain()">← '+t("nav").trening+'</button>';
-  h+='<h1>'+esc(p.title)+'</h1><div class="sub">'+esc(p.desc)+'</div>';
-  if(!st){
-    h+='<div class="card"><div class="csub" style="margin-bottom:12px">'+total+' '+P.day.toLowerCase()+'</div><button class="btn" onclick="startProgram()">'+P.start+'</button></div>';
-    return h;
+
+function renderJournal() {
+  const entries = [...state.journal].reverse().map(j => `
+    <div class="card journalEntry">
+      <div class="date">${j.date}</div>
+      <b>${t('qGood')}</b><p>${escapeHtml(j.good)}</p>
+      <b>${t('qHard')}</b><p>${escapeHtml(j.hard)}</p>
+      <b>${t('qFocus')}</b><p>${escapeHtml(j.focus)}</p>
+    </div>`).join('') || `<p class="sub">${t('noNotes')}</p>`;
+  return `
+    <h1>${t('journalTitle')}</h1>
+    <p class="sub">${t('journalSub')}</p>
+    <div class="card">
+      <div class="qBlock"><label>${t('qGood')}</label><textarea id="jGood" rows="2"></textarea></div>
+      <div class="qBlock"><label>${t('qHard')}</label><textarea id="jHard" rows="2"></textarea></div>
+      <div class="qBlock"><label>${t('qFocus')}</label><textarea id="jFocus" rows="2"></textarea></div>
+      <button class="btn full" onclick="saveJournal()">${t('saveNote')}</button>
+    </div>
+    <h2>${t('prevNotes')}</h2>
+    ${entries}
+  `;
+}
+function saveJournal() {
+  const good = document.getElementById('jGood').value.trim();
+  const hard = document.getElementById('jHard').value.trim();
+  const focus = document.getElementById('jFocus').value.trim();
+  if (!good && !hard && !focus) { toast(t('writeFirst')); return; }
+  state.journal.push({ date: new Date().toLocaleDateString(t('dateLocale')), good, hard, focus });
+  save();
+  toast(t('noteSaved'));
+  render();
+}
+
+function renderProfile() {
+  return `
+    <h1>${t('profileTitle')}</h1>
+    <div class="card ${IS_PRO ? 'heroCard' : ''}">
+      <b>${IS_PRO ? t('proTitle') : t('freeTitle')}</b>
+      <p style="font-size:0.85rem;margin-top:6px;${IS_PRO?'opacity:0.9':'color:var(--text-soft)'}">
+        ${IS_PRO ? t('proDesc') : t('freeDesc')}
+      </p>
+      ${IS_PRO ? '' : `<button class="btn sand full" style="margin-top:12px" onclick="showProModal()">${t('becomePro')}</button>`}
+    </div>
+    <div class="card">
+      <div class="toggleRow">
+        <span>${t('dailyReminder')}</span>
+        <div class="switch ${state.notifOn?'on':''}" onclick="toggleNotif()"><div class="dot"></div></div>
+      </div>
+      <div class="toggleRow">
+        <span>${t('language')}</span>
+        <span class="seg"><button class="${state.lang==='no'?'on':''}" onclick="setLang('no')">NO</button><button class="${state.lang==='en'?'on':''}" onclick="setLang('en')">EN</button></span>
+      </div>
+      <div class="toggleRow" style="border-bottom:none">
+        <span>${t('restoreLabel')}</span>
+        <button class="btn small secondary" onclick="restorePurchases()">${t('restoreBtn')}</button>
+      </div>
+    </div>
+    <div class="card">
+      <p style="font-size:0.85rem;color:var(--text-soft)">${t('disclaimer')}</p>
+      <p style="font-size:0.85rem;margin-top:8px"><a href="mailto:${SUPPORT_EMAIL}" style="color:var(--blue)">${SUPPORT_EMAIL}</a></p>
+    </div>
+  `;
+}
+
+function showProModal() {
+  document.getElementById('modalSheet').innerHTML = `
+    <h2>${t('modalTitle')}</h2>
+    <p class="sub">${t('modalSub')}</p>
+    <div class="card"><b>${t('planName')}</b><p style="font-size:0.85rem;color:var(--text-soft);margin-top:4px">${t('planDesc')}</p></div>
+    <button class="btn full sand" onclick="purchasePro()">${t('startPro')}</button>
+    <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('notNow')}</button>
+  `;
+  document.getElementById('modalWrap').classList.add('show');
+}
+function closeModal() { document.getElementById('modalWrap').classList.remove('show'); }
+document.getElementById('modalWrap').addEventListener('click', (e) => { if (e.target.id === 'modalWrap') closeModal(); });
+
+/* ---------- RevenueCat ---------- */
+// TODO: set RevenueCat API key (appl_...) before production, see Together project for the pattern
+const REVENUECAT_API_KEY = 'appl_SETT_INN_NOKKEL_HER';
+async function initRevenueCat() {
+  try {
+    const Purchases = window.Capacitor?.Plugins?.Purchases;
+    if (!Purchases) return;
+    await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
+    const { customerInfo } = await Purchases.getCustomerInfo();
+    IS_PRO = !!customerInfo.entitlements.active['pro'];
+    render();
+  } catch (e) { console.warn('RevenueCat:', e); }
+}
+async function purchasePro() {
+  try {
+    const Purchases = window.Capacitor?.Plugins?.Purchases;
+    if (!Purchases) { toast(t('purchaseInAppOnly')); return; }
+    const offerings = await Purchases.getOfferings();
+    const pkg = offerings.current?.availablePackages?.[0];
+    if (!pkg) { toast(t('noSub')); return; }
+    const { customerInfo } = await Purchases.purchasePackage({ aPackage: pkg });
+    IS_PRO = !!customerInfo.entitlements.active['pro'];
+    if (IS_PRO) { hapticSuccess(); closeModal(); toast(t('proWelcome')); render(); }
+  } catch (e) { console.warn('purchasePro:', e); }
+}
+async function restorePurchases() {
+  try {
+    const Purchases = window.Capacitor?.Plugins?.Purchases;
+    if (!Purchases) { toast(t('restoreInAppOnly')); return; }
+    const { customerInfo } = await Purchases.restorePurchases();
+    IS_PRO = !!customerInfo.entitlements.active['pro'];
+    toast(IS_PRO ? t('restored') : t('noActiveSub'));
+    render();
+  } catch (e) { console.warn('restorePurchases:', e); }
+}
+
+/* ---------- Local notifications ---------- */
+async function toggleNotif() {
+  state.notifOn = !state.notifOn;
+  save();
+  const LN = window.Capacitor?.Plugins?.LocalNotifications;
+  if (!LN) { render(); return; }
+  if (state.notifOn) {
+    const perm = await LN.requestPermissions();
+    if (perm.display !== 'granted') { state.notifOn = false; save(); render(); return; }
+    const notifications = [];
+    for (let i = 1; i <= 45; i++) {
+      const d = new Date(); d.setDate(d.getDate() + i); d.setHours(9, 0, 0, 0);
+      notifications.push({ id: i, title: t('notifTitle'), body: t('notifBody'), schedule: { at: d } });
+    }
+    await LN.schedule({ notifications });
+  } else {
+    const pending = await LN.getPending();
+    if (pending.notifications.length) await LN.cancel({ notifications: pending.notifications.map(n => ({ id: n.id })) });
   }
-  const doneN=st.done.length,pct=Math.round(doneN/total*100);
-  h+='<div class="card"><div class="lab">'+doneN+'/'+total+' '+P.progress+'</div><div class="bar" style="margin-top:6px"><span style="width:'+pct+'%"></span></div></div>';
-  h+='<div class="card">'+p.days.map((d,i)=>{
-    const n=i+1,done=st.done.includes(n),cur=!done&&n===doneN+1,unlocked=done||cur;
-    const cls=done?"done":(cur?"cur":"");
-    const badge=done?"✓":(unlocked?n:"🔒");
-    return '<div class="dayrow" '+(unlocked?'onclick="openDay('+n+')" style="cursor:pointer"':'style="opacity:.5"')+'>'+
-      '<div class="daynum '+cls+'">'+badge+'</div>'+
-      '<div style="flex:1"><div style="font-size:14px;font-weight:500">'+P.day+' '+n+'</div><div class="csub" style="font-size:12.5px">'+esc(d.t)+'</div></div>'+
-      (unlocked?'<span style="color:var(--blue);font-size:16px">→</span>':'')+'</div>';
-  }).join("")+'</div>';
-  return h;
-}
-function vProgramDay(){
-  const p=pData(),P=T[state.lang].prog,st=pSt(),d=p.days[progDay-1],total=p.days.length;
-  const prev=st.reflect[progDay]||"";
-  let h='<button class="back" onclick="backToOverview()">← '+esc(p.title)+'</button>';
-  h+='<div class="lab">'+P.day+' '+progDay+' '+P.of+' '+total+'</div><h1 style="margin-bottom:14px">'+esc(d.t)+'</h1>';
-  h+='<div class="card"><div class="csub" style="color:var(--text);font-size:14px;line-height:1.6">'+esc(d.body)+'</div></div>';
-  h+='<div class="card"><div class="lab">'+P.exercise+'</div><div class="csub" style="color:var(--text);font-size:14px;margin-bottom:'+(d.breath?'11px':'0')+'">'+esc(d.ex)+'</div>'+
-    (d.breath?'<button class="btn sand" onclick="openBreath()">'+P.startBreath+'</button>':'')+'</div>';
-  h+='<div class="card"><div class="lab">'+P.reflection+'</div><textarea id="progReflect" placeholder="'+esc(P.reflectPh)+'">'+esc(prev)+'</textarea></div>';
-  h+='<button class="btn" style="margin-bottom:8px" onclick="completeDay()">'+(st.done.includes(progDay)?"✓ "+P.cdone:P.complete)+'</button>';
-  return h;
+  render();
 }
 
-/* ---------- breathing exercise (animated) ---------- */
-const BR_R=96, BR_C=2*Math.PI*BR_R;
-let brRaf=null, brPhase=0;
-function easeInOut(t){return t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
-function openExercise(id){ if(id==="breath")openBreath(); else toast(t("soon")); }
-function openBreath(){
-  brPhase=0; const b=T[state.lang].breath;
-  const ov=document.createElement("div"); ov.id="breathOv";
-  let parts="";
-  for(let i=0;i<16;i++){const l=Math.round(Math.random()*100),bo=Math.round(8+Math.random()*72),d=(6+Math.random()*7).toFixed(1),dl=(Math.random()*8).toFixed(1),s=(2+Math.random()*2.5).toFixed(1);
-    parts+='<div class="bParticle" style="left:'+l+'%;bottom:'+bo+'%;width:'+s+'px;height:'+s+'px;animation-duration:'+d+'s;animation-delay:'+dl+'s"></div>';}
-  ov.innerHTML=parts+
-    '<button class="cx" onclick="closeBreath()">✕</button>'+
-    '<div id="breathStage"><div class="orbWrap">'+
-      '<div class="aura" id="aura2"></div><div class="aura" id="aura1"></div>'+
-      '<div class="orb" id="brOrb"></div>'+
-      '<svg id="breathRingS" width="232" height="232" viewBox="0 0 232 232"><circle cx="116" cy="116" r="'+BR_R+'" fill="none" stroke="rgba(255,255,255,.13)" stroke-width="4"/>'+
-      '<circle id="brRing" cx="116" cy="116" r="'+BR_R+'" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-dasharray="'+BR_C.toFixed(1)+'" stroke-dashoffset="'+BR_C.toFixed(1)+'" transform="rotate(-90 116 116)"/></svg>'+
-      '<div class="orbTxt"><div class="orbPhase" id="brPhaseTxt">'+b.press+'</div><div class="orbCount" id="brCountTxt"></div></div>'+
-    '</div><div class="bRound" id="brRoundTxt"></div></div>'+
-    '<div class="breathCtl"><div class="breathTempo">'+b.pace+': <b id="brTempoVal">4</b> '+b.sec+'<input type="range" id="brTempo" min="3" max="6" step="0.5" value="4"></div>'+
-      '<div class="breathBtns"><button class="bStart" id="brStart">'+b.start+'</button><button class="bEnd" onclick="endBreath()">'+b.end+'</button></div></div>';
-  document.getElementById("app").appendChild(ov);
-  document.getElementById("brTempo").oninput=e=>document.getElementById("brTempoVal").textContent=e.target.value;
-  document.getElementById("brStart").onclick=toggleBreath;
+/* ---------- Breathing overlay (animated) ---------- */
+const BR_R = 92, BR_C = 2 * Math.PI * BR_R;
+let brRaf = null, brPhase = 0, brRunning = false, brStart = null, brTempoMs = 4000;
+function startBreathing() {
+  const b = t('breath');
+  brPhase = 0; brRunning = false; brStart = null;
+  document.getElementById('orbPhase').textContent = b.press;
+  document.getElementById('orbCount').textContent = '';
+  document.getElementById('bRound').textContent = '';
+  document.getElementById('brStart').textContent = b.start;
+  document.getElementById('brEnd').textContent = b.end;
+  document.getElementById('tempoLabel').innerHTML = b.pace + ': <b id="brTempoVal">4</b> ' + b.sec + '<input type="range" id="brTempo" min="3" max="6" step="0.5" value="4">';
+  document.getElementById('breathOverlay').classList.add('show');
+  document.getElementById('brTempo').oninput = e => { document.getElementById('brTempoVal').textContent = e.target.value; };
+  document.getElementById('brStart').onclick = toggleBreath;
 }
-function toggleBreath(){
-  const btn=document.getElementById("brStart"); const b=T[state.lang].breath;
-  if(brRaf){ stopBreath(); btn.textContent=b.cont; document.getElementById("brPhaseTxt").textContent=b.paused; document.getElementById("brCountTxt").textContent=""; return; }
-  btn.textContent=b.pause; runBreath();
+function toggleBreath() {
+  const b = t('breath');
+  const btn = document.getElementById('brStart');
+  if (brRunning) { stopBreathTick(); btn.textContent = b.cont; document.getElementById('orbPhase').textContent = b.paused; document.getElementById('orbCount').textContent = ''; return; }
+  btn.textContent = b.pause; brRunning = true; brStart = null; runBreathTick();
 }
-function runBreath(){
-  let start=null; const b=T[state.lang].breath;
-  const tick=ts=>{
-    const orb=document.getElementById("brOrb"); if(!orb){brRaf=null;return;}
-    const tempo=parseFloat(document.getElementById("brTempo").value)*1000;
-    if(start===null)start=ts;
-    const t=Math.min((ts-start)/tempo,1), ph=brPhase%4;
-    let bv; if(ph===0)bv=easeInOut(t); else if(ph===1)bv=1; else if(ph===2)bv=easeInOut(1-t); else bv=0;
-    orb.style.transform="translate(-50%,-50%) scale("+(0.5+0.5*bv).toFixed(3)+")";
-    orb.style.boxShadow="0 0 "+Math.round(38+52*bv)+"px "+Math.round(6+10*bv)+"px rgba(228,201,137,"+(0.24+0.32*bv).toFixed(2)+")";
-    const a1=document.getElementById("aura1"), a2=document.getElementById("aura2");
-    a1.style.transform="translate(-50%,-50%) scale("+(0.6+0.5*bv).toFixed(3)+")"; a1.style.opacity=(0.14+0.34*bv).toFixed(2);
-    a2.style.transform="translate(-50%,-50%) scale("+(0.72+0.82*bv).toFixed(3)+")"; a2.style.opacity=(0.08+0.2*bv).toFixed(2);
-    document.getElementById("brRing").style.strokeDashoffset=(BR_C*(1-bv)).toFixed(1);
-    document.getElementById("brPhaseTxt").textContent=b.phases[ph];
-    const secs=Math.ceil((tempo-(ts-start))/1000);
-    document.getElementById("brCountTxt").textContent=secs>0?secs:"";
-    document.getElementById("brRoundTxt").textContent=b.round+" "+(Math.floor(brPhase/4)+1);
-    if(t>=1){brPhase++;start=null;}
-    brRaf=requestAnimationFrame(tick);
+function easeInOut(x) { return x < 0.5 ? 2*x*x : 1 - Math.pow(-2*x+2, 2) / 2; }
+function runBreathTick() {
+  const b = t('breath');
+  const tick = ts => {
+    if (!brRunning) return;
+    const orb = document.getElementById('orb');
+    if (!orb) { brRaf = null; return; }
+    const tempoEl = document.getElementById('brTempo');
+    brTempoMs = (tempoEl ? parseFloat(tempoEl.value) : 4) * 1000;
+    if (brStart === null) brStart = ts;
+    const frac = Math.min((ts - brStart) / brTempoMs, 1);
+    const ph = brPhase % 4;
+    let bv;
+    if (ph === 0) bv = easeInOut(frac); else if (ph === 1) bv = 1; else if (ph === 2) bv = easeInOut(1 - frac); else bv = 0;
+    orb.style.transform = `translate(-50%,-50%) scale(${(0.5 + 0.5*bv).toFixed(3)})`;
+    const a1 = document.getElementById('aura1'), a2 = document.getElementById('aura2');
+    if (a1) { a1.style.transform = `translate(-50%,-50%) scale(${(0.6+0.5*bv).toFixed(3)})`; a1.style.opacity = (0.14+0.34*bv).toFixed(2); }
+    if (a2) { a2.style.transform = `translate(-50%,-50%) scale(${(0.72+0.82*bv).toFixed(3)})`; a2.style.opacity = (0.08+0.2*bv).toFixed(2); }
+    const ring = document.getElementById('brRing');
+    if (ring) ring.style.strokeDashoffset = (BR_C * (1 - bv)).toFixed(1);
+    document.getElementById('orbPhase').textContent = b.phases[ph];
+    const secs = Math.ceil((brTempoMs - (ts - brStart)) / 1000);
+    document.getElementById('orbCount').textContent = secs > 0 ? secs : '';
+    document.getElementById('bRound').textContent = b.round + ' ' + (Math.floor(brPhase/4) + 1);
+    if (frac >= 1) { brPhase++; brStart = null; }
+    brRaf = requestAnimationFrame(tick);
   };
-  brRaf=requestAnimationFrame(tick);
+  brRaf = requestAnimationFrame(tick);
 }
-function stopBreath(){ if(brRaf){cancelAnimationFrame(brRaf);brRaf=null;} }
-function endBreath(){ if(!state.completed.includes("breath"))state.completed.push("breath"); save(); closeBreath(); toast(T[state.lang].breath.done); }
-function closeBreath(){ stopBreath(); const ov=document.getElementById("breathOv"); if(ov)ov.remove(); }
+function stopBreathTick() { brRunning = false; if (brRaf) { cancelAnimationFrame(brRaf); brRaf = null; } }
+function stopBreathing() {
+  stopBreathTick();
+  document.getElementById('breathOverlay').classList.remove('show');
+}
 
-function vProfile(){
-  const n=Object.keys(state.checkins).length;
-  let h='<h1>'+t("nav").profil+'</h1><div class="sub">'+t("trend")+'</div>';
-  h+='<div class="card"><div class="lab">'+t("trend")+'</div><div style="font-size:26px;font-weight:600;color:var(--blue)">'+n+'</div><div class="csub">'+t("checkinsN")+'</div></div>';
-  h+='<div class="card"><div class="row"><span style="font-size:14px">'+t("language")+'</span><span class="seg" style="border-color:var(--border)"><button class="'+(state.lang==="no"?"on":"")+'" style="color:var(--soft)" onclick="setLang(\'no\')">NO</button><button class="'+(state.lang==="en"?"on":"")+'" style="color:var(--soft)" onclick="setLang(\'en\')">EN</button></span></div>'+
-    '<div class="row"><span style="font-size:14px">'+t("changeRole")+'</span><button class="chip" onclick="state.role=null;save();render()">'+tr().pill+'</button></div></div>';
-  h+='<div class="card" style="background:var(--blue)"><div class="lab" style="color:#bcd3e0">'+t("coaching")+'</div><div class="csub" style="color:#e7eef3;margin-bottom:11px">'+t("coachingd")+'</div><a class="btn sand" style="display:block;text-align:center;text-decoration:none" href="https://cliffordcoaching.no" target="_blank">'+t("coachbtn")+'</a></div>';
-  return h;
-}
+/* ---------- Init ---------- */
+load();
 render();
+initRevenueCat();
 </script>
 </body>
 </html>
