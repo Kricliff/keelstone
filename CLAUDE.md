@@ -35,6 +35,7 @@ Fra 2026-07-22 er fargepaletten hentet direkte fra cliffordcoaching.no for å sk
 | Fil/mappe | Beskrivelse |
 |---|---|
 | `www/index.html` | Appen (produksjon, dette bygges). Vanilla JS + localStorage + i18n |
+| `privacy.html` (rot) | Personvernerklæring, NO/EN med språkbryter (samme mønster som appen), for App Store Connect. Ikke koblet til GitHub Pages ennå — trenger en offentlig URL før innsending |
 | `www/manifest.webmanifest`, `www/sw.js` | PWA-filer |
 | `www/assets/audio/no/`, `www/assets/audio/en/` | Lydfiler per språk, id-er matcher `content/manus.md` (ingen filer lagt inn ennå) |
 | `content/manus.md` | Manus til alle 20 øvelser, norsk og engelsk side om side |
