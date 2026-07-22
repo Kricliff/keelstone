@@ -38,23 +38,26 @@ Fra 2026-07-22 er fargepaletten hentet direkte fra cliffordcoaching.no for å sk
 
 - Vanilla JS + localStorage, ingen rammeverk (samme filosofi som Together og Mentalt Sterkere)
 - i18n: `T[lang][key]` + `t(key)`; `CATEGORIES[lang]` og `EXERCISES[lang]` er parallelle strukturer med samme id-er og rekkefølge på tvers av språk
-- Fire faner: Hjem, Øvelser, Dagbok, Profil (samme som Mentalt Sterkere, ikke lenger fem faner med rollevalg)
+- Fire faner: Hjem, Utforsk, Fremgang, Profil (se «UX-redesign» under for detaljer per fane)
 - `LS_KEY = 'keelstone_state_v1'`, `FREE_EXERCISE_IDS = new Set(['fokus-1', 'ro-1'])`
 - Capacitor 8 (iOS + Android ikke lagt til ennå, kjør `npx cap add ios` / `npx cap add android` når native oppsett skal starte), RevenueCat for abonnement (samme oppsett som Together, API-nøkkel ikke satt inn ennå)
 - `npm install --legacy-peer-deps` (RevenueCat v9 + Capacitor v8)
 
+## UX-redesign (2026-07-22)
+
+Fullstendig UX-oppgradering utover innholdssynkroniseringen over, gjort etter research på ledende meditasjons-/mental trenings-apper (Calm, Headspace, Balance-mønstre). Samme struktur som Mentalt Sterkere, kun tekst/språk skiller dem:
+
+- **Onboarding ved første oppstart:** velg ett fokusområde (én av de 4 kategoriene) eller hopp over. Lagres i `state.goal`, styrer «Anbefalt for deg» på Hjem og kan endres når som helst i Profil.
+- **Hjem:** sirkulær SVG-fremdriftsring (aktive dager siste 7 dager, ikke bare streak-tall), dagens humør-innsjekk (5 emoji, lagres i `state.checkins[dato]`), anbefalt øvelse (goal-basert med fallback til dato-rotasjon, respekterer Pro-lås — dette var en reell bug i den gamle versjonen som ikke sjekket lås på hjem-kortet).
+- **Utforsk** (tidligere «Øvelser»): søkefelt (live-filter), kategori-chips + favoritt-chip, varighetsfilter (Under 5 min / 5–7 min / 8+ min), hjerte-ikon per øvelse (`state.favorites`), «Nylig fullført»-seksjon.
+- **Fremgang** (slår sammen tidligere «Dagbok» med ny innsikt via en seksjonsbryter Innsikt/Dagbok): ukesdiagram (siste 7 dager, søylediagram), aktivitets-heatmap (siste 10 uker, GitHub-stil), balanse mellom kategorier (horisontal stolpe per kategori). Fargene for kategoriene (`--cat-fokus/ro/selvtillit/restitusjon`) er validert med dataviz-paletteregler (CVD-sjekk) for både lys og mørk modus.
+- **Øvelsesspilleren:** tidsbasert fremdriftslinje (fyller seg over oppgitt varighet), favoritt-hjerte i header, fullført-tilstand med egen suksesskort i stedet for bare deaktivert knapp.
+- **Profil:** tilpassbart tidspunkt for daglig påminnelse (`state.reminderTime`, `<input type="time">`, erstatter fast kl. 09:00), fokusvelger (samme kategorier som onboarding).
+- Alle nye datavisualiseringer fulgte `dataviz`-skillets prosedyre: form først, deretter validert farge (`validate_palette.js`), sekundær koding (ikon+label) der kontrast-WARN krevde det.
+
 ## Status (2026-07-22)
 
-Innhold og struktur er nå identisk med Mentalt Sterkere (bortsett fra språk), verifisert i nettleser-preview (navigasjon, øvelsesvisning, dagbok, språkbytte NO/EN, pusteanimasjon, alle uten konsollfeil). Gjenstår: ekte app-ikoner (PNG, `www/assets/` er tom), lydinnspilling (begge språk), `npx cap add ios/android`, App Store Connect-app, signering, RevenueCat-produkt (`com.kricliff.keelstone.pro.monthly`), push til GitHub (`github.com/Kricliff/keelstone`, ikke bekreftet at push har skjedd).
-
-## Build-lærdommer (arvet fra Together, ikke gjenta feilene)
-
-- Bruk `npx cap copy ios`, ALDRI `cap sync ios` (overskriver Podfile-hook)
-- iOS bruker CocoaPods, ikke SPM (RevenueCat v9 har ingen Package.swift)
-- Podfile trenger `post_install`-hook som tvinger `IPHONEOS_DEPLOYMENT_TARGET = 15.0`
-- `xcode: latest` i codemagic.yaml (Apple krever nyeste iOS SDK for opplasting)
-- Alltid `git pull --rebase --autostash` før push
-- Ingen em-streker i brukervendt tekst; all app-tekst på norsk OG engelsk (i18n)
+Innhold, struktur og UX er nå identisk med Mentalt Sterkere (bortsett fra språk og den penere pusteanimasjonen), verifisert grundig i nettleser-preview (onboarding, hjem, søk/filter/favoritter, innsikt-diagrammer, spiller, profil-innstillinger, lys/mørk modus, alle uten konsollfeil). Gjenstår: ekte native app-ikoner i Xcode/Android-prosjekt (web-PNG-ene finnes i `www/assets/`), lydinnspilling (begge språk), `npx cap add ios/android`, App Store Connect-app, signering, RevenueCat-produkt (`com.kricliff.keelstone.pro.monthly`).
 
 ## Build-lærdommer (arvet fra Together — ikke gjenta feilene)
 

@@ -30,6 +30,8 @@
     --radius: 16px;
     --shadow: 0 1px 3px rgba(31,54,54,0.06), 0 4px 14px rgba(31,54,54,0.09);
     --page-bg: #d6dbd9;
+    --heat-1: #cfe0dc; --heat-2: #8fb3ac; --heat-3: #2F4F4F;
+    --cat-fokus: #2a78d6; --cat-ro: #1baf7a; --cat-selvtillit: #4a3aa7; --cat-restitusjon: #e34948;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -38,18 +40,22 @@
       --bg: #141918; --card: #1c2422; --text: #eef1f0; --text-soft: #9aa3a0;
       --border: #2b3432; --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 14px rgba(0,0,0,0.35);
       --page-bg: #0c0f0e;
+      --heat-1: #3a4f4b; --heat-2: #5c8079; --heat-3: #9fc3bb;
+      --cat-fokus: #3987e5; --cat-ro: #199e70; --cat-selvtillit: #9085e9; --cat-restitusjon: #e66767;
     }
   }
   * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; }
   body { font-family: "PT Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--page-bg); color: var(--text); display: flex; justify-content: center; }
   #app { width: 100%; max-width: 460px; min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.15); }
+  #app.onboarding header, #app.onboarding nav { display: none; }
   main { flex: 1; overflow-y: auto; padding: 20px 18px 90px; }
   h1 { font-size: 1.45rem; font-weight: 700; margin-bottom: 2px; letter-spacing: 0.2px; }
   h2 { font-size: 1.05rem; font-weight: 600; margin: 22px 0 10px; }
   .sub { color: var(--text-soft); font-size: 0.9rem; margin-bottom: 18px; }
   .card { background: var(--card); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); margin-bottom: 14px; transition: transform 0.15s ease, box-shadow 0.15s ease; }
   .card:active { transform: scale(0.985); }
+  .cardLabel { font-size: 0.76rem; color: var(--text-soft); font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
   .btn { display: inline-block; border: none; border-radius: 12px; padding: 11px 18px; font-size: 0.95rem; font-weight: 600; cursor: pointer; background: var(--blue); color: #fff; font-family: inherit; transition: transform 0.12s ease; }
   .btn:active { background: var(--blue-d); transform: scale(0.96); }
   .btn.sand { background: var(--sand); color: #fff; }
@@ -70,12 +76,14 @@
   .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 6px; }
   .chips button { border: 1px solid var(--border); background: var(--card); border-radius: 999px; padding: 7px 14px; font-size: 0.82rem; font-family: inherit; cursor: pointer; white-space: nowrap; color: var(--text-soft); }
   .chips button.active { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 600; }
-  .exCard { display: flex; align-items: center; gap: 14px; cursor: pointer; }
+  .exCard { display: flex; align-items: center; gap: 12px; cursor: pointer; }
   .exIcon { width: 46px; height: 46px; border-radius: 12px; background: var(--blue-light); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
-  .exCard .meta { flex: 1; }
+  .exCard .meta { flex: 1; min-width: 0; }
   .exCard .meta b { font-size: 0.95rem; display: block; }
   .exCard .meta span { font-size: 0.8rem; color: var(--text-soft); }
-  .lockDot { font-size: 1.1rem; color: var(--text-soft); }
+  .lockDot { font-size: 1.1rem; color: var(--text-soft); flex-shrink: 0; }
+  .favBtn { background: none; border: none; font-size: 1.25rem; color: var(--sand); cursor: pointer; padding: 4px; flex-shrink: 0; line-height: 1; }
+  .favBtn.playerFav { font-size: 1.3rem; }
   .tag { display: inline-block; font-size: 0.7rem; font-weight: 700; background: var(--blue-light); color: var(--blue-d); border-radius: 999px; padding: 3px 9px; margin-right: 5px; }
   .tag.sand { background: var(--sand-light); color: var(--sand); }
   .heroCard { background: linear-gradient(135deg, var(--blue), var(--blue-d)); color: #fff; }
@@ -85,33 +93,67 @@
   .statBox { flex: 1; background: var(--card); border-radius: var(--radius); padding: 14px; text-align: center; box-shadow: var(--shadow); }
   .statBox b { font-size: 1.4rem; display: block; color: var(--blue); }
   .statBox span { font-size: 0.75rem; color: var(--text-soft); }
-  textarea, input[type=text] { width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 10px; font-family: inherit; font-size: 0.92rem; resize: vertical; background: var(--card); color: var(--text); }
+  .ringCard { display: flex; align-items: center; gap: 16px; }
+  .ringMeta { display: flex; flex-direction: column; }
+  .ringMeta b { font-size: 1.5rem; color: var(--blue); }
+  .ringMeta span { font-size: 0.8rem; color: var(--text-soft); }
+  .moodRow { display: flex; justify-content: space-between; gap: 6px; }
+  .moodBtn { flex: 1; background: var(--blue-light); border: none; border-radius: 12px; font-size: 1.35rem; padding: 9px 0; cursor: pointer; opacity: 0.5; transition: opacity 0.15s, transform 0.15s; }
+  .moodBtn.on { opacity: 1; background: var(--sand-light); transform: scale(1.08); }
+  textarea, input[type=text], input[type=time] { width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 10px; font-family: inherit; font-size: 0.92rem; resize: vertical; background: var(--card); color: var(--text); }
   textarea:focus, input:focus { outline: 2px solid var(--blue-light); border-color: var(--blue); }
   .journalEntry { border-left: 4px solid var(--sand); }
   .journalEntry .date { font-size: 0.78rem; color: var(--text-soft); margin-bottom: 6px; }
   .journalEntry p { font-size: 0.9rem; margin-bottom: 6px; line-height: 1.4; }
   .journalEntry b { font-size: 0.82rem; color: var(--blue-d); }
   .backRow { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-  .backRow button { background: var(--card); border: 1px solid var(--border); border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; }
+  .backRow button:first-child { background: var(--card); border: 1px solid var(--border); border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; flex-shrink: 0; }
   .manus { font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap; background: var(--card); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
   audio { width: 100%; margin: 10px 0; }
   .audioFallback { background: var(--sand-light); color: var(--sand); border-radius: 10px; padding: 10px 12px; font-size: 0.82rem; margin: 10px 0; }
+  .playerBar { height: 6px; background: var(--border); border-radius: 6px; overflow: hidden; margin: 14px 0; }
+  .playerBarFill { height: 100%; width: 0%; background: var(--blue); transition: width 1s linear; }
+  .doneCard { text-align: center; }
+  .doneCard b { display: block; font-size: 1.05rem; margin-bottom: 6px; }
+  .doneCard p { font-size: 0.85rem; color: var(--text-soft); margin-bottom: 12px; }
+  .weekChart { display: flex; justify-content: space-between; align-items: flex-end; height: 96px; gap: 6px; }
+  .weekBar { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; height: 100%; }
+  .weekVal { font-size: 0.68rem; color: var(--text-soft); min-height: 1em; }
+  .weekBarFill { width: 100%; max-width: 22px; background: var(--blue); border-radius: 4px 4px 0 0; }
+  .weekDay { font-size: 0.68rem; color: var(--text-soft); }
+  .weekDay.today { color: var(--blue); font-weight: 700; }
+  .heatGrid { display: flex; flex-direction: column; gap: 3px; }
+  .heatRow { display: flex; gap: 3px; }
+  .heatCell { flex: 1; aspect-ratio: 1; border-radius: 3px; background: var(--border); }
+  .heatCell.l1 { background: var(--heat-1); }
+  .heatCell.l2 { background: var(--heat-2); }
+  .heatCell.l3 { background: var(--heat-3); }
+  .catBarRow { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .catBarRow:last-child { margin-bottom: 0; }
+  .catBarLabel { font-size: 0.82rem; width: 96px; flex-shrink: 0; }
+  .catBarTrack { flex: 1; height: 10px; background: var(--border); border-radius: 6px; overflow: hidden; }
+  .catBarFill { height: 100%; border-radius: 6px; }
+  .catBarVal { font-size: 0.8rem; color: var(--text-soft); width: 20px; text-align: right; flex-shrink: 0; }
   .modalWrap { position: absolute; inset: 0; background: rgba(18,40,58,0.5); z-index: 50; display: none; align-items: flex-end; justify-content: center; }
   .modalWrap.show { display: flex; }
   .modalSheet { width: 100%; max-width: 460px; background: var(--card); border-radius: 20px 20px 0 0; padding: 22px 20px calc(24px + env(safe-area-inset-bottom)); max-height: 85vh; overflow-y: auto; }
   .modalSheet h2 { margin-top: 0; }
   .toast { position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%); background: var(--blue-d); color: #fff; padding: 10px 18px; border-radius: 999px; font-size: 0.85rem; z-index: 60; opacity: 0; transition: opacity 0.25s; pointer-events: none; }
   .toast.show { opacity: 1; }
-  .toggleRow { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .toggleRow { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); gap: 10px; }
+  .toggleRow input[type=time] { width: auto; padding: 6px 10px; }
   .switch { position: relative; width: 44px; height: 26px; background: var(--border); border-radius: 999px; cursor: pointer; flex-shrink: 0; }
   .switch.on { background: var(--blue); }
   .switch .dot { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform 0.18s; }
   .switch.on .dot { transform: translateX(18px); }
   .qBlock { margin-bottom: 14px; }
   .qBlock label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--blue-d); }
-  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 9px; overflow: hidden; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 9px; overflow: hidden; flex-shrink: 0; }
   .seg button { border: none; background: var(--card); padding: 6px 14px; font-size: 0.8rem; font-family: inherit; color: var(--text-soft); cursor: pointer; }
   .seg button.on { background: var(--blue); color: #fff; }
+  .segFull { display: flex; width: 100%; margin-bottom: 18px; }
+  .segFull button { flex: 1; padding: 9px 0; }
+  .onbCard { display: flex; align-items: center; gap: 14px; cursor: pointer; }
   #breathOverlay { position: absolute; inset: 0; background: radial-gradient(circle at 50% 36%, var(--blue), var(--blue-d) 78%); z-index: 40; display: none; flex-direction: column; align-items: center; color: #eaf1f5; padding: calc(20px + env(safe-area-inset-top)) 20px 20px; overflow: hidden; }
   #breathOverlay.show { display: flex; }
   #breathOverlay .closeRow { width: 100%; display: flex; justify-content: flex-end; z-index: 5; }
@@ -145,8 +187,8 @@
   <main id="main"></main>
   <nav>
     <button data-view="home" class="active"><span class="ico">🏠</span><span data-nav="home"></span></button>
-    <button data-view="exercises"><span class="ico">🧠</span><span data-nav="exercises"></span></button>
-    <button data-view="journal"><span class="ico">📓</span><span data-nav="journal"></span></button>
+    <button data-view="explore"><span class="ico">🧭</span><span data-nav="explore"></span></button>
+    <button data-view="progress"><span class="ico">📈</span><span data-nav="progress"></span></button>
     <button data-view="profile"><span class="ico">👤</span><span data-nav="profile"></span></button>
   </nav>
 
@@ -178,51 +220,71 @@
 /* ---------- i18n ---------- */
 const T = {
   no: {
-    appname: 'Keelstone', navHome: 'Hjem', navExercises: 'Øvelser', navJournal: 'Dagbok', navProfile: 'Profil',
+    appname: 'Keelstone', navHome: 'Hjem', navExplore: 'Utforsk', navProgress: 'Fremgang', navProfile: 'Profil',
     greet: 'Hei!', doneToday: 'Bra jobbet i dag. Du kan gjøre mer om du vil.', notDoneToday: 'Klar for dagens mentale trening?',
     statDays: 'dager på rad', statExercises: 'øvelser fullført', statJournal: 'dagboknotater',
-    todaysExercise: 'Dagens øvelse', quickBreath: 'Rask pusteøvelse', quickBreathDesc: 'Boksepusting i 2 minutter — for ro her og nå.', startBreathBtn: 'Start pusteøvelse',
-    exTitle: 'Øvelser', exSub: 'Velg en kategori og en øvelse som passer akkurat nå.', all: 'Alle',
+    weekRingLabel: 'aktive dager denne uken', moodTitle: 'Hvordan føler du deg i dag?',
+    todaysExercise: 'Anbefalt for deg', quickBreath: 'Rask pusteøvelse', quickBreathDesc: 'Boksepusting i 2 minutter — for ro her og nå.', startBreathBtn: 'Start pusteøvelse',
+    exTitle: 'Utforsk', exSub: 'Søk, filtrer og finn øvelsen som passer akkurat nå.', all: 'Alle',
+    searchPlaceholder: 'Søk etter øvelse...', durationAll: 'Alle lengder', durationShort: 'Under 5 min', durationMedium: '5–7 min', durationLong: '8+ min',
+    favoritesChip: 'Favoritter', recentlyCompleted: 'Nylig fullført', noResults: 'Ingen øvelser matcher søket ditt.',
     audioSoon: '🎧 Lydversjon kommer snart. Les manuset i mellomtiden, eller les det høyt for deg selv i ditt eget tempo.',
     markDone: 'Merk som fullført', doneLabel: '✓ Fullført i dag',
+    sessionDoneTitle: '✓ Fullført i dag', sessionDoneMsg: 'Bra jobbet. Fremgangen din er lagret.', viewProgress: 'Se fremgang',
+    progressTitle: 'Fremgang', progressSub: 'Innsikt i mønstrene dine, og dagboken din.',
+    tabInsights: 'Innsikt', tabJournal: 'Dagbok',
+    weekChartTitle: 'Denne uken', heatmapCaption: 'Siste 10 uker', categoryBalanceTitle: 'Balanse mellom kategorier',
+    noActivityYet: 'Ingen fullførte øvelser ennå. Innsikten din dukker opp her når du kommer i gang.',
     journalTitle: 'Dagbok', journalSub: 'Tre spørsmål, hver dag. Bygger selvinnsikt over tid.',
     qGood: 'Hva gikk bra i dag?', qHard: 'Hva var vanskelig?', qFocus: 'Hva vil du fokusere på i morgen?',
     saveNote: 'Lagre notat', prevNotes: 'Tidligere notater', noNotes: 'Ingen notater ennå. Skriv ditt første under.',
     noteSaved: 'Notat lagret', writeFirst: 'Skriv i minst ett felt først',
     profileTitle: 'Profil', proTitle: '⭐ Keelstone Pro', freeTitle: 'Gratis versjon',
     proDesc: 'Du har tilgang til alle øvelser. Takk for støtten!', freeDesc: 'Du har tilgang til 2 øvelser gratis. Oppgrader for full tilgang til alle kategorier.',
-    becomePro: 'Bli Pro', dailyReminder: 'Daglig påminnelse', restoreLabel: 'Gjenopprett kjøp', restoreBtn: 'Gjenopprett',
+    becomePro: 'Bli Pro', dailyReminder: 'Daglig påminnelse', reminderTimeLabel: 'Tidspunkt', goalLabel: 'Mitt fokus',
+    restoreLabel: 'Gjenopprett kjøp', restoreBtn: 'Gjenopprett',
     language: 'Språk', disclaimer: 'Keelstone er et støtteverktøy for mental trening og prestasjon. Det er ikke en erstatning for behandling eller terapi.',
     modalTitle: 'Bli Pro', modalSub: 'Full tilgang til alle øvelser i Fokus, Ro, Selvtillit og Restitusjon.',
     planName: 'Keelstone Pro', planDesc: 'Månedlig abonnement', startPro: 'Start Pro', notNow: 'Ikke nå',
     streakToast: n => 'Bra jobbet! Streak: ' + n + ' dager', proWelcome: 'Velkommen til Pro!',
     noSub: 'Fant ikke abonnement', restored: 'Pro-tilgang gjenopprettet', noActiveSub: 'Ingen aktivt abonnement funnet',
     purchaseInAppOnly: 'Kjøp er bare tilgjengelig i appen', restoreInAppOnly: 'Bare tilgjengelig i appen',
+    onbTitle: 'Velkommen til Keelstone', onbSub: 'Hva ønsker du å jobbe mest med akkurat nå? Vi tilpasser forslagene dine.', onbSkip: 'Hopp over, vis meg alt',
     breath: { phases: ['Pust inn','Hold','Pust ut','Hold'], press: 'Trykk start', pace: 'Tempo', sec: 'sek per fase', start: 'Start', pause: 'Pause', cont: 'Fortsett', end: 'Avslutt', round: 'Runde', paused: 'Pause' },
     notifTitle: 'Keelstone', notifBody: 'Tid for dagens mentale trening.',
     dateLocale: 'nb-NO',
   },
   en: {
-    appname: 'Keelstone', navHome: 'Home', navExercises: 'Exercises', navJournal: 'Journal', navProfile: 'Profile',
+    appname: 'Keelstone', navHome: 'Home', navExplore: 'Explore', navProgress: 'Progress', navProfile: 'Profile',
     greet: 'Hi!', doneToday: 'Great work today. Feel free to do more if you\'d like.', notDoneToday: 'Ready for today\'s mental training?',
     statDays: 'day streak', statExercises: 'exercises done', statJournal: 'journal entries',
-    todaysExercise: "Today's exercise", quickBreath: 'Quick breathing exercise', quickBreathDesc: 'Box breathing for 2 minutes, for calm right here, right now.', startBreathBtn: 'Start breathing exercise',
-    exTitle: 'Exercises', exSub: 'Pick a category and an exercise that fits right now.', all: 'All',
+    weekRingLabel: 'active days this week', moodTitle: 'How are you feeling today?',
+    todaysExercise: 'Recommended for you', quickBreath: 'Quick breathing exercise', quickBreathDesc: 'Box breathing for 2 minutes, for calm right here, right now.', startBreathBtn: 'Start breathing exercise',
+    exTitle: 'Explore', exSub: 'Search, filter, and find the exercise that fits right now.', all: 'All',
+    searchPlaceholder: 'Search exercises...', durationAll: 'Any length', durationShort: 'Under 5 min', durationMedium: '5–7 min', durationLong: '8+ min',
+    favoritesChip: 'Favorites', recentlyCompleted: 'Recently completed', noResults: 'No exercises match your search.',
     audioSoon: '🎧 Audio version coming soon. Read the script in the meantime, or read it aloud to yourself at your own pace.',
     markDone: 'Mark as complete', doneLabel: '✓ Completed today',
+    sessionDoneTitle: '✓ Completed today', sessionDoneMsg: 'Great work. Your progress is saved.', viewProgress: 'View progress',
+    progressTitle: 'Progress', progressSub: 'Insight into your patterns, and your journal.',
+    tabInsights: 'Insights', tabJournal: 'Journal',
+    weekChartTitle: 'This week', heatmapCaption: 'Last 10 weeks', categoryBalanceTitle: 'Category balance',
+    noActivityYet: 'No completed exercises yet. Your insights will show up here once you get going.',
     journalTitle: 'Journal', journalSub: 'Three questions, every day. Builds self-awareness over time.',
     qGood: 'What went well today?', qHard: 'What was hard?', qFocus: 'What will you focus on tomorrow?',
     saveNote: 'Save entry', prevNotes: 'Previous entries', noNotes: 'No entries yet. Write your first one below.',
     noteSaved: 'Entry saved', writeFirst: 'Write in at least one field first',
     profileTitle: 'Profile', proTitle: '⭐ Keelstone Pro', freeTitle: 'Free version',
     proDesc: 'You have access to all exercises. Thanks for your support!', freeDesc: 'You have access to 2 free exercises. Upgrade for full access to all categories.',
-    becomePro: 'Go Pro', dailyReminder: 'Daily reminder', restoreLabel: 'Restore purchases', restoreBtn: 'Restore',
+    becomePro: 'Go Pro', dailyReminder: 'Daily reminder', reminderTimeLabel: 'Time', goalLabel: 'My focus',
+    restoreLabel: 'Restore purchases', restoreBtn: 'Restore',
     language: 'Language', disclaimer: 'Keelstone is a support tool for mental training and performance. It is not a substitute for treatment or therapy.',
     modalTitle: 'Go Pro', modalSub: 'Full access to all exercises in Focus, Calm, Confidence and Recovery.',
     planName: 'Keelstone Pro', planDesc: 'Monthly subscription', startPro: 'Start Pro', notNow: 'Not now',
     streakToast: n => 'Great work! Streak: ' + n + ' days', proWelcome: 'Welcome to Pro!',
     noSub: 'Couldn\'t find a subscription', restored: 'Pro access restored', noActiveSub: 'No active subscription found',
     purchaseInAppOnly: 'Purchases are only available in the app', restoreInAppOnly: 'Only available in the app',
+    onbTitle: 'Welcome to Keelstone', onbSub: 'What do you want to work on most right now? We\'ll tailor your suggestions.', onbSkip: 'Skip, show me everything',
     breath: { phases: ['Breathe in','Hold','Breathe out','Hold'], press: 'Press start', pace: 'Pace', sec: 'sec per phase', start: 'Start', pause: 'Pause', cont: 'Continue', end: 'End', round: 'Round', paused: 'Paused' },
     notifTitle: 'Keelstone', notifBody: "Time for today's mental training.",
     dateLocale: 'en-US',
@@ -336,14 +398,19 @@ const EXERCISES = {
 const FREE_EXERCISE_IDS = new Set(['fokus-1', 'ro-1']);
 const LS_KEY = 'keelstone_state_v1';
 const SUPPORT_EMAIL = 'keelstone@cliffordcoaching.no';
+const MOODS = ['😔', '😕', '😐', '🙂', '😄'];
 
 /* ---------- State ---------- */
 function detectLang() { const l = (navigator.language || 'en').toLowerCase(); return (l.startsWith('nb') || l.startsWith('nn') || l.startsWith('no')) ? 'no' : 'en'; }
-let state = { streak: 0, lastCompletedDate: null, completedIds: [], journal: [], notifOn: false, lang: null };
+let state = { streak: 0, lastCompletedDate: null, completedIds: [], journal: [], notifOn: false, lang: null, goal: null, favorites: [], checkins: {}, reminderTime: '09:00', onboarded: false };
 function load() {
   try {
     const raw = localStorage.getItem(LS_KEY);
-    if (raw) state = Object.assign(state, JSON.parse(raw));
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      state = Object.assign(state, parsed);
+      if (!('onboarded' in parsed)) state.onboarded = true;
+    }
   } catch (e) { console.warn('load()', e); }
   if (!state.lang) state.lang = detectLang();
 }
@@ -374,6 +441,7 @@ document.querySelectorAll('nav button').forEach(btn => {
   btn.addEventListener('click', () => { navigate(btn.dataset.view); });
 });
 function navigate(view) {
+  stopPlayerTimer();
   currentView = view;
   currentExerciseId = null;
   document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.view === view));
@@ -383,36 +451,90 @@ function setLang(l) { state.lang = l; save(); window._catFilter = 'alle'; render
 
 function render() {
   document.documentElement.lang = state.lang;
+  const app = document.getElementById('app');
+  if (!state.onboarded) {
+    app.classList.add('onboarding');
+    document.getElementById('main').innerHTML = renderOnboarding();
+    return;
+  }
+  app.classList.remove('onboarding');
   document.getElementById('streakNum').textContent = state.streak;
   document.querySelector('[data-nav="home"]').textContent = t('navHome');
-  document.querySelector('[data-nav="exercises"]').textContent = t('navExercises');
-  document.querySelector('[data-nav="journal"]').textContent = t('navJournal');
+  document.querySelector('[data-nav="explore"]').textContent = t('navExplore');
+  document.querySelector('[data-nav="progress"]').textContent = t('navProgress');
   document.querySelector('[data-nav="profile"]').textContent = t('navProfile');
   const main = document.getElementById('main');
   if (currentExerciseId) { main.innerHTML = renderExerciseDetail(currentExerciseId); return; }
   if (currentView === 'home') main.innerHTML = renderHome();
-  else if (currentView === 'exercises') main.innerHTML = renderExercises();
-  else if (currentView === 'journal') main.innerHTML = renderJournal();
+  else if (currentView === 'explore') main.innerHTML = renderExplore();
+  else if (currentView === 'progress') main.innerHTML = renderProgress();
   else main.innerHTML = renderProfile();
 }
 
+/* ---------- Onboarding ---------- */
+function renderOnboarding() {
+  const goals = cats();
+  return `
+    <div style="padding-top:6px">
+      <div class="brand" style="margin-bottom:26px"><span class="mark">K</span> ${t('appname')}</div>
+      <h1>${t('onbTitle')}</h1>
+      <p class="sub">${t('onbSub')}</p>
+      ${goals.map(g => `<div class="card onbCard" onclick="pickGoal('${g.id}')">
+        <div class="exIcon">${g.icon}</div>
+        <div class="meta"><b>${g.label}</b></div>
+        <div class="lockDot">›</div>
+      </div>`).join('')}
+      <button class="btn ghost full" style="margin-top:8px" onclick="skipOnboarding()">${t('onbSkip')}</button>
+    </div>
+  `;
+}
+function pickGoal(id) { state.goal = id; state.onboarded = true; save(); render(); }
+function skipOnboarding() { state.onboarded = true; save(); render(); }
+
+/* ---------- Home ---------- */
+function weeklyActiveDays() {
+  let count = 0;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const ds = d.toISOString().slice(0, 10);
+    if (state.completedIds.some(k => k.endsWith(':' + ds))) count++;
+  }
+  return count;
+}
+function pickRecommended() {
+  const list = exs();
+  let pool = list;
+  if (state.goal) { const gp = list.filter(e => e.category === state.goal); if (gp.length) pool = gp; }
+  const notDoneToday = pool.filter(e => !state.completedIds.includes(e.id + ':' + todayStr()));
+  const finalPool = notDoneToday.length ? notDoneToday : pool;
+  return finalPool[new Date().getDate() % finalPool.length];
+}
 function renderHome() {
   const doneToday = state.lastCompletedDate === todayStr();
-  const list = exs();
-  const pick = list[new Date().getDate() % list.length];
+  const pick = pickRecommended();
   const cat = cats().find(c => c.id === pick.category);
+  const activeDays = weeklyActiveDays();
+  const ringC = 2 * Math.PI * 40;
+  const ringOffset = ringC * (1 - activeDays / 7);
+  const todayMood = state.checkins[todayStr()];
   return `
     <h1>${t('greet')}</h1>
     <p class="sub">${doneToday ? t('doneToday') : t('notDoneToday')}</p>
-    <div class="statRow">
-      <div class="statBox"><b>${state.streak}</b><span>${t('statDays')}</span></div>
-      <div class="statBox"><b>${state.completedIds.length}</b><span>${t('statExercises')}</span></div>
-      <div class="statBox"><b>${state.journal.length}</b><span>${t('statJournal')}</span></div>
+    <div class="card ringCard">
+      <svg width="96" height="96" viewBox="0 0 96 96">
+        <circle cx="48" cy="48" r="40" fill="none" stroke="var(--border)" stroke-width="8"/>
+        <circle cx="48" cy="48" r="40" fill="none" stroke="var(--blue)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${ringC.toFixed(1)}" stroke-dashoffset="${ringOffset.toFixed(1)}" transform="rotate(-90 48 48)"/>
+      </svg>
+      <div class="ringMeta"><b>${activeDays}/7</b><span>${t('weekRingLabel')}</span></div>
     </div>
-    <div class="card heroCard" onclick="openExercise('${pick.id}')">
+    <div class="card">
+      <div class="cardLabel">${t('moodTitle')}</div>
+      <div class="moodRow">${MOODS.map((m, i) => `<button class="moodBtn ${todayMood === i + 1 ? 'on' : ''}" onclick="setMood(${i + 1})">${m}</button>`).join('')}</div>
+    </div>
+    <div class="card heroCard" onclick="${(!IS_PRO && !FREE_EXERCISE_IDS.has(pick.id)) ? 'showProModal()' : `openExercise('${pick.id}')`}">
       <span class="tag">${t('todaysExercise')}</span>
       <p>${escapeHtml(pick.title)}</p>
-      <span style="font-size:0.85rem;opacity:0.85">${pick.duration} · ${cat.label}</span>
+      <span style="font-size:0.85rem;opacity:0.85">${pick.duration} · ${cat.label}${(!IS_PRO && !FREE_EXERCISE_IDS.has(pick.id)) ? ' · 🔒 Pro' : ''}</span>
     </div>
     <h2>${t('quickBreath')}</h2>
     <div class="card">
@@ -421,44 +543,116 @@ function renderHome() {
     </div>
   `;
 }
+function setMood(v) { state.checkins[todayStr()] = v; save(); render(); }
 
-function renderExercises() {
-  window._catFilter = window._catFilter || 'alle';
-  const chips = `<div class="chips">
-    <button class="${window._catFilter==='alle'?'active':''}" onclick="setCatFilter('alle')">${t('all')}</button>
-    ${cats().map(c => `<button class="${window._catFilter===c.id?'active':''}" onclick="setCatFilter('${c.id}')">${c.icon} ${c.label}</button>`).join('')}
+/* ---------- Explore ---------- */
+function exCardHtml(e) {
+  const locked = !IS_PRO && !FREE_EXERCISE_IDS.has(e.id);
+  const cat = cats().find(c => c.id === e.category);
+  const fav = state.favorites.includes(e.id);
+  return `<div class="card exCard" onclick="${locked ? 'showProModal()' : `openExercise('${e.id}')`}" style="${locked ? 'opacity:0.72' : ''}">
+    <div class="exIcon">${cat.icon}</div>
+    <div class="meta"><b>${escapeHtml(e.title)}</b><span>${e.duration} · ${cat.label}</span></div>
+    <button class="favBtn ${fav ? 'on' : ''}" onclick="event.stopPropagation();toggleFavorite('${e.id}')" aria-label="favorite">${fav ? '♥' : '♡'}</button>
+    <div class="lockDot">${locked ? '🔒' : '›'}</div>
   </div>`;
-  const list = exs().filter(e => window._catFilter === 'alle' || e.category === window._catFilter);
-  const cards = list.map(e => {
-    const locked = !IS_PRO && !FREE_EXERCISE_IDS.has(e.id);
-    const cat = cats().find(c => c.id === e.category);
-    return `<div class="card exCard" onclick="${locked ? 'showProModal()' : `openExercise('${e.id}')`}" style="${locked?'opacity:0.72':''}">
-      <div class="exIcon">${cat.icon}</div>
-      <div class="meta"><b>${escapeHtml(e.title)}</b><span>${e.duration} · ${cat.label}</span></div>
-      <div class="lockDot">${locked ? '🔒' : '›'}</div>
-    </div>`;
-  }).join('');
-  return `<h1>${t('exTitle')}</h1><p class="sub">${t('exSub')}</p>${chips}${cards}`;
+}
+function inDuration(e) {
+  const n = parseInt(e.duration);
+  if (window._durFilter === 'short') return n <= 5;
+  if (window._durFilter === 'medium') return n >= 6 && n <= 7;
+  if (window._durFilter === 'long') return n >= 8;
+  return true;
+}
+function renderExplore() {
+  window._catFilter = window._catFilter || 'alle';
+  window._durFilter = window._durFilter || 'alle';
+  window._search = window._search || '';
+  const chips = `<div class="chips">
+    <button class="${window._catFilter === 'alle' ? 'active' : ''}" onclick="setCatFilter('alle')">${t('all')}</button>
+    <button class="${window._catFilter === 'fav' ? 'active' : ''}" onclick="setCatFilter('fav')">♥ ${t('favoritesChip')}</button>
+    ${cats().map(c => `<button class="${window._catFilter === c.id ? 'active' : ''}" onclick="setCatFilter('${c.id}')">${c.icon} ${c.label}</button>`).join('')}
+  </div>`;
+  const durOpts = [['alle', t('durationAll')], ['short', t('durationShort')], ['medium', t('durationMedium')], ['long', t('durationLong')]];
+  const durChips = `<div class="chips">${durOpts.map(([id, label]) => `<button class="${window._durFilter === id ? 'active' : ''}" onclick="setDurFilter('${id}')">${label}</button>`).join('')}</div>`;
+  let list = exs().filter(e => (window._catFilter === 'alle' || (window._catFilter === 'fav' ? state.favorites.includes(e.id) : e.category === window._catFilter)) && inDuration(e));
+  const q = window._search.trim().toLowerCase();
+  if (q) list = list.filter(e => e.title.toLowerCase().includes(q));
+  const noFilters = !q && window._catFilter === 'alle' && window._durFilter === 'alle';
+  const recentIds = [...new Set([...state.completedIds].reverse().map(k => k.split(':')[0]))].slice(0, 3);
+  const recent = recentIds.map(id => exs().find(e => e.id === id)).filter(Boolean);
+  const recentBlock = (noFilters && recent.length) ? `<h2>${t('recentlyCompleted')}</h2>${recent.map(exCardHtml).join('')}<h2>${t('all')}</h2>` : '';
+  const cards = list.length ? list.map(exCardHtml).join('') : `<p class="sub">${t('noResults')}</p>`;
+  return `<h1>${t('exTitle')}</h1><p class="sub">${t('exSub')}</p>
+    <input type="text" id="searchInput" placeholder="${t('searchPlaceholder')}" value="${escapeHtml(window._search)}" oninput="setSearch(this.value)" style="margin-bottom:12px">
+    ${chips}${durChips}${recentBlock}${cards}`;
 }
 function setCatFilter(id) { window._catFilter = id; render(); }
+function setDurFilter(id) { window._durFilter = id; render(); }
+function setSearch(v) {
+  window._search = v;
+  render();
+  const el = document.getElementById('searchInput');
+  if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+}
+function toggleFavorite(id) {
+  const i = state.favorites.indexOf(id);
+  if (i >= 0) state.favorites.splice(i, 1); else state.favorites.push(id);
+  save(); render();
+}
 
+/* ---------- Exercise detail / player ---------- */
+let playerTimer = null, playerElapsed = 0, playerDurationSec = 0, playerRunning = false;
 function renderExerciseDetail(id) {
   const e = exs().find(x => x.id === id);
   const cat = cats().find(c => c.id === e.category);
   const doneToday = state.completedIds.includes(id + ':' + todayStr());
+  const fav = state.favorites.includes(id);
   return `
-    <div class="backRow"><button onclick="closeExercise()">←</button><b>${cat.icon} ${cat.label}</b></div>
+    <div class="backRow">
+      <button onclick="closeExercise()">←</button>
+      <b>${cat.icon} ${cat.label}</b>
+      <button class="favBtn playerFav" style="margin-left:auto" onclick="toggleFavorite('${id}');renderPlayerFav('${id}')" id="playerFavBtn">${fav ? '♥' : '♡'}</button>
+    </div>
     <h1>${escapeHtml(e.title)}</h1>
     <p class="sub">${e.duration}</p>
+    <div class="playerBar"><div class="playerBarFill" id="playerFill"></div></div>
     <div class="audioFallback">${t('audioSoon')}</div>
     <audio controls preload="none" src="assets/audio/${state.lang}/${e.id}.mp3"></audio>
     <div class="manus">${escapeHtml(e.manus)}</div>
     <div style="height:14px"></div>
-    <button class="btn full ${doneToday?'secondary':''}" onclick="logCompletion('${e.id}')" ${doneToday?'disabled':''}>${doneToday ? t('doneLabel') : t('markDone')}</button>
+    ${doneToday
+      ? `<div class="card doneCard"><b>${t('sessionDoneTitle')}</b><p>${t('sessionDoneMsg')}</p><button class="btn secondary full" onclick="navigate('progress')">${t('viewProgress')}</button></div>`
+      : `<button class="btn full" onclick="logCompletion('${e.id}')">${t('markDone')}</button>`}
   `;
 }
-function openExercise(id) { currentExerciseId = id; render(); }
-function closeExercise() { currentExerciseId = null; render(); }
+function renderPlayerFav(id) {
+  const btn = document.getElementById('playerFavBtn');
+  if (btn) btn.textContent = state.favorites.includes(id) ? '♥' : '♡';
+}
+function openExercise(id) {
+  currentExerciseId = id;
+  render();
+  startPlayerTimer(id);
+}
+function closeExercise() { stopPlayerTimer(); currentExerciseId = null; render(); }
+function startPlayerTimer(id) {
+  stopPlayerTimer();
+  const e = exs().find(x => x.id === id);
+  const mins = parseInt(e.duration) || 5;
+  playerDurationSec = mins * 60;
+  playerElapsed = 0;
+  playerRunning = true;
+  playerTimer = setInterval(() => {
+    if (!playerRunning) return;
+    playerElapsed++;
+    const fill = document.getElementById('playerFill');
+    if (!fill) { stopPlayerTimer(); return; }
+    fill.style.width = Math.min(100, (playerElapsed / playerDurationSec) * 100) + '%';
+    if (playerElapsed >= playerDurationSec) stopPlayerTimer();
+  }, 1000);
+}
+function stopPlayerTimer() { if (playerTimer) { clearInterval(playerTimer); playerTimer = null; } playerRunning = false; }
 
 function logCompletion(id) {
   const key = id + ':' + todayStr();
@@ -476,7 +670,76 @@ function logCompletion(id) {
   render();
 }
 
-function renderJournal() {
+/* ---------- Progress (Insights + Journal) ---------- */
+function renderProgress() {
+  window._progressTab = window._progressTab || 'insights';
+  const seg = `<div class="seg segFull">
+    <button class="${window._progressTab === 'insights' ? 'on' : ''}" onclick="setProgressTab('insights')">${t('tabInsights')}</button>
+    <button class="${window._progressTab === 'journal' ? 'on' : ''}" onclick="setProgressTab('journal')">${t('tabJournal')}</button>
+  </div>`;
+  return `<h1>${t('progressTitle')}</h1><p class="sub">${t('progressSub')}</p>${seg}${window._progressTab === 'insights' ? renderInsights() : renderJournalBody()}`;
+}
+function setProgressTab(v) { window._progressTab = v; render(); }
+
+function buildWeekChart() {
+  const labelsNo = ['S', 'M', 'T', 'O', 'T', 'F', 'L'];
+  const labelsEn = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  const labels = state.lang === 'no' ? labelsNo : labelsEn;
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const ds = d.toISOString().slice(0, 10);
+    const count = state.completedIds.filter(k => k.endsWith(':' + ds)).length;
+    days.push({ date: ds, count, label: labels[d.getDay()], isToday: ds === todayStr() });
+  }
+  const max = Math.max(1, ...days.map(d => d.count));
+  return days.map(d => ({ ...d, h: Math.round(6 + (d.count / max) * 46) }));
+}
+function buildHeatmap() {
+  const cells = [];
+  for (let i = 69; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const ds = d.toISOString().slice(0, 10);
+    const count = state.completedIds.filter(k => k.endsWith(':' + ds)).length;
+    const level = count === 0 ? 0 : count === 1 ? 1 : count === 2 ? 2 : 3;
+    cells.push({ date: ds, count, level });
+  }
+  const rows = [];
+  for (let i = 0; i < cells.length; i += 7) rows.push(cells.slice(i, i + 7));
+  return rows.reverse();
+}
+function buildCategoryBalance() {
+  const counts = {};
+  cats().forEach(c => counts[c.id] = 0);
+  state.completedIds.forEach(k => {
+    const id = k.split(':')[0];
+    const ex = exs().find(e => e.id === id);
+    if (ex) counts[ex.category] = (counts[ex.category] || 0) + 1;
+  });
+  const max = Math.max(1, ...Object.values(counts));
+  return cats().map(c => ({ ...c, count: counts[c.id] || 0, pct: Math.round(((counts[c.id] || 0) / max) * 100) }));
+}
+function renderInsights() {
+  if (!state.completedIds.length) return `<div class="card"><p class="sub" style="margin-bottom:0">${t('noActivityYet')}</p></div>`;
+  const week = buildWeekChart();
+  const heat = buildHeatmap();
+  const catBal = buildCategoryBalance();
+  return `
+    <div class="card">
+      <div class="cardLabel">${t('weekChartTitle')}</div>
+      <div class="weekChart">${week.map(d => `<div class="weekBar"><span class="weekVal">${d.count || ''}</span><div class="weekBarFill" style="height:${d.h}px"></div><span class="weekDay ${d.isToday ? 'today' : ''}">${d.label}</span></div>`).join('')}</div>
+    </div>
+    <div class="card">
+      <div class="cardLabel">${t('heatmapCaption')}</div>
+      <div class="heatGrid">${heat.map(row => `<div class="heatRow">${row.map(c => `<div class="heatCell l${c.level}" title="${c.date}: ${c.count}"></div>`).join('')}</div>`).join('')}</div>
+    </div>
+    <div class="card">
+      <div class="cardLabel">${t('categoryBalanceTitle')}</div>
+      ${catBal.map(c => `<div class="catBarRow"><span class="catBarLabel">${c.icon} ${c.label}</span><div class="catBarTrack"><div class="catBarFill" style="width:${c.pct}%;background:var(--cat-${c.id})"></div></div><span class="catBarVal">${c.count}</span></div>`).join('')}
+    </div>
+  `;
+}
+function renderJournalBody() {
   const entries = [...state.journal].reverse().map(j => `
     <div class="card journalEntry">
       <div class="date">${j.date}</div>
@@ -485,8 +748,6 @@ function renderJournal() {
       <b>${t('qFocus')}</b><p>${escapeHtml(j.focus)}</p>
     </div>`).join('') || `<p class="sub">${t('noNotes')}</p>`;
   return `
-    <h1>${t('journalTitle')}</h1>
-    <p class="sub">${t('journalSub')}</p>
     <div class="card">
       <div class="qBlock"><label>${t('qGood')}</label><textarea id="jGood" rows="2"></textarea></div>
       <div class="qBlock"><label>${t('qHard')}</label><textarea id="jHard" rows="2"></textarea></div>
@@ -508,12 +769,13 @@ function saveJournal() {
   render();
 }
 
+/* ---------- Profile ---------- */
 function renderProfile() {
   return `
     <h1>${t('profileTitle')}</h1>
     <div class="card ${IS_PRO ? 'heroCard' : ''}">
       <b>${IS_PRO ? t('proTitle') : t('freeTitle')}</b>
-      <p style="font-size:0.85rem;margin-top:6px;${IS_PRO?'opacity:0.9':'color:var(--text-soft)'}">
+      <p style="font-size:0.85rem;margin-top:6px;${IS_PRO ? 'opacity:0.9' : 'color:var(--text-soft)'}">
         ${IS_PRO ? t('proDesc') : t('freeDesc')}
       </p>
       ${IS_PRO ? '' : `<button class="btn sand full" style="margin-top:12px" onclick="showProModal()">${t('becomePro')}</button>`}
@@ -521,11 +783,16 @@ function renderProfile() {
     <div class="card">
       <div class="toggleRow">
         <span>${t('dailyReminder')}</span>
-        <div class="switch ${state.notifOn?'on':''}" onclick="toggleNotif()"><div class="dot"></div></div>
+        <div class="switch ${state.notifOn ? 'on' : ''}" onclick="toggleNotif()"><div class="dot"></div></div>
+      </div>
+      ${state.notifOn ? `<div class="toggleRow"><span>${t('reminderTimeLabel')}</span><input type="time" value="${state.reminderTime}" onchange="setReminderTime(this.value)"></div>` : ''}
+      <div class="toggleRow">
+        <span>${t('goalLabel')}</span>
+        <span class="seg">${cats().map(c => `<button class="${state.goal === c.id ? 'on' : ''}" onclick="setGoal('${c.id}')">${c.icon}</button>`).join('')}</span>
       </div>
       <div class="toggleRow">
         <span>${t('language')}</span>
-        <span class="seg"><button class="${state.lang==='no'?'on':''}" onclick="setLang('no')">NO</button><button class="${state.lang==='en'?'on':''}" onclick="setLang('en')">EN</button></span>
+        <span class="seg"><button class="${state.lang === 'no' ? 'on' : ''}" onclick="setLang('no')">NO</button><button class="${state.lang === 'en' ? 'on' : ''}" onclick="setLang('en')">EN</button></span>
       </div>
       <div class="toggleRow" style="border-bottom:none">
         <span>${t('restoreLabel')}</span>
@@ -538,6 +805,7 @@ function renderProfile() {
     </div>
   `;
 }
+function setGoal(id) { state.goal = (state.goal === id) ? null : id; save(); render(); }
 
 function showProModal() {
   document.getElementById('modalSheet').innerHTML = `
@@ -589,6 +857,19 @@ async function restorePurchases() {
 }
 
 /* ---------- Local notifications ---------- */
+async function scheduleNotifications() {
+  const LN = window.Capacitor?.Plugins?.LocalNotifications;
+  if (!LN) return;
+  const pending = await LN.getPending();
+  if (pending.notifications.length) await LN.cancel({ notifications: pending.notifications.map(n => ({ id: n.id })) });
+  const [hh, mm] = (state.reminderTime || '09:00').split(':').map(Number);
+  const notifications = [];
+  for (let i = 1; i <= 45; i++) {
+    const d = new Date(); d.setDate(d.getDate() + i); d.setHours(hh, mm, 0, 0);
+    notifications.push({ id: i, title: t('notifTitle'), body: t('notifBody'), schedule: { at: d } });
+  }
+  await LN.schedule({ notifications });
+}
 async function toggleNotif() {
   state.notifOn = !state.notifOn;
   save();
@@ -597,18 +878,14 @@ async function toggleNotif() {
   if (state.notifOn) {
     const perm = await LN.requestPermissions();
     if (perm.display !== 'granted') { state.notifOn = false; save(); render(); return; }
-    const notifications = [];
-    for (let i = 1; i <= 45; i++) {
-      const d = new Date(); d.setDate(d.getDate() + i); d.setHours(9, 0, 0, 0);
-      notifications.push({ id: i, title: t('notifTitle'), body: t('notifBody'), schedule: { at: d } });
-    }
-    await LN.schedule({ notifications });
+    await scheduleNotifications();
   } else {
     const pending = await LN.getPending();
     if (pending.notifications.length) await LN.cancel({ notifications: pending.notifications.map(n => ({ id: n.id })) });
   }
   render();
 }
+function setReminderTime(v) { state.reminderTime = v; save(); if (state.notifOn) scheduleNotifications(); render(); }
 
 /* ---------- Breathing overlay (animated) ---------- */
 const BR_R = 92, BR_C = 2 * Math.PI * BR_R;
