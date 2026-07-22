@@ -17,6 +17,10 @@ Kristian Clifford (coach og mental trener) bygger **Keelstone**, den internasjon
 - **Ingen fellesskap/UGC i v1:** dette er et personlig treningsverktøy, ikke en community-app. Unngår hele Apple 1.2-moderasjonskravet som Together måtte gjennom.
 - **Beholdt fra tidligere versjon:** den animerte pusteøvelsen (SVG-ring, justerbart tempo) er penere enn Mentalt Sterkeres enklere variant og er beholdt i Keelstone som en kvalitetsdifferensiering for det internasjonale markedet, samme boksepust-konsept.
 
+## Merkevare (delt med Mentalt Sterkere og cliffordcoaching.no)
+
+Fra 2026-07-22 er fargepaletten hentet direkte fra cliffordcoaching.no for å skape en rød tråd mellom nettside og app: primær `#2F4F4F` (dyp skifergrønn/teal, header og knapper), bakgrunn `#f9f9f9`, tekst nær-svart. Gull `#D9B25C` er en tillagt aksentfarge (siden selv har ingen egen aksent). Skrift: **PT Sans** (samme som siden, lastet via Google Fonts). App-ikon: konsentriske ringer i teal/gull (pusteøvelse-motiv), samme design som Mentalt Sterkere. Samme palett gjelder Mentalt Sterkere identisk.
+
 ## Filstruktur
 
 | Fil/mappe | Beskrivelse |
