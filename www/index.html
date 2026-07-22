@@ -44,6 +44,24 @@
       --cat-fokus: #3987e5; --cat-ro: #199e70; --cat-selvtillit: #9085e9; --cat-restitusjon: #e66767;
     }
   }
+  :root[data-theme="dark"] {
+    --blue: #7fa39c; --blue-d: #3f5f5c; --blue-light: #1c2a29;
+    --sand: #e0bb63; --sand-light: #362b12;
+    --bg: #141918; --card: #1c2422; --text: #eef1f0; --text-soft: #9aa3a0;
+    --border: #2b3432; --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 14px rgba(0,0,0,0.35);
+    --page-bg: #0c0f0e;
+    --heat-1: #3a4f4b; --heat-2: #5c8079; --heat-3: #9fc3bb;
+    --cat-fokus: #3987e5; --cat-ro: #199e70; --cat-selvtillit: #9085e9; --cat-restitusjon: #e66767;
+  }
+  :root[data-theme="light"] {
+    --blue: #2F4F4F; --blue-d: #1f3636; --blue-light: #e4ecea;
+    --sand: #D9B25C; --sand-light: #fbf0dc;
+    --bg: #f9f9f9; --card: #ffffff; --text: #1a1a1a; --text-soft: #5f6f6f;
+    --border: #e5e3dd; --shadow: 0 1px 3px rgba(31,54,54,0.06), 0 4px 14px rgba(31,54,54,0.09);
+    --page-bg: #d6dbd9;
+    --heat-1: #cfe0dc; --heat-2: #8fb3ac; --heat-3: #2F4F4F;
+    --cat-fokus: #2a78d6; --cat-ro: #1baf7a; --cat-selvtillit: #4a3aa7; --cat-restitusjon: #e34948;
+  }
   * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; }
   body { font-family: "PT Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--page-bg); color: var(--text); display: flex; justify-content: center; }
@@ -244,6 +262,7 @@ const T = {
     profileTitle: 'Profil', proTitle: 'Keelstone Pro', freeTitle: 'Gratis versjon',
     proDesc: 'Du har tilgang til alle øvelser. Takk for støtten!', freeDesc: 'Du har tilgang til 2 øvelser gratis. Oppgrader for full tilgang til alle kategorier.',
     becomePro: 'Bli Pro', dailyReminder: 'Daglig påminnelse', reminderTimeLabel: 'Tidspunkt', goalLabel: 'Mitt fokus',
+    appearance: 'Utseende', themeSystem: 'System', themeLight: 'Lys', themeDark: 'Mørk',
     restoreLabel: 'Gjenopprett kjøp', restoreBtn: 'Gjenopprett',
     language: 'Språk', disclaimer: 'Keelstone er et støtteverktøy for mental trening og prestasjon. Det er ikke en erstatning for behandling eller terapi.',
     modalTitle: 'Bli Pro', modalSub: 'Full tilgang til alle øvelser i Fokus, Ro, Selvtillit og Restitusjon.',
@@ -279,6 +298,7 @@ const T = {
     profileTitle: 'Profile', proTitle: 'Keelstone Pro', freeTitle: 'Free version',
     proDesc: 'You have access to all exercises. Thanks for your support!', freeDesc: 'You have access to 2 free exercises. Upgrade for full access to all categories.',
     becomePro: 'Go Pro', dailyReminder: 'Daily reminder', reminderTimeLabel: 'Time', goalLabel: 'My focus',
+    appearance: 'Appearance', themeSystem: 'System', themeLight: 'Light', themeDark: 'Dark',
     restoreLabel: 'Restore purchases', restoreBtn: 'Restore',
     language: 'Language', disclaimer: 'Keelstone is a support tool for mental training and performance. It is not a substitute for treatment or therapy.',
     modalTitle: 'Go Pro', modalSub: 'Full access to all exercises in Focus, Calm, Confidence and Recovery.',
@@ -404,7 +424,7 @@ const MOODS = ['😔', '😕', '😐', '🙂', '😄'];
 
 /* ---------- State ---------- */
 function detectLang() { const l = (navigator.language || 'en').toLowerCase(); return (l.startsWith('nb') || l.startsWith('nn') || l.startsWith('no')) ? 'no' : 'en'; }
-let state = { streak: 0, lastCompletedDate: null, completedIds: [], journal: [], notifOn: false, lang: null, goal: null, favorites: [], checkins: {}, reminderTime: '09:00', onboarded: false };
+let state = { streak: 0, lastCompletedDate: null, completedIds: [], journal: [], notifOn: false, lang: null, goal: null, favorites: [], checkins: {}, reminderTime: '09:00', onboarded: false, theme: 'system' };
 function load() {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -417,6 +437,11 @@ function load() {
   if (!state.lang) state.lang = detectLang();
 }
 function save() { localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+function applyTheme() {
+  if (state.theme === 'light' || state.theme === 'dark') document.documentElement.setAttribute('data-theme', state.theme);
+  else document.documentElement.removeAttribute('data-theme');
+}
+function setTheme(v) { state.theme = v; save(); applyTheme(); render(); }
 
 let IS_PRO = false;
 let currentView = 'home';
@@ -809,6 +834,14 @@ function renderProfile() {
         <span>${t('goalLabel')}</span>
         <div class="goalGrid">${cats().map(c => `<button class="goalBtn ${state.goal === c.id ? 'on' : ''}" onclick="setGoal('${c.id}')">${icon(c.id, 17)}<span>${c.label}</span></button>`).join('')}</div>
       </div>
+      <div class="toggleRow" style="flex-direction:column;align-items:stretch;">
+        <span>${t('appearance')}</span>
+        <div class="seg segFull" style="margin-top:10px;margin-bottom:0;">
+          <button class="${state.theme === 'system' ? 'on' : ''}" onclick="setTheme('system')">${t('themeSystem')}</button>
+          <button class="${state.theme === 'light' ? 'on' : ''}" onclick="setTheme('light')">${t('themeLight')}</button>
+          <button class="${state.theme === 'dark' ? 'on' : ''}" onclick="setTheme('dark')">${t('themeDark')}</button>
+        </div>
+      </div>
       <div class="toggleRow">
         <span>${t('language')}</span>
         <span class="seg"><button class="${state.lang === 'no' ? 'on' : ''}" onclick="setLang('no')">NO</button><button class="${state.lang === 'en' ? 'on' : ''}" onclick="setLang('en')">EN</button></span>
@@ -965,6 +998,7 @@ function stopBreathing() {
 
 /* ---------- Init ---------- */
 load();
+applyTheme();
 render();
 initRevenueCat();
 </script>
