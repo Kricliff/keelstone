@@ -70,7 +70,7 @@
   .streakBadge { background: var(--sand-light); color: var(--sand); border-radius: 999px; padding: 6px 12px; font-size: 0.82rem; font-weight: 700; display: flex; align-items: center; gap: 5px; }
   nav { position: absolute; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid var(--border); display: flex; padding: 6px 4px calc(8px + env(safe-area-inset-bottom)); }
   nav button { flex: 1; background: none; border: none; font-family: inherit; font-size: 0.68rem; color: var(--text-soft); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 0; }
-  nav button .ico { font-size: 1.25rem; line-height: 1; border-radius: 8px; padding: 4px 12px; transition: background 0.18s; }
+  nav button .ico { display: flex; align-items: center; justify-content: center; line-height: 1; border-radius: 8px; padding: 6px 14px; transition: background 0.18s; }
   nav button.active { color: var(--blue-d); font-weight: 700; }
   nav button.active .ico { background: var(--blue-light); }
   .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 6px; }
@@ -81,9 +81,8 @@
   .exCard .meta { flex: 1; min-width: 0; }
   .exCard .meta b { font-size: 0.95rem; display: block; }
   .exCard .meta span { font-size: 0.8rem; color: var(--text-soft); }
-  .lockDot { font-size: 1.1rem; color: var(--text-soft); flex-shrink: 0; }
-  .favBtn { background: none; border: none; font-size: 1.25rem; color: var(--sand); cursor: pointer; padding: 4px; flex-shrink: 0; line-height: 1; }
-  .favBtn.playerFav { font-size: 1.3rem; }
+  .lockDot { display: flex; align-items: center; color: var(--text-soft); flex-shrink: 0; }
+  .favBtn { background: none; border: none; display: inline-flex; align-items: center; justify-content: center; color: var(--sand); cursor: pointer; padding: 4px; flex-shrink: 0; }
   .tag { display: inline-block; font-size: 0.7rem; font-weight: 700; background: var(--blue-light); color: var(--blue-d); border-radius: 999px; padding: 3px 9px; margin-right: 5px; }
   .tag.sand { background: var(--sand-light); color: var(--sand); }
   .heroCard { background: linear-gradient(135deg, var(--blue), var(--blue-d)); color: #fff; }
@@ -107,10 +106,10 @@
   .journalEntry p { font-size: 0.9rem; margin-bottom: 6px; line-height: 1.4; }
   .journalEntry b { font-size: 0.82rem; color: var(--blue-d); }
   .backRow { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-  .backRow button:first-child { background: var(--card); border: 1px solid var(--border); border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; flex-shrink: 0; }
+  .backRow button:first-child { background: var(--card); border: 1px solid var(--border); border-radius: 999px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; color: var(--text); }
   .manus { font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap; background: var(--card); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
   audio { width: 100%; margin: 10px 0; }
-  .audioFallback { background: var(--sand-light); color: var(--sand); border-radius: 10px; padding: 10px 12px; font-size: 0.82rem; margin: 10px 0; }
+  .audioFallback { background: var(--sand-light); color: var(--sand); border-radius: 10px; padding: 10px 12px; font-size: 0.82rem; margin: 10px 0; display: flex; align-items: flex-start; gap: 8px; }
   .playerBar { height: 6px; background: var(--border); border-radius: 6px; overflow: hidden; margin: 14px 0; }
   .playerBarFill { height: 100%; width: 0%; background: var(--blue); transition: width 1s linear; }
   .doneCard { text-align: center; }
@@ -182,14 +181,14 @@
 <div id="app">
   <header>
     <div class="brand"><span class="mark">K</span> Keelstone</div>
-    <div class="streakBadge">🔥 <span id="streakNum">0</span></div>
+    <div class="streakBadge"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 21 C7.5 21 5 18 5 14.5 C5 11.5 7 9.5 7.5 7 C9 8.5 9.5 9.5 9.5 9.5 C9.5 9.5 9 6 12 3 C12.5 6.5 14 7.5 15.5 9.5 C17 11.5 19 12.5 19 15 C19 18.5 16 21 12 21 Z"/></svg> <span id="streakNum">0</span></div>
   </header>
   <main id="main"></main>
   <nav>
-    <button data-view="home" class="active"><span class="ico">🏠</span><span data-nav="home"></span></button>
-    <button data-view="explore"><span class="ico">🧭</span><span data-nav="explore"></span></button>
-    <button data-view="progress"><span class="ico">📈</span><span data-nav="progress"></span></button>
-    <button data-view="profile"><span class="ico">👤</span><span data-nav="profile"></span></button>
+    <button data-view="home" class="active"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 L12 4 L20 11"/><path d="M6 10 V20 H18 V10"/><path d="M10 20 V14 H14 V20"/></svg></span><span data-nav="home"></span></button>
+    <button data-view="explore"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5 L13 13 L8.5 15.5 L11 11 Z" fill="currentColor" stroke="none"/></svg></span><span data-nav="explore"></span></button>
+    <button data-view="progress"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 V14 M10 20 V9 M16 20 V12 M4 20 H20"/><path d="M14 6 L20 6 L20 12"/><path d="M4 14 L10 9 L14 12 L20 6"/></svg></span><span data-nav="progress"></span></button>
+    <button data-view="profile"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20 C4 15.5 7.5 13 12 13 C16.5 13 20 15.5 20 20"/></svg></span><span data-nav="profile"></span></button>
   </nav>
 
   <div id="breathOverlay">
@@ -228,7 +227,7 @@ const T = {
     exTitle: 'Utforsk', exSub: 'Søk, filtrer og finn øvelsen som passer akkurat nå.', all: 'Alle',
     searchPlaceholder: 'Søk etter øvelse...', durationAll: 'Alle lengder', durationShort: 'Under 5 min', durationMedium: '5–7 min', durationLong: '8+ min',
     favoritesChip: 'Favoritter', recentlyCompleted: 'Nylig fullført', noResults: 'Ingen øvelser matcher søket ditt.',
-    audioSoon: '🎧 Lydversjon kommer snart. Les manuset i mellomtiden, eller les det høyt for deg selv i ditt eget tempo.',
+    audioSoon: 'Lydversjon kommer snart. Les manuset i mellomtiden, eller les det høyt for deg selv i ditt eget tempo.',
     markDone: 'Merk som fullført', doneLabel: '✓ Fullført i dag',
     sessionDoneTitle: '✓ Fullført i dag', sessionDoneMsg: 'Bra jobbet. Fremgangen din er lagret.', viewProgress: 'Se fremgang',
     progressTitle: 'Fremgang', progressSub: 'Innsikt i mønstrene dine, og dagboken din.',
@@ -239,7 +238,7 @@ const T = {
     qGood: 'Hva gikk bra i dag?', qHard: 'Hva var vanskelig?', qFocus: 'Hva vil du fokusere på i morgen?',
     saveNote: 'Lagre notat', prevNotes: 'Tidligere notater', noNotes: 'Ingen notater ennå. Skriv ditt første under.',
     noteSaved: 'Notat lagret', writeFirst: 'Skriv i minst ett felt først',
-    profileTitle: 'Profil', proTitle: '⭐ Keelstone Pro', freeTitle: 'Gratis versjon',
+    profileTitle: 'Profil', proTitle: 'Keelstone Pro', freeTitle: 'Gratis versjon',
     proDesc: 'Du har tilgang til alle øvelser. Takk for støtten!', freeDesc: 'Du har tilgang til 2 øvelser gratis. Oppgrader for full tilgang til alle kategorier.',
     becomePro: 'Bli Pro', dailyReminder: 'Daglig påminnelse', reminderTimeLabel: 'Tidspunkt', goalLabel: 'Mitt fokus',
     restoreLabel: 'Gjenopprett kjøp', restoreBtn: 'Gjenopprett',
@@ -263,7 +262,7 @@ const T = {
     exTitle: 'Explore', exSub: 'Search, filter, and find the exercise that fits right now.', all: 'All',
     searchPlaceholder: 'Search exercises...', durationAll: 'Any length', durationShort: 'Under 5 min', durationMedium: '5–7 min', durationLong: '8+ min',
     favoritesChip: 'Favorites', recentlyCompleted: 'Recently completed', noResults: 'No exercises match your search.',
-    audioSoon: '🎧 Audio version coming soon. Read the script in the meantime, or read it aloud to yourself at your own pace.',
+    audioSoon: 'Audio version coming soon. Read the script in the meantime, or read it aloud to yourself at your own pace.',
     markDone: 'Mark as complete', doneLabel: '✓ Completed today',
     sessionDoneTitle: '✓ Completed today', sessionDoneMsg: 'Great work. Your progress is saved.', viewProgress: 'View progress',
     progressTitle: 'Progress', progressSub: 'Insight into your patterns, and your journal.',
@@ -274,7 +273,7 @@ const T = {
     qGood: 'What went well today?', qHard: 'What was hard?', qFocus: 'What will you focus on tomorrow?',
     saveNote: 'Save entry', prevNotes: 'Previous entries', noNotes: 'No entries yet. Write your first one below.',
     noteSaved: 'Entry saved', writeFirst: 'Write in at least one field first',
-    profileTitle: 'Profile', proTitle: '⭐ Keelstone Pro', freeTitle: 'Free version',
+    profileTitle: 'Profile', proTitle: 'Keelstone Pro', freeTitle: 'Free version',
     proDesc: 'You have access to all exercises. Thanks for your support!', freeDesc: 'You have access to 2 free exercises. Upgrade for full access to all categories.',
     becomePro: 'Go Pro', dailyReminder: 'Daily reminder', reminderTimeLabel: 'Time', goalLabel: 'My focus',
     restoreLabel: 'Restore purchases', restoreBtn: 'Restore',
@@ -295,16 +294,16 @@ function t(k) { return T[state.lang][k]; }
 /* ---------- Data ---------- */
 const CATEGORIES = {
   no: [
-    { id: 'fokus', label: 'Fokus', icon: '🎯' },
-    { id: 'ro', label: 'Ro', icon: '🌊' },
-    { id: 'selvtillit', label: 'Selvtillit', icon: '⭐' },
-    { id: 'restitusjon', label: 'Restitusjon', icon: '🌙' },
+    { id: 'fokus', label: 'Fokus' },
+    { id: 'ro', label: 'Ro' },
+    { id: 'selvtillit', label: 'Selvtillit' },
+    { id: 'restitusjon', label: 'Restitusjon' },
   ],
   en: [
-    { id: 'fokus', label: 'Focus', icon: '🎯' },
-    { id: 'ro', label: 'Calm', icon: '🌊' },
-    { id: 'selvtillit', label: 'Confidence', icon: '⭐' },
-    { id: 'restitusjon', label: 'Recovery', icon: '🌙' },
+    { id: 'fokus', label: 'Focus' },
+    { id: 'ro', label: 'Calm' },
+    { id: 'selvtillit', label: 'Confidence' },
+    { id: 'restitusjon', label: 'Recovery' },
   ],
 };
 
@@ -436,6 +435,23 @@ function hapticSuccess() {
 }
 function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
+const ICON_PATHS = {
+  fokus: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="var(--sand)" stroke="none"/>',
+  ro: '<path d="M2 9 C4.5 6.5 7 6.5 9.5 9 C12 11.5 14.5 11.5 17 9 C19.5 6.5 22 6.5 22 9"/><path d="M2 15 C4.5 12.5 7 12.5 9.5 15 C12 17.5 14.5 17.5 17 15 C19.5 12.5 22 12.5 22 15"/>',
+  selvtillit: '<path d="M12 3 L14.6 9.3 L21.4 9.8 L16.2 14.1 L17.9 20.7 L12 17.1 L6.1 20.7 L7.8 14.1 L2.6 9.8 L9.4 9.3 Z" stroke-linejoin="round"/>',
+  restitusjon: '<path d="M17.5 12.5 C17.5 16.6 14.1 20 10 20 C7.8 20 5.8 19 4.5 17.5 C7.6 17.9 10.6 16.2 11.8 13.3 C13 10.4 12.1 7.2 9.8 5.2 C13.6 4.8 17 7.4 17.5 12.5 Z"/>',
+  heart: '<path d="M12 20 C12 20 4 15 4 9.5 C4 6.5 6.5 4.5 9 4.5 C10.5 4.5 11.5 5.2 12 6 C12.5 5.2 13.5 4.5 15 4.5 C17.5 4.5 20 6.5 20 9.5 C20 15 12 20 12 20 Z"/>',
+  'heart-filled': '<path fill="currentColor" d="M12 20 C12 20 4 15 4 9.5 C4 6.5 6.5 4.5 9 4.5 C10.5 4.5 11.5 5.2 12 6 C12.5 5.2 13.5 4.5 15 4.5 C17.5 4.5 20 6.5 20 9.5 C20 15 12 20 12 20 Z"/>',
+  lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11 V7.5 C8 5 9.8 3.5 12 3.5 C14.2 3.5 16 5 16 7.5 V11"/>',
+  headphones: '<path d="M4 13 C4 7.5 7.5 4 12 4 C16.5 4 20 7.5 20 13"/><rect x="2.5" y="13" width="4.5" height="6.5" rx="2"/><rect x="17" y="13" width="4.5" height="6.5" rx="2"/>',
+  back: '<path d="M19 12 H5 M11 6 L5 12 L11 18"/>',
+  chevron: '<path d="M9 6 L15 12 L9 18"/>',
+};
+function icon(name, size) {
+  size = size || 20;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;vertical-align:-3px" aria-hidden="true">${ICON_PATHS[name] || ''}</svg>`;
+}
+
 /* ---------- Navigation / render ---------- */
 document.querySelectorAll('nav button').forEach(btn => {
   btn.addEventListener('click', () => { navigate(btn.dataset.view); });
@@ -480,9 +496,9 @@ function renderOnboarding() {
       <h1>${t('onbTitle')}</h1>
       <p class="sub">${t('onbSub')}</p>
       ${goals.map(g => `<div class="card onbCard" onclick="pickGoal('${g.id}')">
-        <div class="exIcon">${g.icon}</div>
+        <div class="exIcon">${icon(g.id, 22)}</div>
         <div class="meta"><b>${g.label}</b></div>
-        <div class="lockDot">›</div>
+        <div class="lockDot">${icon('chevron', 18)}</div>
       </div>`).join('')}
       <button class="btn ghost full" style="margin-top:8px" onclick="skipOnboarding()">${t('onbSkip')}</button>
     </div>
@@ -534,7 +550,7 @@ function renderHome() {
     <div class="card heroCard" onclick="${(!IS_PRO && !FREE_EXERCISE_IDS.has(pick.id)) ? 'showProModal()' : `openExercise('${pick.id}')`}">
       <span class="tag">${t('todaysExercise')}</span>
       <p>${escapeHtml(pick.title)}</p>
-      <span style="font-size:0.85rem;opacity:0.85">${pick.duration} · ${cat.label}${(!IS_PRO && !FREE_EXERCISE_IDS.has(pick.id)) ? ' · 🔒 Pro' : ''}</span>
+      <span style="font-size:0.85rem;opacity:0.85">${pick.duration} · ${cat.label}${(!IS_PRO && !FREE_EXERCISE_IDS.has(pick.id)) ? ' · ' + icon('lock', 12) + ' Pro' : ''}</span>
     </div>
     <h2>${t('quickBreath')}</h2>
     <div class="card">
@@ -551,10 +567,10 @@ function exCardHtml(e) {
   const cat = cats().find(c => c.id === e.category);
   const fav = state.favorites.includes(e.id);
   return `<div class="card exCard" onclick="${locked ? 'showProModal()' : `openExercise('${e.id}')`}" style="${locked ? 'opacity:0.72' : ''}">
-    <div class="exIcon">${cat.icon}</div>
+    <div class="exIcon">${icon(cat.id, 22)}</div>
     <div class="meta"><b>${escapeHtml(e.title)}</b><span>${e.duration} · ${cat.label}</span></div>
-    <button class="favBtn ${fav ? 'on' : ''}" onclick="event.stopPropagation();toggleFavorite('${e.id}')" aria-label="favorite">${fav ? '♥' : '♡'}</button>
-    <div class="lockDot">${locked ? '🔒' : '›'}</div>
+    <button class="favBtn" onclick="event.stopPropagation();toggleFavorite('${e.id}')" aria-label="favorite">${icon(fav ? 'heart-filled' : 'heart', 19)}</button>
+    <div class="lockDot">${locked ? icon('lock', 17) : icon('chevron', 17)}</div>
   </div>`;
 }
 function inDuration(e) {
@@ -570,8 +586,8 @@ function renderExplore() {
   window._search = window._search || '';
   const chips = `<div class="chips">
     <button class="${window._catFilter === 'alle' ? 'active' : ''}" onclick="setCatFilter('alle')">${t('all')}</button>
-    <button class="${window._catFilter === 'fav' ? 'active' : ''}" onclick="setCatFilter('fav')">♥ ${t('favoritesChip')}</button>
-    ${cats().map(c => `<button class="${window._catFilter === c.id ? 'active' : ''}" onclick="setCatFilter('${c.id}')">${c.icon} ${c.label}</button>`).join('')}
+    <button class="${window._catFilter === 'fav' ? 'active' : ''}" onclick="setCatFilter('fav')">${icon('heart-filled', 14)} ${t('favoritesChip')}</button>
+    ${cats().map(c => `<button class="${window._catFilter === c.id ? 'active' : ''}" onclick="setCatFilter('${c.id}')">${icon(c.id, 14)} ${c.label}</button>`).join('')}
   </div>`;
   const durOpts = [['alle', t('durationAll')], ['short', t('durationShort')], ['medium', t('durationMedium')], ['long', t('durationLong')]];
   const durChips = `<div class="chips">${durOpts.map(([id, label]) => `<button class="${window._durFilter === id ? 'active' : ''}" onclick="setDurFilter('${id}')">${label}</button>`).join('')}</div>`;
@@ -610,14 +626,14 @@ function renderExerciseDetail(id) {
   const fav = state.favorites.includes(id);
   return `
     <div class="backRow">
-      <button onclick="closeExercise()">←</button>
-      <b>${cat.icon} ${cat.label}</b>
-      <button class="favBtn playerFav" style="margin-left:auto" onclick="toggleFavorite('${id}');renderPlayerFav('${id}')" id="playerFavBtn">${fav ? '♥' : '♡'}</button>
+      <button onclick="closeExercise()">${icon('back', 18)}</button>
+      <b style="display:inline-flex;align-items:center;gap:6px">${icon(cat.id, 18)} ${cat.label}</b>
+      <button class="favBtn" style="margin-left:auto" onclick="toggleFavorite('${id}');renderPlayerFav('${id}')" id="playerFavBtn">${icon(fav ? 'heart-filled' : 'heart', 23)}</button>
     </div>
     <h1>${escapeHtml(e.title)}</h1>
     <p class="sub">${e.duration}</p>
     <div class="playerBar"><div class="playerBarFill" id="playerFill"></div></div>
-    <div class="audioFallback">${t('audioSoon')}</div>
+    <div class="audioFallback">${icon('headphones', 18)}<span>${t('audioSoon')}</span></div>
     <audio controls preload="none" src="assets/audio/${state.lang}/${e.id}.mp3"></audio>
     <div class="manus">${escapeHtml(e.manus)}</div>
     <div style="height:14px"></div>
@@ -628,7 +644,7 @@ function renderExerciseDetail(id) {
 }
 function renderPlayerFav(id) {
   const btn = document.getElementById('playerFavBtn');
-  if (btn) btn.textContent = state.favorites.includes(id) ? '♥' : '♡';
+  if (btn) btn.innerHTML = icon(state.favorites.includes(id) ? 'heart-filled' : 'heart', 23);
 }
 function openExercise(id) {
   currentExerciseId = id;
@@ -735,7 +751,7 @@ function renderInsights() {
     </div>
     <div class="card">
       <div class="cardLabel">${t('categoryBalanceTitle')}</div>
-      ${catBal.map(c => `<div class="catBarRow"><span class="catBarLabel">${c.icon} ${c.label}</span><div class="catBarTrack"><div class="catBarFill" style="width:${c.pct}%;background:var(--cat-${c.id})"></div></div><span class="catBarVal">${c.count}</span></div>`).join('')}
+      ${catBal.map(c => `<div class="catBarRow"><span class="catBarLabel">${icon(c.id, 16)} ${c.label}</span><div class="catBarTrack"><div class="catBarFill" style="width:${c.pct}%;background:var(--cat-${c.id})"></div></div><span class="catBarVal">${c.count}</span></div>`).join('')}
     </div>
   `;
 }
@@ -774,7 +790,7 @@ function renderProfile() {
   return `
     <h1>${t('profileTitle')}</h1>
     <div class="card ${IS_PRO ? 'heroCard' : ''}">
-      <b>${IS_PRO ? t('proTitle') : t('freeTitle')}</b>
+      <b>${IS_PRO ? icon('selvtillit', 16) + ' ' + t('proTitle') : t('freeTitle')}</b>
       <p style="font-size:0.85rem;margin-top:6px;${IS_PRO ? 'opacity:0.9' : 'color:var(--text-soft)'}">
         ${IS_PRO ? t('proDesc') : t('freeDesc')}
       </p>
@@ -788,7 +804,7 @@ function renderProfile() {
       ${state.notifOn ? `<div class="toggleRow"><span>${t('reminderTimeLabel')}</span><input type="time" value="${state.reminderTime}" onchange="setReminderTime(this.value)"></div>` : ''}
       <div class="toggleRow">
         <span>${t('goalLabel')}</span>
-        <span class="seg">${cats().map(c => `<button class="${state.goal === c.id ? 'on' : ''}" onclick="setGoal('${c.id}')">${c.icon}</button>`).join('')}</span>
+        <span class="seg">${cats().map(c => `<button class="${state.goal === c.id ? 'on' : ''}" onclick="setGoal('${c.id}')">${icon(c.id, 16)}</button>`).join('')}</span>
       </div>
       <div class="toggleRow">
         <span>${t('language')}</span>
