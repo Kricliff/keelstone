@@ -7,6 +7,7 @@ Kristian Clifford (coach og mental trener) bygger **Keelstone** — mental treni
 **2026-07-22: Keelstone og Mentalt Sterkere er slått sammen til én app.** De startet som to separate prosjekter (se historikk i `Prosjekthistorikk` under), fikk identisk innhold samme dag, og ble deretter besluttet slått sammen: **Keelstone er nå den eneste gjenlevende appen**, og dekker det norske markedet via sitt eksisterende språk-auto-deteksjon (ikke en egen norsk app lenger). `Projects\mentaltsterkere` er lagt ned som eget produkt — repoet står igjen som arkiv/historikk, ikke i aktiv drift. Ikke gjenoppliv det som en egen app med mindre brukeren eksplisitt ber om det.
 
 - **Navn:** Keelstone (App Store-sjekket rent juli 2026; bør reserveres i App Store Connect for endelig bekreftelse)
+- **GitHub**: https://github.com/Kricliff/keelstone — **offentlig repo** (endret fra privat 2026-07-22 for å kunne bruke gratis GitHub Pages til personvernsiden). Ikke legg ekte API-nøkler eller hemmeligheter i koden — `REVENUECAT_API_KEY` er fortsatt en plassholder, hold det slik til release-oppsett, bruk da miljøvariabler/Codemagic-secrets i stedet.
 - **Bundle ID (planlagt):** com.kricliff.keelstone
 - **Support/kontakt:** keelstone@cliffordcoaching.no (alias må opprettes, samme mønster som together@)
 - **Coaching-funnel:** Clifford Coaching (https://cliffordcoaching.no)
@@ -35,7 +36,7 @@ Fra 2026-07-22 er fargepaletten hentet direkte fra cliffordcoaching.no for å sk
 | Fil/mappe | Beskrivelse |
 |---|---|
 | `www/index.html` | Appen (produksjon, dette bygges). Vanilla JS + localStorage + i18n |
-| `privacy.html` (rot) | Personvernerklæring, NO/EN med språkbryter (samme mønster som appen), for App Store Connect. Ikke koblet til GitHub Pages ennå — trenger en offentlig URL før innsending |
+| `privacy.html` (rot) | Personvernerklæring, NO/EN med språkbryter (samme mønster som appen). Live på https://kricliff.github.io/keelstone/privacy.html via GitHub Pages |
 | `www/manifest.webmanifest`, `www/sw.js` | PWA-filer |
 | `www/assets/audio/no/`, `www/assets/audio/en/` | Lydfiler per språk, id-er matcher `content/manus.md` (ingen filer lagt inn ennå) |
 | `content/manus.md` | Manus til alle 20 øvelser, norsk og engelsk side om side |
