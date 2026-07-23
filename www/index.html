@@ -142,6 +142,9 @@
   .catBarTrack { flex: 1; height: 10px; background: var(--border); border-radius: 6px; overflow: hidden; }
   .catBarFill { height: 100%; border-radius: 6px; }
   .catBarVal { font-size: 0.8rem; color: var(--text-soft); width: 20px; text-align: right; flex-shrink: 0; }
+  .weekMoodRow { display: flex; justify-content: space-between; gap: 4px; margin-top: 8px; }
+  .weekMoodCell { flex: 1; text-align: center; font-size: 1.25rem; }
+  .weekMoodCell.empty { color: var(--border); font-size: 1rem; }
   .modalWrap { position: absolute; inset: 0; background: rgba(18,40,58,0.5); z-index: 50; display: none; align-items: flex-end; justify-content: center; }
   .modalWrap.show { display: flex; }
   .modalSheet { width: 100%; max-width: 460px; background: var(--card); border-radius: 20px 20px 0 0; padding: 22px 20px calc(24px + env(safe-area-inset-bottom)); max-height: 85vh; overflow-y: auto; }
@@ -309,6 +312,9 @@ const T = {
     tabInsights: 'Innsikt', tabJournal: 'Dagbok',
     weekChartTitle: 'Denne uken', heatmapCaption: 'Siste 10 uker', tenWeekDesc: 'Øvelser fullført per uke. Trykk på en uke for å se hva du gjorde.',
     weekDetailTitle: 'Den uken', weekDetailEmpty: 'Ingen øvelser fullført denne uken.',
+    weekDetailExercises: 'Øvelser', weekDetailMood: 'Humør', weekDetailJournal: 'Dagbok',
+    weekDetailJournalCount: n => n + (n === 1 ? ' dagboknotat denne uken' : ' dagboknotater denne uken'),
+    weekDetailNoJournal: 'Ingen dagboknotater denne uken.',
     categoryBalanceTitle: 'Balanse mellom kategoriene',
     noActivityYet: 'Ingen fullførte øvelser ennå. Innsikten din dukker opp her når du kommer i gang.',
     journalTitle: 'Dagbok', journalSub: 'Tre enkle spørsmål hver dag bygger selvinnsikt over tid.',
@@ -318,6 +324,7 @@ const T = {
     profileTitle: 'Profil', proTitle: 'Keelstone Pro', freeTitle: 'Gratis versjon',
     proDesc: 'Du har tilgang til alle øvelser. Takk for støtten!', freeDesc: 'Du har tilgang til én gratis øvelse i hver kategori. Oppgrader til Pro for full tilgang til alle kategorier og yoga-øktene.',
     becomePro: 'Bli Pro', dailyReminder: 'Daglig påminnelse', reminderTimeLabel: 'Tidspunkt', goalLabel: 'Mitt fokus',
+    weeklyReflectionLabel: 'Ukentlig refleksjon (søndager)',
     appearance: 'Utseende', themeSystem: 'System', themeLight: 'Lys', themeDark: 'Mørk',
     restoreLabel: 'Gjenopprett kjøp', restoreBtn: 'Gjenopprett',
     language: 'Språk', disclaimer: 'Keelstone er et støtteverktøy for mental trening og prestasjon. Det er ikke en erstatning for behandling eller terapi.',
@@ -331,6 +338,7 @@ const T = {
     breath: { press: 'Trykk for å starte', pace: 'Tempo', sec: 'sek per fase', start: 'Start', pause: 'Pause', cont: 'Fortsett', end: 'Avslutt', round: 'Runde', paused: 'Pause', doneLabel: 'Ferdig!', doneCloseBtn: 'Lukk', safetyNote: 'Du kan avslutte når som helst, for eksempel hvis du blir svimmel.' },
     breathworkTitle: 'Pusteøvelser', breathworkDesc: 'Ulike pustemønstre for ulike behov. Velg det som passer situasjonen din.',
     notifTitle: 'Keelstone', notifBody: 'Tid for dagens mentale trening.',
+    weeklyReflectionNotifBody: 'Søndagsrefleksjon: se tilbake på uken din i Keelstone.',
     dateLocale: 'nb-NO',
     comebackTitle: 'Godt å se deg igjen!', comebackBody: n => `Det er ${n} ${n === 1 ? 'dag' : 'dager'} siden sist. Klar for en kort økt?`,
     comebackCta: 'Start en øvelse', comebackDismiss: 'Ikke nå',
@@ -380,6 +388,9 @@ const T = {
     tabInsights: 'Insights', tabJournal: 'Journal',
     weekChartTitle: 'This week', heatmapCaption: 'Last 10 weeks', tenWeekDesc: 'Exercises completed per week. Tap a week to see what you did.',
     weekDetailTitle: 'That week', weekDetailEmpty: 'No exercises completed that week.',
+    weekDetailExercises: 'Exercises', weekDetailMood: 'Mood', weekDetailJournal: 'Journal',
+    weekDetailJournalCount: n => n + (n === 1 ? ' journal entry this week' : ' journal entries this week'),
+    weekDetailNoJournal: 'No journal entries this week.',
     categoryBalanceTitle: 'Category balance',
     noActivityYet: 'No completed exercises yet. Your insights will show up here once you get going.',
     journalTitle: 'Journal', journalSub: 'Three questions, every day. Builds self-awareness over time.',
@@ -389,6 +400,7 @@ const T = {
     profileTitle: 'Profile', proTitle: 'Keelstone Pro', freeTitle: 'Free version',
     proDesc: 'You have access to all exercises. Thanks for your support!', freeDesc: 'You have access to one free exercise in each category. Upgrade for full access to all categories and the yoga sessions.',
     becomePro: 'Go Pro', dailyReminder: 'Daily reminder', reminderTimeLabel: 'Time', goalLabel: 'My focus',
+    weeklyReflectionLabel: 'Weekly reflection (Sundays)',
     appearance: 'Appearance', themeSystem: 'System', themeLight: 'Light', themeDark: 'Dark',
     restoreLabel: 'Restore purchases', restoreBtn: 'Restore',
     language: 'Language', disclaimer: 'Keelstone is a support tool for mental training and performance. It is not a substitute for treatment or therapy.',
@@ -402,6 +414,7 @@ const T = {
     breath: { press: 'Press start', pace: 'Pace', sec: 'sec per phase', start: 'Start', pause: 'Pause', cont: 'Continue', end: 'End', round: 'Round', paused: 'Paused', doneLabel: 'Done!', doneCloseBtn: 'Close', safetyNote: 'You can stop anytime, for example if you feel dizzy.' },
     breathworkTitle: 'Breathing exercises', breathworkDesc: 'Different breathing patterns for different needs. Pick the one that fits your moment.',
     notifTitle: 'Keelstone', notifBody: "Time for today's mental training.",
+    weeklyReflectionNotifBody: 'Sunday reflection: look back on your week in Keelstone.',
     dateLocale: 'en-US',
     comebackTitle: 'Good to see you again!', comebackBody: n => `It's been ${n} days. Ready for a short session?`,
     comebackCta: 'Start an exercise', comebackDismiss: 'Not now',
@@ -545,7 +558,7 @@ const MOODS = ['😔', '😕', '😐', '🙂', '😄'];
 
 /* ---------- State ---------- */
 function detectLang() { const l = (navigator.language || 'en').toLowerCase(); return (l.startsWith('nb') || l.startsWith('nn') || l.startsWith('no')) ? 'no' : 'en'; }
-let state = { streak: 0, lastCompletedDate: null, completedIds: [], journal: [], notifOn: false, lang: null, goal: null, favorites: [], checkins: {}, reminderTime: '09:00', onboarded: false, theme: 'system', lastOpenDate: null, ritual: null, mainGoal: null, wins: [], reframes: [] };
+let state = { streak: 0, lastCompletedDate: null, completedIds: [], journal: [], notifOn: false, lang: null, goal: null, favorites: [], checkins: {}, reminderTime: '09:00', onboarded: false, theme: 'system', lastOpenDate: null, ritual: null, mainGoal: null, wins: [], reframes: [], weeklyReflectionOn: false };
 function load() {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -1099,30 +1112,51 @@ function buildTenWeekChart() {
       weekDates.push(day.toISOString().slice(0, 10));
     }
     const ids = state.completedIds.filter(k => weekDates.includes(k.split(':')[1]));
-    weeks.push({ startDate: weekDates[0], endDate: weekDates[6], count: ids.length, ids, isCurrent: w === 0 });
+    weeks.push({ startDate: weekDates[0], endDate: weekDates[6], dates: weekDates, count: ids.length, ids, isCurrent: w === 0 });
   }
   const max = Math.max(1, ...weeks.map(x => x.count));
   return weeks.map(x => ({ ...x, h: Math.round(6 + (x.count / max) * 46) }));
-}
-function describeCompletedKey(key) {
-  const id = key.split(':')[0];
-  const ex = exs().find(e => e.id === id);
-  if (ex) return ex.title;
-  const yoga = yogaRoutines().find(r => r.id === id);
-  if (yoga) return yoga.title;
-  return id;
 }
 function showWeekDetail(weekIndex) {
   const week = buildTenWeekChart()[weekIndex];
   const startLabel = new Date(week.startDate).toLocaleDateString(t('dateLocale'), { day: 'numeric', month: 'short' });
   const endLabel = new Date(week.endDate).toLocaleDateString(t('dateLocale'), { day: 'numeric', month: 'short' });
-  const items = week.ids.length
-    ? [...week.ids].sort().map(k => `<div class="card journalEntry"><p>${escapeHtml(describeCompletedKey(k))}</p><div class="date">${k.split(':')[1]}</div></div>`).join('')
-    : `<p class="sub">${t('weekDetailEmpty')}</p>`;
+
+  const catCounts = {};
+  cats().forEach(c => catCounts[c.id] = 0);
+  let yogaCount = 0;
+  week.ids.forEach(k => {
+    const id = k.split(':')[0];
+    const ex = exs().find(e => e.id === id);
+    if (ex) catCounts[ex.category] = (catCounts[ex.category] || 0) + 1;
+    else if (yogaRoutines().some(r => r.id === id)) yogaCount++;
+  });
+  const catRows = cats().filter(c => catCounts[c.id] > 0)
+    .map(c => `<div class="catBarRow"><span class="catBarLabel">${icon(c.id, 16)} ${c.label}</span><span class="catBarVal" style="margin-left:auto">${catCounts[c.id]}</span></div>`).join('');
+  const yogaRow = yogaCount ? `<div class="catBarRow"><span class="catBarLabel">${icon('yoga', 16)} ${t('yogaTitle')}</span><span class="catBarVal" style="margin-left:auto">${yogaCount}</span></div>` : '';
+
+  const moodCells = week.dates.map(ds => {
+    const m = state.checkins[ds];
+    return `<span class="weekMoodCell${m ? '' : ' empty'}">${m ? MOODS[m - 1] : '·'}</span>`;
+  }).join('');
+
+  const journalCount = state.journal.filter(j => week.dates.includes(j.dateISO)).length;
+
   document.getElementById('modalSheet').innerHTML = `
     <h2>${t('weekDetailTitle')}</h2>
     <p class="sub">${startLabel} – ${endLabel}</p>
-    ${items}
+    ${week.count ? `<div class="card">
+      <div class="cardLabel">${t('weekDetailExercises')} (${week.count})</div>
+      ${catRows}${yogaRow}
+    </div>` : `<p class="sub">${t('weekDetailEmpty')}</p>`}
+    <div class="card">
+      <div class="cardLabel">${t('weekDetailMood')}</div>
+      <div class="weekMoodRow">${moodCells}</div>
+    </div>
+    <div class="card">
+      <div class="cardLabel">${t('weekDetailJournal')}</div>
+      <p style="font-size:0.9rem;color:var(--text-soft);margin-top:6px">${journalCount ? t('weekDetailJournalCount')(journalCount) : t('weekDetailNoJournal')}</p>
+    </div>
   `;
   document.getElementById('modalWrap').classList.add('show');
 }
@@ -1182,7 +1216,7 @@ function saveJournal() {
   const hard = document.getElementById('jHard').value.trim();
   const focus = document.getElementById('jFocus').value.trim();
   if (!good && !hard && !focus) { toast(t('writeFirst')); return; }
-  state.journal.push({ date: new Date().toLocaleDateString(t('dateLocale')), good, hard, focus });
+  state.journal.push({ date: new Date().toLocaleDateString(t('dateLocale')), dateISO: todayStr(), good, hard, focus });
   save();
   toast(t('noteSaved'));
   render();
@@ -1229,6 +1263,10 @@ function renderProfile() {
         <div class="switch ${state.notifOn ? 'on' : ''}" onclick="toggleNotif()"><div class="dot"></div></div>
       </div>
       ${state.notifOn ? `<div class="toggleRow"><span>${t('reminderTimeLabel')}</span><input type="time" value="${state.reminderTime}" onchange="setReminderTime(this.value)"></div>` : ''}
+      <div class="toggleRow">
+        <span>${t('weeklyReflectionLabel')}</span>
+        <div class="switch ${state.weeklyReflectionOn ? 'on' : ''}" onclick="toggleWeeklyReflection()"><div class="dot"></div></div>
+      </div>
       <div class="toggleRow" style="flex-direction:column;align-items:stretch;">
         <span>${t('goalLabel')}</span>
         <div class="goalGrid">${cats().map(c => `<button class="goalBtn ${state.goal === c.id ? 'on' : ''}" onclick="setGoal('${c.id}')">${icon(c.id, 17)}<span>${c.label}</span></button>`).join('')}</div>
@@ -1458,6 +1496,38 @@ async function toggleNotif() {
   render();
 }
 function setReminderTime(v) { state.reminderTime = v; save(); if (state.notifOn) scheduleNotifications(); render(); }
+
+async function scheduleWeeklyReflection() {
+  const LN = window.Capacitor?.Plugins?.LocalNotifications;
+  if (!LN) return;
+  const pending = await LN.getPending();
+  const old = pending.notifications.filter(n => n.id >= 500 && n.id < 600).map(n => ({ id: n.id }));
+  if (old.length) await LN.cancel({ notifications: old });
+  const notifications = [];
+  const first = new Date();
+  first.setDate(first.getDate() + ((7 - first.getDay()) % 7 || 7));
+  for (let i = 0; i < 10; i++) {
+    const d = new Date(first); d.setDate(first.getDate() + i * 7); d.setHours(18, 0, 0, 0);
+    notifications.push({ id: 500 + i, title: t('notifTitle'), body: t('weeklyReflectionNotifBody'), schedule: { at: d } });
+  }
+  await LN.schedule({ notifications });
+}
+async function toggleWeeklyReflection() {
+  state.weeklyReflectionOn = !state.weeklyReflectionOn;
+  save();
+  const LN = window.Capacitor?.Plugins?.LocalNotifications;
+  if (!LN) { render(); return; }
+  if (state.weeklyReflectionOn) {
+    const perm = await LN.requestPermissions();
+    if (perm.display !== 'granted') { state.weeklyReflectionOn = false; save(); render(); return; }
+    await scheduleWeeklyReflection();
+  } else {
+    const pending = await LN.getPending();
+    const old = pending.notifications.filter(n => n.id >= 500 && n.id < 600).map(n => ({ id: n.id }));
+    if (old.length) await LN.cancel({ notifications: old });
+  }
+  render();
+}
 
 /* ---------- Breathing overlay (animated) ---------- */
 const BR_R = 92, BR_C = 2 * Math.PI * BR_R;
