@@ -351,6 +351,19 @@ const T = {
     ritualMissing: 'Skriv inn både mantra og fokuspunkt',
     ritualBreathLabel: 'Pust med meg', ritualMantraSub: 'Pust, og kjenn etter.', ritualFocusSub: 'Du er klar.',
     ritualNext: 'Neste', ritualFinish: 'Fullfør',
+    goalCardTitle: 'Mitt mål', goalSetupDesc: 'Sett deg ett tydelig mål, og finn ut hva du faktisk kan gjøre noe med for å komme dit.',
+    goalSetupBtn: 'Sett deg et mål', goalEditBtn: 'Rediger', goalProcessBadge: 'Prosessfokus',
+    goalTitleLabel: 'Hva vil du oppnå?', goalWhyLabel: 'Hvorfor betyr dette noe for deg?',
+    goalObstacleLabel: 'Hva pleier å stå i veien?', goalProcessLabel: 'Hva er den ene tingen du kan gjøre, som du selv kontrollerer?',
+    goalSaveBtn: 'Lagre mål', goalDeleteBtn: 'Fjern mål', goalMissing: 'Fyll ut minst mål og prosessfokus',
+    tabMastery: 'Mestring', masteryTitle: 'Mestringslogg',
+    masterySub: 'Ting du har fått til. Bygg en logg du kan se tilbake på når du trenger påminnelsen.',
+    masteryPlaceholder: 'Hva fikk du til i dag?', masterySaveBtn: 'Legg til seier',
+    masteryEmpty: 'Ingen seire logget ennå. Legg til din første over.', masteryMissing: 'Skriv inn noe først', masterySaved: 'Lagt til!',
+    reframeCardTitle: 'Tankeomramming', reframeCardDesc: 'Når en tanke sitter fast: se den klarere, og finn en mer konstruktiv vinkel.',
+    reframeBtn: 'Omramm en tanke', reframeSituationLabel: 'Hva skjedde?', reframeThoughtLabel: 'Hva tenkte du med en gang?',
+    reframeReframeLabel: 'Hvordan kan du se det annerledes?', reframeSaveBtn: 'Lagre', reframeMissing: 'Fyll ut alle tre feltene',
+    reframeHistoryTitle: 'Tidligere omramminger', reframeEmpty: 'Ingen omramminger lagret ennå.',
   },
   en: {
     appname: 'Keelstone', navHome: 'Home', navExplore: 'Explore', navProgress: 'Progress', navProfile: 'Profile',
@@ -400,6 +413,19 @@ const T = {
     ritualMissing: 'Enter both a mantra and a focus cue',
     ritualBreathLabel: 'Breathe with me', ritualMantraSub: 'Breathe, and feel it.', ritualFocusSub: "You're ready.",
     ritualNext: 'Next', ritualFinish: 'Finish',
+    goalCardTitle: 'My goal', goalSetupDesc: 'Set one clear goal, and figure out what you can actually do to get there.',
+    goalSetupBtn: 'Set a goal', goalEditBtn: 'Edit', goalProcessBadge: 'Process focus',
+    goalTitleLabel: 'What do you want to achieve?', goalWhyLabel: 'Why does this matter to you?',
+    goalObstacleLabel: 'What tends to get in the way?', goalProcessLabel: "What's the one thing you can do, that's fully in your control?",
+    goalSaveBtn: 'Save goal', goalDeleteBtn: 'Remove goal', goalMissing: 'Fill in at least the goal and process focus',
+    tabMastery: 'Mastery', masteryTitle: 'Mastery log',
+    masterySub: "Things you've pulled off. Build a log you can look back on when you need the reminder.",
+    masteryPlaceholder: 'What did you pull off today?', masterySaveBtn: 'Add a win',
+    masteryEmpty: 'No wins logged yet. Add your first one above.', masteryMissing: 'Write something first', masterySaved: 'Added!',
+    reframeCardTitle: 'Reframe a thought', reframeCardDesc: 'When a thought is stuck: see it more clearly, and find a more constructive angle.',
+    reframeBtn: 'Reframe a thought', reframeSituationLabel: 'What happened?', reframeThoughtLabel: 'What did you think right away?',
+    reframeReframeLabel: 'How else could you look at it?', reframeSaveBtn: 'Save', reframeMissing: 'Fill in all three fields',
+    reframeHistoryTitle: 'Previous reframes', reframeEmpty: 'No reframes saved yet.',
   },
 };
 function t(k) { return T[state.lang][k]; }
@@ -515,7 +541,7 @@ const MOODS = ['😔', '😕', '😐', '🙂', '😄'];
 
 /* ---------- State ---------- */
 function detectLang() { const l = (navigator.language || 'en').toLowerCase(); return (l.startsWith('nb') || l.startsWith('nn') || l.startsWith('no')) ? 'no' : 'en'; }
-let state = { streak: 0, lastCompletedDate: null, completedIds: [], journal: [], notifOn: false, lang: null, goal: null, favorites: [], checkins: {}, reminderTime: '09:00', onboarded: false, theme: 'system', lastOpenDate: null, ritual: null };
+let state = { streak: 0, lastCompletedDate: null, completedIds: [], journal: [], notifOn: false, lang: null, goal: null, favorites: [], checkins: {}, reminderTime: '09:00', onboarded: false, theme: 'system', lastOpenDate: null, ritual: null, mainGoal: null, wins: [], reframes: [] };
 function load() {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -821,6 +847,23 @@ function renderHome() {
           <p style="margin-bottom:10px;font-size:0.9rem;color:var(--text-soft)">${t('ritualSetupDesc')}</p>
           <button class="btn full secondary" onclick="showRitualSetup()">${t('ritualSetupBtn')}</button>
         </div>`}
+    <h2>${t('goalCardTitle')}</h2>
+    ${state.mainGoal
+      ? `<div class="card">
+          <span class="tag sand">${t('goalProcessBadge')}</span>
+          <b style="display:block;margin-top:8px">${escapeHtml(state.mainGoal.title)}</b>
+          <p style="margin:6px 0 10px;font-size:0.9rem;color:var(--text-soft)">${escapeHtml(state.mainGoal.process)}</p>
+          <button class="btn ghost full" onclick="showGoalSetup()">${t('goalEditBtn')}</button>
+        </div>`
+      : `<div class="card">
+          <p style="margin-bottom:10px;font-size:0.9rem;color:var(--text-soft)">${t('goalSetupDesc')}</p>
+          <button class="btn full secondary" onclick="showGoalSetup()">${t('goalSetupBtn')}</button>
+        </div>`}
+    <h2>${t('reframeCardTitle')}</h2>
+    <div class="card">
+      <p style="margin-bottom:10px;font-size:0.9rem;color:var(--text-soft)">${t('reframeCardDesc')}</p>
+      <button class="btn full secondary" onclick="showReframeModal()">${t('reframeBtn')}</button>
+    </div>
   `;
 }
 function setMood(v) { state.checkins[todayStr()] = v; save(); render(); }
@@ -988,8 +1031,10 @@ function renderProgress() {
   const seg = `<div class="seg segFull">
     <button class="${window._progressTab === 'insights' ? 'on' : ''}" onclick="setProgressTab('insights')">${t('tabInsights')}</button>
     <button class="${window._progressTab === 'journal' ? 'on' : ''}" onclick="setProgressTab('journal')">${t('tabJournal')}</button>
+    <button class="${window._progressTab === 'mastery' ? 'on' : ''}" onclick="setProgressTab('mastery')">${t('tabMastery')}</button>
   </div>`;
-  return `<h1>${t('progressTitle')}</h1><p class="sub">${t('progressSub')}</p>${seg}${window._progressTab === 'insights' ? renderInsights() : renderJournalBody()}`;
+  const body = window._progressTab === 'insights' ? renderInsights() : window._progressTab === 'journal' ? renderJournalBody() : renderMasteryBody();
+  return `<h1>${t('progressTitle')}</h1><p class="sub">${t('progressSub')}</p>${seg}${body}`;
 }
 function setProgressTab(v) { window._progressTab = v; render(); }
 
@@ -1078,6 +1123,30 @@ function saveJournal() {
   state.journal.push({ date: new Date().toLocaleDateString(t('dateLocale')), good, hard, focus });
   save();
   toast(t('noteSaved'));
+  render();
+}
+function renderMasteryBody() {
+  const entries = [...state.wins].reverse().map(w => `
+    <div class="card journalEntry">
+      <div class="date">${w.date}</div>
+      <p>${escapeHtml(w.text)}</p>
+    </div>`).join('') || `<p class="sub">${t('masteryEmpty')}</p>`;
+  return `
+    <div class="card">
+      <p class="cardLabel">${t('masteryTitle')}</p>
+      <p style="font-size:0.9rem;color:var(--text-soft);margin-bottom:12px">${t('masterySub')}</p>
+      <textarea id="winText" rows="2" placeholder="${t('masteryPlaceholder')}"></textarea>
+      <button class="btn full" style="margin-top:10px" onclick="saveWin()">${t('masterySaveBtn')}</button>
+    </div>
+    ${entries}
+  `;
+}
+function saveWin() {
+  const text = document.getElementById('winText').value.trim();
+  if (!text) { toast(t('masteryMissing')); return; }
+  state.wins.push({ date: new Date().toLocaleDateString(t('dateLocale')), text });
+  save();
+  toast(t('masterySaved'));
   render();
 }
 
@@ -1173,6 +1242,66 @@ function deleteRitual() {
   save();
   closeModal();
   render();
+}
+function showGoalSetup() {
+  const g = state.mainGoal || { title: '', why: '', obstacle: '', process: '' };
+  document.getElementById('modalSheet').innerHTML = `
+    <h2>${t('goalCardTitle')}</h2>
+    <p class="sub">${t('goalSetupDesc')}</p>
+    <div class="qBlock"><label>${t('goalTitleLabel')}</label><input type="text" id="gTitle" value="${escapeHtml(g.title)}"></div>
+    <div class="qBlock"><label>${t('goalWhyLabel')}</label><input type="text" id="gWhy" value="${escapeHtml(g.why)}"></div>
+    <div class="qBlock"><label>${t('goalObstacleLabel')}</label><input type="text" id="gObstacle" value="${escapeHtml(g.obstacle)}"></div>
+    <div class="qBlock"><label>${t('goalProcessLabel')}</label><input type="text" id="gProcess" value="${escapeHtml(g.process)}"></div>
+    <button class="btn full sand" onclick="saveGoal()">${t('goalSaveBtn')}</button>
+    ${state.mainGoal ? `<button class="btn full ghost" style="margin-top:8px" onclick="deleteGoal()">${t('goalDeleteBtn')}</button>` : ''}
+  `;
+  document.getElementById('modalWrap').classList.add('show');
+}
+function saveGoal() {
+  const title = document.getElementById('gTitle').value.trim();
+  const why = document.getElementById('gWhy').value.trim();
+  const obstacle = document.getElementById('gObstacle').value.trim();
+  const process = document.getElementById('gProcess').value.trim();
+  if (!title || !process) { toast(t('goalMissing')); return; }
+  state.mainGoal = { title, why, obstacle, process };
+  save();
+  closeModal();
+  render();
+}
+function deleteGoal() {
+  state.mainGoal = null;
+  save();
+  closeModal();
+  render();
+}
+function showReframeModal() {
+  const history = [...state.reframes].reverse().map(r => `
+    <div class="card journalEntry">
+      <div class="date">${r.date}</div>
+      <b>${t('reframeSituationLabel')}</b><p>${escapeHtml(r.situation)}</p>
+      <b>${t('reframeThoughtLabel')}</b><p>${escapeHtml(r.thought)}</p>
+      <b>${t('reframeReframeLabel')}</b><p>${escapeHtml(r.reframe)}</p>
+    </div>`).join('') || `<p class="sub">${t('reframeEmpty')}</p>`;
+  document.getElementById('modalSheet').innerHTML = `
+    <h2>${t('reframeCardTitle')}</h2>
+    <p class="sub">${t('reframeCardDesc')}</p>
+    <div class="qBlock"><label>${t('reframeSituationLabel')}</label><textarea id="rfSituation" rows="2"></textarea></div>
+    <div class="qBlock"><label>${t('reframeThoughtLabel')}</label><textarea id="rfThought" rows="2"></textarea></div>
+    <div class="qBlock"><label>${t('reframeReframeLabel')}</label><textarea id="rfReframe" rows="2"></textarea></div>
+    <button class="btn full sand" onclick="saveReframe()">${t('reframeSaveBtn')}</button>
+    <h2>${t('reframeHistoryTitle')}</h2>
+    ${history}
+  `;
+  document.getElementById('modalWrap').classList.add('show');
+}
+function saveReframe() {
+  const situation = document.getElementById('rfSituation').value.trim();
+  const thought = document.getElementById('rfThought').value.trim();
+  const reframe = document.getElementById('rfReframe').value.trim();
+  if (!situation || !thought || !reframe) { toast(t('reframeMissing')); return; }
+  state.reframes.push({ date: new Date().toLocaleDateString(t('dateLocale')), situation, thought, reframe });
+  save();
+  showReframeModal();
 }
 function submitContact() {
   const name = document.getElementById('cName').value.trim();
