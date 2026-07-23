@@ -68,7 +68,17 @@ Fullstendig UX-oppgradering, gjort etter research på ledende meditasjons-/menta
 
 ## Status (2026-07-22)
 
-Innhold og UX verifisert grundig i nettleser-preview (onboarding, hjem, søk/filter/favoritter, innsikt-diagrammer, spiller, profil-innstillinger, NO/EN-bytte, lys/mørk modus, alle uten konsollfeil). Gjenstår: ekte native app-ikoner i Xcode/Android-prosjekt (web-PNG-ene finnes i `www/assets/`), lydinnspilling (begge språk), `npx cap add ios/android`, App Store Connect-app, signering, RevenueCat-produkt (`com.kricliff.keelstone.pro.monthly`).
+Innhold og UX verifisert grundig i nettleser-preview (onboarding, hjem, søk/filter/favoritter, innsikt-diagrammer, spiller, profil-innstillinger, NO/EN-bytte, lys/mørk modus, alle uten konsollfeil).
+
+**iOS-oppsett (2026-07-22):** `ios/` lagt til med `npx cap add ios`, deretter samme SPM→CocoaPods-fiks som Together trengte (fjernet `CapApp-SPM`-referanser fra `project.pbxproj`, lagt til `Podfile` med `IPHONEOS_DEPLOYMENT_TARGET=15.0`-hook), `TARGETED_DEVICE_FAMILY = "1"` (iPhone-only), ekte app-ikon kopiert inn i `AppIcon.appiconset`. `codemagic.yaml` lagt til (kun `ios-workflow`, `android-workflow` ikke satt opp ennå — ingen `android/`-mappe). Alt dette er ikke testet mot en faktisk build ennå (krever macOS/Xcode via Codemagic), kun strukturelt validert (pbxproj brace/parens balansert, YAML syntaks-sjekket).
+
+**Gjenstår, kun gjørbart av Kristian (Apple-ID/RevenueCat-innlogging):**
+1. Reserver App ID `com.kricliff.keelstone` i Apple Developer-portalen, opprett appen i App Store Connect
+2. Koble Codemagic til `Kricliff/keelstone`-repoet (nå offentlig), bruk eksisterende App Store Connect-integrasjon («Codemagic»-navnet i `codemagic.yaml`)
+3. Trigg `ios-workflow` manuelt fra Codemagic-dashbordet — laster opp til TestFlight automatisk ved suksess
+4. Opprett RevenueCat-app for `com.kricliff.keelstone`, produkt `com.kricliff.keelstone.pro.monthly`, entitlement `pro`, sett inn API-nøkkelen i `REVENUECAT_API_KEY` i `www/index.html` (søk «SETT_INN_NOKKEL») — ikke blokkerende for første TestFlight-opplasting, men nødvendig før Pro-kjøp fungerer for testere
+5. Lydinnspilling (begge språk) — ikke blokkerende for TestFlight-intern testing
+6. Personvern-URL for App Store Connect: https://kricliff.github.io/keelstone/privacy.html (allerede live)
 
 ## Build-lærdommer (arvet fra Together — ikke gjenta feilene)
 
