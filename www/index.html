@@ -30,7 +30,6 @@
     --radius: 16px;
     --shadow: 0 1px 3px rgba(31,54,54,0.06), 0 4px 14px rgba(31,54,54,0.09);
     --page-bg: #d6dbd9;
-    --heat-1: #cfe0dc; --heat-2: #8fb3ac; --heat-3: #2F4F4F;
     --cat-fokus: #2a78d6; --cat-ro: #1baf7a; --cat-selvtillit: #4a3aa7; --cat-restitusjon: #e34948;
   }
   @media (prefers-color-scheme: dark) {
@@ -40,7 +39,6 @@
       --bg: #141918; --card: #1c2422; --text: #eef1f0; --text-soft: #9aa3a0;
       --border: #2b3432; --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 14px rgba(0,0,0,0.35);
       --page-bg: #0c0f0e;
-      --heat-1: #3a4f4b; --heat-2: #5c8079; --heat-3: #9fc3bb;
       --cat-fokus: #3987e5; --cat-ro: #199e70; --cat-selvtillit: #9085e9; --cat-restitusjon: #e66767;
     }
   }
@@ -50,7 +48,6 @@
     --bg: #141918; --card: #1c2422; --text: #eef1f0; --text-soft: #9aa3a0;
     --border: #2b3432; --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 14px rgba(0,0,0,0.35);
     --page-bg: #0c0f0e;
-    --heat-1: #3a4f4b; --heat-2: #5c8079; --heat-3: #9fc3bb;
     --cat-fokus: #3987e5; --cat-ro: #199e70; --cat-selvtillit: #9085e9; --cat-restitusjon: #e66767;
   }
   :root[data-theme="light"] {
@@ -59,7 +56,6 @@
     --bg: #f9f9f9; --card: #ffffff; --text: #1a1a1a; --text-soft: #5f6f6f;
     --border: #e5e3dd; --shadow: 0 1px 3px rgba(31,54,54,0.06), 0 4px 14px rgba(31,54,54,0.09);
     --page-bg: #d6dbd9;
-    --heat-1: #cfe0dc; --heat-2: #8fb3ac; --heat-3: #2F4F4F;
     --cat-fokus: #2a78d6; --cat-ro: #1baf7a; --cat-selvtillit: #4a3aa7; --cat-restitusjon: #e34948;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
@@ -140,12 +136,6 @@
   .weekBarFill { width: 100%; max-width: 22px; background: var(--blue); border-radius: 4px 4px 0 0; }
   .weekDay { font-size: 0.68rem; color: var(--text-soft); }
   .weekDay.today { color: var(--blue); font-weight: 700; }
-  .heatGrid { display: flex; flex-direction: column; gap: 3px; }
-  .heatRow { display: flex; gap: 3px; }
-  .heatCell { flex: 1; aspect-ratio: 1; border-radius: 3px; background: var(--border); }
-  .heatCell.l1 { background: var(--heat-1); }
-  .heatCell.l2 { background: var(--heat-2); }
-  .heatCell.l3 { background: var(--heat-3); }
   .catBarRow { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
   .catBarRow:last-child { margin-bottom: 0; }
   .catBarLabel { font-size: 0.82rem; width: 96px; flex-shrink: 0; }
@@ -317,7 +307,9 @@ const T = {
     sessionDoneTitle: '✓ Fullført i dag', sessionDoneMsg: 'Bra jobbet. Fremgangen din er lagret.', viewProgress: 'Se fremgang',
     progressTitle: 'Fremgang', progressSub: 'Innsikt i mønstrene dine og tilgang til dagboken.',
     tabInsights: 'Innsikt', tabJournal: 'Dagbok',
-    weekChartTitle: 'Denne uken', heatmapCaption: 'Siste 10 uker', categoryBalanceTitle: 'Balanse mellom kategoriene',
+    weekChartTitle: 'Denne uken', heatmapCaption: 'Siste 10 uker', tenWeekDesc: 'Øvelser fullført per uke. Trykk på en uke for å se hva du gjorde.',
+    weekDetailTitle: 'Den uken', weekDetailEmpty: 'Ingen øvelser fullført denne uken.',
+    categoryBalanceTitle: 'Balanse mellom kategoriene',
     noActivityYet: 'Ingen fullførte øvelser ennå. Innsikten din dukker opp her når du kommer i gang.',
     journalTitle: 'Dagbok', journalSub: 'Tre enkle spørsmål hver dag bygger selvinnsikt over tid.',
     qGood: 'Hva gikk bra i dag?', qHard: 'Hva var vanskelig?', qFocus: 'Hva vil du fokusere på i morgen?',
@@ -386,7 +378,9 @@ const T = {
     sessionDoneTitle: '✓ Completed today', sessionDoneMsg: 'Great work. Your progress is saved.', viewProgress: 'View progress',
     progressTitle: 'Progress', progressSub: 'Insight into your patterns, and your journal.',
     tabInsights: 'Insights', tabJournal: 'Journal',
-    weekChartTitle: 'This week', heatmapCaption: 'Last 10 weeks', categoryBalanceTitle: 'Category balance',
+    weekChartTitle: 'This week', heatmapCaption: 'Last 10 weeks', tenWeekDesc: 'Exercises completed per week. Tap a week to see what you did.',
+    weekDetailTitle: 'That week', weekDetailEmpty: 'No exercises completed that week.',
+    categoryBalanceTitle: 'Category balance',
     noActivityYet: 'No completed exercises yet. Your insights will show up here once you get going.',
     journalTitle: 'Journal', journalSub: 'Three questions, every day. Builds self-awareness over time.',
     qGood: 'What went well today?', qHard: 'What was hard?', qFocus: 'What will you focus on tomorrow?',
@@ -1095,18 +1089,42 @@ function buildWeekChart() {
   const max = Math.max(1, ...days.map(d => d.count));
   return days.map(d => ({ ...d, h: Math.round(6 + (d.count / max) * 46) }));
 }
-function buildHeatmap() {
-  const cells = [];
-  for (let i = 69; i >= 0; i--) {
-    const d = new Date(); d.setDate(d.getDate() - i);
-    const ds = d.toISOString().slice(0, 10);
-    const count = state.completedIds.filter(k => k.endsWith(':' + ds)).length;
-    const level = count === 0 ? 0 : count === 1 ? 1 : count === 2 ? 2 : 3;
-    cells.push({ date: ds, count, level });
+function buildTenWeekChart() {
+  const weeks = [];
+  for (let w = 9; w >= 0; w--) {
+    const weekEnd = new Date(); weekEnd.setDate(weekEnd.getDate() - w * 7);
+    const weekDates = [];
+    for (let d = 6; d >= 0; d--) {
+      const day = new Date(weekEnd); day.setDate(day.getDate() - d);
+      weekDates.push(day.toISOString().slice(0, 10));
+    }
+    const ids = state.completedIds.filter(k => weekDates.includes(k.split(':')[1]));
+    weeks.push({ startDate: weekDates[0], endDate: weekDates[6], count: ids.length, ids, isCurrent: w === 0 });
   }
-  const rows = [];
-  for (let i = 0; i < cells.length; i += 7) rows.push(cells.slice(i, i + 7));
-  return rows.reverse();
+  const max = Math.max(1, ...weeks.map(x => x.count));
+  return weeks.map(x => ({ ...x, h: Math.round(6 + (x.count / max) * 46) }));
+}
+function describeCompletedKey(key) {
+  const id = key.split(':')[0];
+  const ex = exs().find(e => e.id === id);
+  if (ex) return ex.title;
+  const yoga = yogaRoutines().find(r => r.id === id);
+  if (yoga) return yoga.title;
+  return id;
+}
+function showWeekDetail(weekIndex) {
+  const week = buildTenWeekChart()[weekIndex];
+  const startLabel = new Date(week.startDate).toLocaleDateString(t('dateLocale'), { day: 'numeric', month: 'short' });
+  const endLabel = new Date(week.endDate).toLocaleDateString(t('dateLocale'), { day: 'numeric', month: 'short' });
+  const items = week.ids.length
+    ? [...week.ids].sort().map(k => `<div class="card journalEntry"><p>${escapeHtml(describeCompletedKey(k))}</p><div class="date">${k.split(':')[1]}</div></div>`).join('')
+    : `<p class="sub">${t('weekDetailEmpty')}</p>`;
+  document.getElementById('modalSheet').innerHTML = `
+    <h2>${t('weekDetailTitle')}</h2>
+    <p class="sub">${startLabel} – ${endLabel}</p>
+    ${items}
+  `;
+  document.getElementById('modalWrap').classList.add('show');
 }
 function buildCategoryBalance() {
   const counts = {};
@@ -1122,7 +1140,7 @@ function buildCategoryBalance() {
 function renderInsights() {
   if (!state.completedIds.length) return `<div class="card"><p class="sub" style="margin-bottom:0">${t('noActivityYet')}</p></div>`;
   const week = buildWeekChart();
-  const heat = buildHeatmap();
+  const tenWeek = buildTenWeekChart();
   const catBal = buildCategoryBalance();
   return `
     <div class="card">
@@ -1131,7 +1149,8 @@ function renderInsights() {
     </div>
     <div class="card">
       <div class="cardLabel">${t('heatmapCaption')}</div>
-      <div class="heatGrid">${heat.map(row => `<div class="heatRow">${row.map(c => `<div class="heatCell l${c.level}" title="${c.date}: ${c.count}"></div>`).join('')}</div>`).join('')}</div>
+      <p class="sub" style="font-size:0.8rem;margin:-4px 0 12px">${t('tenWeekDesc')}</p>
+      <div class="weekChart">${tenWeek.map((w, i) => `<div class="weekBar" onclick="showWeekDetail(${i})" style="cursor:pointer"><span class="weekVal">${w.count || ''}</span><div class="weekBarFill" style="height:${w.h}px"></div><span class="weekDay ${w.isCurrent ? 'today' : ''}">${new Date(w.endDate).getDate()}/${new Date(w.endDate).getMonth() + 1}</span></div>`).join('')}</div>
     </div>
     <div class="card">
       <div class="cardLabel">${t('categoryBalanceTitle')}</div>
