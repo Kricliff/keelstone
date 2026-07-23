@@ -68,7 +68,7 @@
   #app { width: 100%; max-width: 460px; min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.15); }
   #app.onboarding header, #app.onboarding nav { display: none; }
   #app.onboarding main { padding-top: calc(26px + env(safe-area-inset-top)); }
-  main { flex: 1; overflow-y: auto; padding: 20px 18px 90px; }
+  main { flex: 1; overflow-y: auto; padding: 20px 18px calc(90px + env(safe-area-inset-bottom)); }
   h1 { font-size: 1.45rem; font-weight: 700; margin-bottom: 2px; letter-spacing: 0.2px; }
   h2 { font-size: 1.05rem; font-weight: 600; margin: 22px 0 10px; }
   .sub { color: var(--text-soft); font-size: 0.9rem; margin-bottom: 18px; }
@@ -783,8 +783,16 @@ function renderExplore() {
   const chips = `<div class="chips">
     <button class="${window._catFilter === 'alle' ? 'active' : ''}" onclick="setCatFilter('alle')">${t('all')}</button>
     <button class="${window._catFilter === 'fav' ? 'active' : ''}" onclick="setCatFilter('fav')">${icon('heart-filled', 14)} ${t('favoritesChip')}</button>
+    <button class="${window._catFilter === 'yoga' ? 'active' : ''}" onclick="setCatFilter('yoga')">${icon('yoga', 14)} ${t('yogaTitle')}</button>
     ${cats().map(c => `<button class="${window._catFilter === c.id ? 'active' : ''}" onclick="setCatFilter('${c.id}')">${icon(c.id, 14)} ${c.label}</button>`).join('')}
   </div>`;
+  if (window._catFilter === 'yoga') {
+    return `<h1>${t('exTitle')}</h1><p class="sub">${t('exSub')}</p>
+      <input type="text" id="searchInput" placeholder="${t('searchPlaceholder')}" value="${escapeHtml(window._search)}" oninput="setSearch(this.value)" style="margin-bottom:12px">
+      ${chips}
+      <p class="sub" style="margin-top:-6px">${t('yogaDesc')}</p>
+      ${yogaRoutines().map(yogaCardHtml).join('')}`;
+  }
   const durOpts = [['alle', t('durationAll')], ['short', t('durationShort')], ['medium', t('durationMedium')], ['long', t('durationLong')]];
   const durChips = `<div class="chips">${durOpts.map(([id, label]) => `<button class="${window._durFilter === id ? 'active' : ''}" onclick="setDurFilter('${id}')">${label}</button>`).join('')}</div>`;
   let list = exs().filter(e => (window._catFilter === 'alle' || (window._catFilter === 'fav' ? state.favorites.includes(e.id) : e.category === window._catFilter)) && inDuration(e));
@@ -795,10 +803,9 @@ function renderExplore() {
   const recent = recentIds.map(id => exs().find(e => e.id === id)).filter(Boolean);
   const recentBlock = (noFilters && recent.length) ? `<h2>${t('recentlyCompleted')}</h2>${recent.map(exCardHtml).join('')}<h2>${t('all')}</h2>` : '';
   const cards = list.length ? list.map(exCardHtml).join('') : `<p class="sub">${t('noResults')}</p>`;
-  const yogaBlock = noFilters ? `<h2>${t('yogaTitle')}</h2><p class="sub" style="margin-top:-8px">${t('yogaDesc')}</p>${yogaRoutines().map(yogaCardHtml).join('')}` : '';
   return `<h1>${t('exTitle')}</h1><p class="sub">${t('exSub')}</p>
     <input type="text" id="searchInput" placeholder="${t('searchPlaceholder')}" value="${escapeHtml(window._search)}" oninput="setSearch(this.value)" style="margin-bottom:12px">
-    ${chips}${durChips}${recentBlock}${cards}${yogaBlock}`;
+    ${chips}${durChips}${recentBlock}${cards}`;
 }
 function setCatFilter(id) { window._catFilter = id; render(); }
 function setDurFilter(id) { window._durFilter = id; render(); }
