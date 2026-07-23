@@ -188,16 +188,17 @@
   @keyframes splashExit { to { opacity: 0; } }
   #breathOverlay { position: absolute; inset: 0; background: radial-gradient(circle at 50% 36%, var(--blue), var(--blue-d) 78%); z-index: 40; display: none; flex-direction: column; align-items: center; color: #eaf1f5; padding: calc(20px + env(safe-area-inset-top)) 20px 20px; overflow: hidden; }
   #breathOverlay.show { display: flex; }
-  #breathOverlay .closeRow { width: 100%; display: flex; justify-content: flex-end; z-index: 5; }
-  #breathOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; }
+  #breathOverlay .closeRow { width: 100%; display: flex; justify-content: space-between; align-items: center; z-index: 5; }
+  #breathOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; flex-shrink: 0; }
+  #breathOverlay .routineTitle { font-size: 0.85rem; opacity: 0.85; }
   #breathStage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; width: 100%; position: relative; }
   .orbWrap { position: relative; width: 240px; height: 240px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .aura { position: absolute; left: 50%; top: 50%; width: 190px; height: 190px; border-radius: 50%; border: 1px solid rgba(228,201,137,.4); transform: translate(-50%,-50%) scale(.6); opacity: .2; }
   .orb { position: absolute; left: 50%; top: 50%; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle at 42% 36%, #ffffff, var(--sand) 80%); transform: translate(-50%,-50%) scale(0.55); box-shadow: 0 0 40px 6px rgba(217,178,92,0.28); }
   #breathRingS { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); }
   .orbTxt { position: relative; z-index: 3; text-align: center; pointer-events: none; }
-  .orbPhase { font-size: 15px; font-weight: 600; letter-spacing: 0.02em; color: rgba(255,255,255,0.92); }
-  .orbCount { font-size: 46px; font-weight: 700; line-height: 1; margin-top: 2px; min-height: 0.9em; color: #fff; }
+  .orbPhase { font-size: 15px; font-weight: 700; letter-spacing: 0.02em; color: #1f3636; }
+  .orbCount { font-size: 46px; font-weight: 800; line-height: 1; margin-top: 2px; min-height: 0.9em; color: #1f3636; }
   .bParticle { position: absolute; border-radius: 50%; background: #fff; opacity: 0; animation: bdrift linear infinite; }
   @keyframes bdrift { 0%{opacity:0;transform:translateY(16px)} 25%{opacity:.5} 75%{opacity:.35} 100%{opacity:0;transform:translateY(-56px)} }
   .bRound { font-size: 12.5px; color: rgba(234,241,245,.65); min-height: 1.2em; }
@@ -261,7 +262,7 @@
   </nav>
 
   <div id="breathOverlay">
-    <div class="closeRow"><button onclick="stopBreathing()">✕</button></div>
+    <div class="closeRow"><span class="routineTitle" id="breathTitle"></span><button onclick="stopBreathing()">✕</button></div>
     <div id="breathStage">
       <div class="orbWrap">
         <div class="aura" id="aura2"></div><div class="aura" id="aura1"></div>
@@ -331,7 +332,8 @@ const T = {
     noSub: 'Fant ikke abonnement', restored: 'Pro-tilgang gjenopprettet', noActiveSub: 'Ingen aktivt abonnement funnet',
     purchaseInAppOnly: 'Kjøp er bare tilgjengelig i appen', restoreInAppOnly: 'Bare tilgjengelig i appen',
     onbTitle: 'Velkommen til Keelstone', onbSub: 'Hva ønsker du å jobbe mest med akkurat nå? Vi tilpasser forslagene dine.', onbSkip: 'Hopp over, vis meg alt',
-    breath: { phases: ['Pust inn','Hold','Pust ut','Hold'], press: 'Trykk start', pace: 'Tempo', sec: 'sek per fase', start: 'Start', pause: 'Pause', cont: 'Fortsett', end: 'Avslutt', round: 'Runde', paused: 'Pause' },
+    breath: { press: 'Trykk start', pace: 'Tempo', sec: 'sek per fase', start: 'Start', pause: 'Pause', cont: 'Fortsett', end: 'Avslutt', round: 'Runde', paused: 'Pause' },
+    breathworkTitle: 'Pusteøvelser', breathworkDesc: 'Ulike pustemønstre for ulike behov. Velg det som passer situasjonen din.',
     notifTitle: 'Keelstone', notifBody: 'Tid for dagens mentale trening.',
     dateLocale: 'nb-NO',
     comebackTitle: 'Godt å se deg igjen!', comebackBody: n => `Det er ${n} dager siden sist. Klar for en kort økt?`,
@@ -383,7 +385,8 @@ const T = {
     noSub: 'Couldn\'t find a subscription', restored: 'Pro access restored', noActiveSub: 'No active subscription found',
     purchaseInAppOnly: 'Purchases are only available in the app', restoreInAppOnly: 'Only available in the app',
     onbTitle: 'Welcome to Keelstone', onbSub: 'What do you want to work on most right now? We\'ll tailor your suggestions.', onbSkip: 'Skip, show me everything',
-    breath: { phases: ['Breathe in','Hold','Breathe out','Hold'], press: 'Press start', pace: 'Pace', sec: 'sec per phase', start: 'Start', pause: 'Pause', cont: 'Continue', end: 'End', round: 'Round', paused: 'Paused' },
+    breath: { press: 'Press start', pace: 'Pace', sec: 'sec per phase', start: 'Start', pause: 'Pause', cont: 'Continue', end: 'End', round: 'Round', paused: 'Paused' },
+    breathworkTitle: 'Breathing exercises', breathworkDesc: 'Different breathing patterns for different needs. Pick the one that fits your moment.',
     notifTitle: 'Keelstone', notifBody: "Time for today's mental training.",
     dateLocale: 'en-US',
     comebackTitle: 'Good to see you again!', comebackBody: n => `It's been ${n} days. Ready for a short session?`,
@@ -584,6 +587,7 @@ const ICON_PATHS = {
   back: '<path d="M19 12 H5 M11 6 L5 12 L11 18"/>',
   chevron: '<path d="M9 6 L15 12 L9 18"/>',
   yoga: '<path d="M12 20 L12 10 M12 12 C9 12 6 9 6 5 M12 12 C15 12 18 9 18 5 M12 10 C10 10 8 8 8 5 M12 10 C14 10 16 8 16 5"/>',
+  breath: '<path d="M4 8 C4 8 8 4 13 4 C16.5 4 16.5 7.5 13 7.5 C11 7.5 9.5 6.3 9.5 5"/><path d="M4 13 C4 13 11 9 16 9 C20 9 20 13.5 16 13.5 C13 13.5 11 12 11 10.8"/><path d="M4 18 C4 18 8 16 11 16 C13 16 13 18.3 11 18.3"/>',
 };
 function icon(name, size) {
   size = size || 20;
@@ -649,6 +653,55 @@ function yogaRoutines() {
     title: state.lang === 'no' ? r.titleNo : r.titleEn,
     poses: r.poses.map(([key, sec]) => ({ key, sec, name: POSE_NAMES[state.lang][key], cue: POSE_CUES[state.lang][key] })),
     totalSec: r.poses.reduce((a, [, s]) => a + s, 0),
+  }));
+}
+
+/* ---------- Breathing techniques ---------- */
+const BREATH_TECHNIQUES_DEF = [
+  {
+    id: 'box',
+    titleNo: 'Boksepusting', titleEn: 'Box breathing',
+    descNo: 'Fire like faser: inn, hold, ut, hold. Rolig, fokusert kontroll rett før en prestasjon.',
+    descEn: 'Four equal phases: in, hold, out, hold. Calm, focused control right before you perform.',
+    adjustable: true,
+    phases: [
+      { type: 'in', labelNo: 'Pust inn', labelEn: 'Breathe in' },
+      { type: 'holdFull', labelNo: 'Hold', labelEn: 'Hold' },
+      { type: 'out', labelNo: 'Pust ut', labelEn: 'Breathe out' },
+      { type: 'holdEmpty', labelNo: 'Hold', labelEn: 'Hold' },
+    ],
+  },
+  {
+    id: '478',
+    titleNo: '4-7-8 pusting', titleEn: '4-7-8 breathing',
+    descNo: 'Pust inn i 4, hold i 7, pust ut i 8. Den lange utpusten roer nervesystemet raskt, bra før søvn eller når uroen er sterk.',
+    descEn: 'Inhale for 4, hold for 7, exhale for 8. The long exhale calms your nervous system fast, good before sleep or when anxiety runs high.',
+    adjustable: false,
+    phases: [
+      { type: 'in', seconds: 4, labelNo: 'Pust inn', labelEn: 'Breathe in' },
+      { type: 'holdFull', seconds: 7, labelNo: 'Hold', labelEn: 'Hold' },
+      { type: 'out', seconds: 8, labelNo: 'Pust ut', labelEn: 'Breathe out' },
+    ],
+  },
+  {
+    id: 'energize',
+    titleNo: 'Energipust', titleEn: 'Energizing breath',
+    descNo: 'Rask, jevn pust uten pause. Øker årvåkenhet og energi før en krevende økt.',
+    descEn: 'Quick, even breathing with no pause. Boosts alertness and energy before a demanding session.',
+    adjustable: false,
+    phases: [
+      { type: 'in', seconds: 2, labelNo: 'Pust inn', labelEn: 'Breathe in' },
+      { type: 'out', seconds: 2, labelNo: 'Pust ut', labelEn: 'Breathe out' },
+    ],
+  },
+];
+function breathTechniques() {
+  return BREATH_TECHNIQUES_DEF.map(tech => ({
+    id: tech.id,
+    title: state.lang === 'no' ? tech.titleNo : tech.titleEn,
+    desc: state.lang === 'no' ? tech.descNo : tech.descEn,
+    adjustable: tech.adjustable,
+    phases: tech.phases.map(p => ({ type: p.type, seconds: p.seconds, label: state.lang === 'no' ? p.labelNo : p.labelEn })),
   }));
 }
 
@@ -755,7 +808,7 @@ function renderHome() {
     <h2>${t('quickBreath')}</h2>
     <div class="card">
       <p style="margin-bottom:10px;font-size:0.9rem;color:var(--text-soft)">${t('quickBreathDesc')}</p>
-      <button class="btn full sand" onclick="startBreathing()">${t('startBreathBtn')}</button>
+      <button class="btn full sand" onclick="startBreathing('box')">${t('startBreathBtn')}</button>
     </div>
     <h2>${t('ritualTitle')}</h2>
     ${state.ritual
@@ -793,6 +846,13 @@ function yogaCardHtml(r) {
     <div class="lockDot">${locked ? icon('lock', 17) : icon('chevron', 17)}</div>
   </div>`;
 }
+function breathCardHtml(tech) {
+  return `<div class="card exCard" onclick="startBreathing('${tech.id}')">
+    <div class="exIcon">${icon('breath', 22)}</div>
+    <div class="meta"><b>${escapeHtml(tech.title)}</b><span>${escapeHtml(tech.desc)}</span></div>
+    <div class="lockDot">${icon('chevron', 17)}</div>
+  </div>`;
+}
 function inDuration(e) {
   const n = parseInt(e.duration);
   if (window._durFilter === 'short') return n <= 5;
@@ -808,6 +868,7 @@ function renderExplore() {
     <button class="${window._catFilter === 'alle' ? 'active' : ''}" onclick="setCatFilter('alle')">${t('all')}</button>
     <button class="${window._catFilter === 'fav' ? 'active' : ''}" onclick="setCatFilter('fav')">${icon('heart-filled', 14)} ${t('favoritesChip')}</button>
     <button class="${window._catFilter === 'yoga' ? 'active' : ''}" onclick="setCatFilter('yoga')">${icon('yoga', 14)} ${t('yogaTitle')}</button>
+    <button class="${window._catFilter === 'breathwork' ? 'active' : ''}" onclick="setCatFilter('breathwork')">${icon('breath', 14)} ${t('breathworkTitle')}</button>
     ${cats().map(c => `<button class="${window._catFilter === c.id ? 'active' : ''}" onclick="setCatFilter('${c.id}')">${icon(c.id, 14)} ${c.label}</button>`).join('')}
   </div>`;
   if (window._catFilter === 'yoga') {
@@ -816,6 +877,13 @@ function renderExplore() {
       ${chips}
       <p class="sub" style="margin-top:-6px">${t('yogaDesc')}</p>
       ${yogaRoutines().map(yogaCardHtml).join('')}`;
+  }
+  if (window._catFilter === 'breathwork') {
+    return `<h1>${t('exTitle')}</h1><p class="sub">${t('exSub')}</p>
+      <input type="text" id="searchInput" placeholder="${t('searchPlaceholder')}" value="${escapeHtml(window._search)}" oninput="setSearch(this.value)" style="margin-bottom:12px">
+      ${chips}
+      <p class="sub" style="margin-top:-6px">${t('breathworkDesc')}</p>
+      ${breathTechniques().map(breathCardHtml).join('')}`;
   }
   const durOpts = [['alle', t('durationAll')], ['short', t('durationShort')], ['medium', t('durationMedium')], ['long', t('durationLong')]];
   const durChips = `<div class="chips">${durOpts.map(([id, label]) => `<button class="${window._durFilter === id ? 'active' : ''}" onclick="setDurFilter('${id}')">${label}</button>`).join('')}</div>`;
@@ -1202,18 +1270,25 @@ function setReminderTime(v) { state.reminderTime = v; save(); if (state.notifOn)
 
 /* ---------- Breathing overlay (animated) ---------- */
 const BR_R = 92, BR_C = 2 * Math.PI * BR_R;
-let brRaf = null, brPhase = 0, brRunning = false, brStart = null, brTempoMs = 4000;
-function startBreathing() {
+let brRaf = null, brPhaseIdx = 0, brRunning = false, brStart = null, currentBreathTech = null;
+function startBreathing(techId) {
+  const tech = breathTechniques().find(x => x.id === techId) || breathTechniques()[0];
+  currentBreathTech = tech;
   const b = t('breath');
-  brPhase = 0; brRunning = false; brStart = null;
+  brPhaseIdx = 0; brRunning = false; brStart = null;
+  document.getElementById('breathTitle').textContent = tech.title;
   document.getElementById('orbPhase').textContent = b.press;
   document.getElementById('orbCount').textContent = '';
   document.getElementById('bRound').textContent = '';
   document.getElementById('brStart').textContent = b.start;
   document.getElementById('brEnd').textContent = b.end;
-  document.getElementById('tempoLabel').innerHTML = b.pace + ': <b id="brTempoVal">4</b> ' + b.sec + '<input type="range" id="brTempo" min="3" max="6" step="0.5" value="4">';
+  if (tech.adjustable) {
+    document.getElementById('tempoLabel').innerHTML = b.pace + ': <b id="brTempoVal">4</b> ' + b.sec + '<input type="range" id="brTempo" min="3" max="6" step="0.5" value="4">';
+    document.getElementById('brTempo').oninput = e => { document.getElementById('brTempoVal').textContent = e.target.value; };
+  } else {
+    document.getElementById('tempoLabel').innerHTML = '';
+  }
   document.getElementById('breathOverlay').classList.add('show');
-  document.getElementById('brTempo').oninput = e => { document.getElementById('brTempoVal').textContent = e.target.value; };
   document.getElementById('brStart').onclick = toggleBreath;
 }
 function toggleBreath() {
@@ -1224,29 +1299,37 @@ function toggleBreath() {
 }
 function easeInOut(x) { return x < 0.5 ? 2*x*x : 1 - Math.pow(-2*x+2, 2) / 2; }
 function runBreathTick() {
-  const b = t('breath');
   const tick = ts => {
-    if (!brRunning) return;
+    if (!brRunning || !currentBreathTech) return;
     const orb = document.getElementById('orb');
     if (!orb) { brRaf = null; return; }
-    const tempoEl = document.getElementById('brTempo');
-    brTempoMs = (tempoEl ? parseFloat(tempoEl.value) : 4) * 1000;
+    const phases = currentBreathTech.phases;
+    const phase = phases[brPhaseIdx % phases.length];
+    let phaseMs;
+    if (currentBreathTech.adjustable) {
+      const tempoEl = document.getElementById('brTempo');
+      phaseMs = (tempoEl ? parseFloat(tempoEl.value) : 4) * 1000;
+    } else {
+      phaseMs = (phase.seconds || 4) * 1000;
+    }
     if (brStart === null) brStart = ts;
-    const frac = Math.min((ts - brStart) / brTempoMs, 1);
-    const ph = brPhase % 4;
+    const frac = Math.min((ts - brStart) / phaseMs, 1);
     let bv;
-    if (ph === 0) bv = easeInOut(frac); else if (ph === 1) bv = 1; else if (ph === 2) bv = easeInOut(1 - frac); else bv = 0;
+    if (phase.type === 'in') bv = easeInOut(frac);
+    else if (phase.type === 'holdFull') bv = 1;
+    else if (phase.type === 'out') bv = easeInOut(1 - frac);
+    else bv = 0;
     orb.style.transform = `translate(-50%,-50%) scale(${(0.5 + 0.5*bv).toFixed(3)})`;
     const a1 = document.getElementById('aura1'), a2 = document.getElementById('aura2');
     if (a1) { a1.style.transform = `translate(-50%,-50%) scale(${(0.6+0.5*bv).toFixed(3)})`; a1.style.opacity = (0.14+0.34*bv).toFixed(2); }
     if (a2) { a2.style.transform = `translate(-50%,-50%) scale(${(0.72+0.82*bv).toFixed(3)})`; a2.style.opacity = (0.08+0.2*bv).toFixed(2); }
     const ring = document.getElementById('brRing');
     if (ring) ring.style.strokeDashoffset = (BR_C * (1 - bv)).toFixed(1);
-    document.getElementById('orbPhase').textContent = b.phases[ph];
-    const secs = Math.ceil((brTempoMs - (ts - brStart)) / 1000);
+    document.getElementById('orbPhase').textContent = phase.label;
+    const secs = Math.ceil((phaseMs - (ts - brStart)) / 1000);
     document.getElementById('orbCount').textContent = secs > 0 ? secs : '';
-    document.getElementById('bRound').textContent = b.round + ' ' + (Math.floor(brPhase/4) + 1);
-    if (frac >= 1) { brPhase++; brStart = null; }
+    document.getElementById('bRound').textContent = t('breath').round + ' ' + (Math.floor(brPhaseIdx / phases.length) + 1);
+    if (frac >= 1) { brPhaseIdx++; brStart = null; }
     brRaf = requestAnimationFrame(tick);
   };
   brRaf = requestAnimationFrame(tick);
@@ -1255,6 +1338,7 @@ function stopBreathTick() { brRunning = false; if (brRaf) { cancelAnimationFrame
 function stopBreathing() {
   stopBreathTick();
   document.getElementById('breathOverlay').classList.remove('show');
+  currentBreathTech = null;
 }
 
 /* ---------- Yoga player (animated) ---------- */
