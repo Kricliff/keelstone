@@ -50,7 +50,7 @@ Fra 2026-07-22 er fargepaletten hentet direkte fra cliffordcoaching.no for å sk
 - Vanilla JS + localStorage, ingen rammeverk (samme filosofi som Together)
 - i18n: `T[lang][key]` + `t(key)`; `CATEGORIES[lang]` og `EXERCISES[lang]` er parallelle strukturer med samme id-er og rekkefølge på tvers av språk
 - Fire faner: Hjem, Utforsk, Fremgang, Profil (se «UX-redesign» under for detaljer per fane)
-- `LS_KEY = 'keelstone_state_v1'`, `FREE_EXERCISE_IDS = new Set(['fokus-1', 'ro-1'])`
+- `LS_KEY = 'keelstone_state_v1'`, `FREE_EXERCISE_IDS = new Set(['fokus-1', 'ro-1', 'selvtillit-1', 'restitusjon-1'])` (én gratis øvelse per kategori, 2026-07-23)
 - Capacitor 8 (iOS + Android ikke lagt til ennå, kjør `npx cap add ios` / `npx cap add android` når native oppsett skal starte), RevenueCat for abonnement (samme oppsett som Together, API-nøkkel ikke satt inn ennå)
 - `npm install --legacy-peer-deps` (RevenueCat v9 + Capacitor v8)
 
@@ -65,6 +65,15 @@ Fullstendig UX-oppgradering, gjort etter research på ledende meditasjons-/menta
 - **Øvelsesspilleren:** tidsbasert fremdriftslinje (fyller seg over oppgitt varighet), favoritt-hjerte i header, fullført-tilstand med egen suksesskort i stedet for bare deaktivert knapp.
 - **Profil:** tilpassbart tidspunkt for daglig påminnelse (`state.reminderTime`, `<input type="time">`, erstatter fast kl. 09:00), fokusvelger (samme kategorier som onboarding).
 - Alle nye datavisualiseringer fulgte `dataviz`-skillets prosedyre: form først, deretter validert farge (`validate_palette.js`), sekundær koding (ikon+label) der kontrast-WARN krevde det.
+
+## Runde 2-funksjoner (2026-07-23)
+
+- **Onboarding-fiks:** `#app.onboarding main` manglet `env(safe-area-inset-top)` siden header (som normalt bærer safe-area-paddingen) skjules under onboarding — overskriften ble klippet av notch/statuslinje på ekte enheter. Fikset med egen CSS-regel.
+- **Gratis-nivå utvidet:** fra 2 faste øvelser til én øvelse per kategori (`fokus-1, ro-1, selvtillit-1, restitusjon-1`), pluss oppdatert `freeDesc`-tekst.
+- **«Godt å se deg igjen»-prompt:** `state.lastOpenDate` spores; `checkComeback()` kjøres ved init og viser en modal hvis det er ≥3 dager siden forrige økt (samme modal-mønster som paywall). Merk: verken Together eller Keelstone hadde dette fra før — det er en ny, felles UX-idé, ikke portert fra en eksisterende Together-funksjon.
+- **Coach-kontaktskjema (kun norsk):** nytt kort i Profil, synlig kun når `state.lang === 'no'`. Åpner et skjema (Navn/Telefon/E-post/Grunn) som bygger en `mailto:`-lenke til `keelstone@cliffordcoaching.no` med prefylt emne/brødtekst og navigerer dit via `window.location.href` — ingen backend, konsistent med appens no-backend-filosofi. Bruker lover 24-timers svar i UI-teksten.
+- **Yoga-øktspiller:** ny seksjon i Utforsk, alltid Pro-låst. `POSE_PATHS` (9 håndtegnede strekfigur-positurer, delt SVG viewBox `0 0 120 150`) + `YOGA_ROUTINES_DEF` (3 ruter: Morgenflyt, Kontorpause, Kveldsro, 4-5 positurer hver). Egen fullskjerm-overlay (`#yogaOverlay`) strukturelt lik `#breathOverlay` men enklere (ingen partikkelanimasjon), med nedtellingstimer per positur, autofremgang, pause/neste/avslutt. Fullførte økter logges i `state.completedIds` med syntetisk id `yoga-<routineId>:<dato>` — teller mot streak/aktivitetsdiagrammer, men ikke mot kategori-balanse (siden yoga ikke er en av de 4 hovedkategoriene, med hensikt).
+- **3-dagers gratis prøveperiode:** kun UI-tekst lagt til i paywall-modalen (`trialBadge`/`trialNote`, CTA endret til «Start 3 dager gratis»). Selve prøveperiode-mekanikken må settes opp som en Introductory Offer på `com.kricliff.keelstone.pro.monthly` i App Store Connect + verifiseres i RevenueCat — kan ikke gjøres fra kode, krever Kristians innlogging.
 
 ## Status (2026-07-22)
 
