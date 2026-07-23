@@ -245,7 +245,7 @@
       <circle id="splashDot" cx="50" cy="50" r="13" fill="#D9B25C"/>
     </svg>
     <div id="splashWord">Keelstone</div>
-    <div id="splashTagline"></div>
+    <div id="splashTagline">Steady as a keel. Solid as a stone.</div>
   </div>
   <header>
     <div class="brand"><span class="mark">K</span> Keelstone</div>
@@ -356,7 +356,6 @@ const T = {
     ritualMissing: 'Skriv inn både mantra og fokuspunkt',
     ritualBreathLabel: 'Pust med meg', ritualMantraSub: 'Pust, og kjenn etter.', ritualFocusSub: 'Du er klar.',
     ritualNext: 'Neste', ritualFinish: 'Fullfør',
-    splashTagline: 'Stø som en kjøl. Fast som stein.',
   },
   en: {
     appname: 'Keelstone', navHome: 'Home', navExplore: 'Explore', navProgress: 'Progress', navProfile: 'Profile',
@@ -405,7 +404,6 @@ const T = {
     ritualMissing: 'Enter both a mantra and a focus cue',
     ritualBreathLabel: 'Breathe with me', ritualMantraSub: 'Breathe, and feel it.', ritualFocusSub: "You're ready.",
     ritualNext: 'Next', ritualFinish: 'Finish',
-    splashTagline: 'Steady as a keel. Solid as a stone.',
   },
 };
 function t(k) { return T[state.lang][k]; }
@@ -1357,8 +1355,6 @@ function closeRitual() {
 
 /* ---------- Init ---------- */
 load();
-const splashTaglineEl = document.getElementById('splashTagline');
-if (splashTaglineEl) splashTaglineEl.textContent = t('splashTagline');
 applyTheme();
 checkComeback();
 render();
