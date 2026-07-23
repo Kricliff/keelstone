@@ -202,6 +202,7 @@
   .bParticle { position: absolute; border-radius: 50%; background: #fff; opacity: 0; animation: bdrift linear infinite; }
   @keyframes bdrift { 0%{opacity:0;transform:translateY(16px)} 25%{opacity:.5} 75%{opacity:.35} 100%{opacity:0;transform:translateY(-56px)} }
   .bRound { font-size: 12.5px; color: rgba(234,241,245,.65); min-height: 1.2em; }
+  .bSafetyNote { font-size: 12px; color: rgba(234,241,245,.55); text-align: center; max-width: 260px; margin: 4px auto 0; line-height: 1.4; }
   #breathOverlay .controls { padding-top: 10px; padding-bottom: 26px; width: 100%; max-width: 340px; }
   #breathOverlay .tempoRow { text-align: center; font-size: 13px; color: rgba(234,241,245,.75); margin-bottom: 15px; }
   #breathOverlay .tempoRow input { width: 100%; margin-top: 8px; accent-color: var(--sand); }
@@ -274,6 +275,7 @@
         <div class="orbTxt"><div class="orbPhase" id="orbPhase"></div><div class="orbCount" id="orbCount"></div></div>
       </div>
       <div class="bRound" id="bRound"></div>
+      <div class="bSafetyNote" id="bSafetyNote"></div>
     </div>
     <div class="controls">
       <div class="tempoRow" id="tempoLabel"></div>
@@ -332,7 +334,7 @@ const T = {
     noSub: 'Fant ikke abonnement', restored: 'Pro-tilgang gjenopprettet', noActiveSub: 'Ingen aktivt abonnement funnet',
     purchaseInAppOnly: 'Kjøp er bare tilgjengelig i appen', restoreInAppOnly: 'Bare tilgjengelig i appen',
     onbTitle: 'Velkommen til Keelstone', onbSub: 'Hva ønsker du å jobbe mest med akkurat nå? Vi tilpasser forslagene dine.', onbSkip: 'Hopp over, vis meg alt',
-    breath: { press: 'Trykk for å starte', pace: 'Tempo', sec: 'sek per fase', start: 'Start', pause: 'Pause', cont: 'Fortsett', end: 'Avslutt', round: 'Runde', paused: 'Pause', doneLabel: 'Ferdig!', doneCloseBtn: 'Lukk' },
+    breath: { press: 'Trykk for å starte', pace: 'Tempo', sec: 'sek per fase', start: 'Start', pause: 'Pause', cont: 'Fortsett', end: 'Avslutt', round: 'Runde', paused: 'Pause', doneLabel: 'Ferdig!', doneCloseBtn: 'Lukk', safetyNote: 'Du kan avslutte når som helst, for eksempel hvis du blir svimmel.' },
     breathworkTitle: 'Pusteøvelser', breathworkDesc: 'Ulike pustemønstre for ulike behov. Velg det som passer situasjonen din.',
     notifTitle: 'Keelstone', notifBody: 'Tid for dagens mentale trening.',
     dateLocale: 'nb-NO',
@@ -398,7 +400,7 @@ const T = {
     noSub: 'Couldn\'t find a subscription', restored: 'Pro access restored', noActiveSub: 'No active subscription found',
     purchaseInAppOnly: 'Purchases are only available in the app', restoreInAppOnly: 'Only available in the app',
     onbTitle: 'Welcome to Keelstone', onbSub: 'What do you want to work on most right now? We\'ll tailor your suggestions.', onbSkip: 'Skip, show me everything',
-    breath: { press: 'Press start', pace: 'Pace', sec: 'sec per phase', start: 'Start', pause: 'Pause', cont: 'Continue', end: 'End', round: 'Round', paused: 'Paused', doneLabel: 'Done!', doneCloseBtn: 'Close' },
+    breath: { press: 'Press start', pace: 'Pace', sec: 'sec per phase', start: 'Start', pause: 'Pause', cont: 'Continue', end: 'End', round: 'Round', paused: 'Paused', doneLabel: 'Done!', doneCloseBtn: 'Close', safetyNote: 'You can stop anytime, for example if you feel dizzy.' },
     breathworkTitle: 'Breathing exercises', breathworkDesc: 'Different breathing patterns for different needs. Pick the one that fits your moment.',
     notifTitle: 'Keelstone', notifBody: "Time for today's mental training.",
     dateLocale: 'en-US',
@@ -1413,6 +1415,7 @@ function startBreathing(techId) {
   document.getElementById('orbPhase').textContent = b.press;
   document.getElementById('orbCount').textContent = '';
   document.getElementById('bRound').textContent = '';
+  document.getElementById('bSafetyNote').textContent = b.safetyNote;
   document.getElementById('brStart').textContent = b.start;
   document.getElementById('brEnd').textContent = b.end;
   document.getElementById('brEnd').style.display = '';
@@ -1483,6 +1486,7 @@ function finishBreathingSession() {
   if (orb) orb.style.transform = 'translate(-50%,-50%) scale(0.75)';
   document.getElementById('orbPhase').textContent = b.doneLabel;
   document.getElementById('orbCount').textContent = '';
+  document.getElementById('bSafetyNote').textContent = '';
   const startBtn = document.getElementById('brStart');
   startBtn.textContent = b.doneCloseBtn;
   startBtn.onclick = stopBreathing;
