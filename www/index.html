@@ -217,6 +217,8 @@
   #yogaOverlay .routineTitle { font-size: 0.85rem; opacity: 0.85; }
   #yogaStage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; width: 100%; }
   .yogaArtWrap { width: 190px; height: 200px; display: flex; align-items: center; justify-content: center; }
+  .yogaGlyph { animation: yogaGlyphPulse 3.2s ease-in-out infinite; transform-origin: 50% 50%; filter: drop-shadow(0 0 14px rgba(217,178,92,0.35)); }
+  @keyframes yogaGlyphPulse { 0%, 100% { transform: scale(0.92); opacity: 0.8; } 50% { transform: scale(1.03); opacity: 1; } }
   .yogaPoseName { font-size: 1.2rem; font-weight: 700; text-align: center; }
   .yogaCue { font-size: 0.85rem; color: rgba(255,255,255,0.75); text-align: center; max-width: 260px; line-height: 1.4; margin-top: -6px; }
   .yogaCount { font-size: 2.6rem; font-weight: 700; min-height: 1em; }
@@ -366,6 +368,9 @@ const T = {
     reframeBtn: 'Omramm en tanke', reframeSituationLabel: 'Hva skjedde?', reframeThoughtLabel: 'Hva tenkte du med en gang?',
     reframeReframeLabel: 'Hvordan kan du se det annerledes?', reframeSaveBtn: 'Lagre', reframeMissing: 'Fyll ut alle tre feltene',
     reframeHistoryTitle: 'Tidligere omramminger', reframeEmpty: 'Ingen omramminger lagret ennå.',
+    moodLowTitle: 'Går det greit?', moodLowMsg: 'En kort pusteøvelse kan hjelpe deg å roe deg litt ned akkurat nå.', moodLowCta: 'Start pusteøvelse',
+    moodHighTitle: 'Godt å høre!', moodHighMsg: 'Var det noe som gikk bra i dag? Skriv det ned i mestringsloggen, så har du det å se tilbake på.', moodHighCta: 'Åpne mestringslogg',
+    moodMidToast: 'Humør registrert. Bra å sjekke inn med deg selv.', moodDismiss: 'Ikke nå',
   },
   en: {
     appname: 'Keelstone', navHome: 'Home', navExplore: 'Explore', navProgress: 'Progress', navProfile: 'Profile',
@@ -428,6 +433,9 @@ const T = {
     reframeBtn: 'Reframe a thought', reframeSituationLabel: 'What happened?', reframeThoughtLabel: 'What did you think right away?',
     reframeReframeLabel: 'How else could you look at it?', reframeSaveBtn: 'Save', reframeMissing: 'Fill in all three fields',
     reframeHistoryTitle: 'Previous reframes', reframeEmpty: 'No reframes saved yet.',
+    moodLowTitle: 'Rough one?', moodLowMsg: 'A short breathing exercise can help you settle a bit right now.', moodLowCta: 'Start breathing exercise',
+    moodHighTitle: 'Good to hear!', moodHighMsg: 'Did something go well today? Write it down in your mastery log so you have it to look back on.', moodHighCta: 'Open mastery log',
+    moodMidToast: 'Mood logged. Good to check in with yourself.', moodDismiss: 'Not now',
   },
 };
 function t(k) { return T[state.lang][k]; }
@@ -627,20 +635,23 @@ function appMark(size) {
 }
 
 /* ---------- Yoga pose art + routines ---------- */
+/* Abstract animated glyphs, not literal body figures - each pose gets its own shape
+   in the app's existing line-icon language (arcs, rings), gently pulsing like the
+   breathing orb. The written cue carries the instruction; the glyph sets the mood. */
 const POSE_PATHS = {
-  mountain: '<circle cx="60" cy="18" r="10"/><path d="M60,28 L60,95 M60,38 L42,74 M60,38 L78,74 M60,95 L50,136 M60,95 L70,136"/><circle cx="60" cy="38" r="4.5" fill="currentColor" stroke="none"/><circle cx="60" cy="95" r="4.5" fill="currentColor" stroke="none"/><line x1="26" y1="136" x2="94" y2="136" stroke-width="4" opacity="0.3"/>',
-  forwardfold: '<circle cx="32" cy="58" r="10"/><path d="M32,68 L46,74 L60,94 M46,74 L30,118 M60,94 L52,136 M60,94 L70,136"/><circle cx="46" cy="74" r="4.5" fill="currentColor" stroke="none"/><circle cx="60" cy="94" r="4.5" fill="currentColor" stroke="none"/><line x1="22" y1="136" x2="92" y2="136" stroke-width="4" opacity="0.3"/>',
-  downdog: '<circle cx="42" cy="78" r="10"/><path d="M60,42 L24,118 M60,42 L98,118 M60,42 L42,78"/><circle cx="60" cy="42" r="4.5" fill="currentColor" stroke="none"/><line x1="12" y1="122" x2="108" y2="122" stroke-width="4" opacity="0.3"/>',
-  cat: '<circle cx="26" cy="102" r="9"/><path d="M18,120 L34,90 L60,74 L86,70 L100,120 M34,90 L26,102"/><circle cx="34" cy="90" r="4.5" fill="currentColor" stroke="none"/><circle cx="86" cy="70" r="4.5" fill="currentColor" stroke="none"/><line x1="10" y1="124" x2="108" y2="124" stroke-width="4" opacity="0.3"/>',
-  cow: '<circle cx="20" cy="74" r="9"/><path d="M18,110 L34,95 L60,113 L86,95 L100,110 M34,95 L20,74"/><circle cx="34" cy="95" r="4.5" fill="currentColor" stroke="none"/><circle cx="86" cy="95" r="4.5" fill="currentColor" stroke="none"/><line x1="10" y1="114" x2="108" y2="114" stroke-width="4" opacity="0.3"/>',
-  cobra: '<circle cx="62" cy="54" r="10"/><path d="M42,132 L96,132 M42,132 L48,94 L60,60 M48,94 L30,108"/><circle cx="42" cy="132" r="4.5" fill="currentColor" stroke="none"/><line x1="42" y1="132" x2="96" y2="132" stroke-width="4" opacity="0.3"/>',
-  childspose: '<circle cx="30" cy="106" r="9"/><path d="M96,78 L34,106 L14,110 M96,78 L86,120 M96,78 L106,120"/><circle cx="96" cy="78" r="4.5" fill="currentColor" stroke="none"/><line x1="8" y1="124" x2="108" y2="124" stroke-width="4" opacity="0.3"/>',
-  seatedtwist: '<circle cx="67" cy="60" r="10"/><path d="M60,118 L65,70 M65,88 L92,98 M65,92 L43,108"/><circle cx="60" cy="118" r="4.5" fill="currentColor" stroke="none"/><line x1="32" y1="130" x2="88" y2="130" stroke-width="4" opacity="0.3"/>',
-  tree: '<circle cx="60" cy="32" r="10"/><path d="M48,20 L60,45 L72,20 M60,45 L60,95 L54,136 M60,95 L80,100 L58,92"/><circle cx="60" cy="45" r="4.5" fill="currentColor" stroke="none"/><circle cx="60" cy="95" r="4.5" fill="currentColor" stroke="none"/><line x1="33" y1="136" x2="87" y2="136" stroke-width="4" opacity="0.3"/>',
+  mountain: '<path d="M20 75 L50 25 L80 75"/><circle cx="50" cy="25" r="4" fill="currentColor" stroke="none"/>',
+  forwardfold: '<path d="M25 30 Q35 55 68 68"/><circle cx="25" cy="30" r="4" fill="currentColor" stroke="none"/>',
+  downdog: '<path d="M12 78 L50 35 L88 78"/><line x1="8" y1="78" x2="20" y2="78"/><line x1="80" y1="78" x2="92" y2="78"/>',
+  cat: '<path d="M15 55 Q50 22 85 55"/>',
+  cow: '<path d="M15 42 Q50 78 85 42"/>',
+  cobra: '<path d="M18 80 Q35 80 50 50 Q58 32 68 25"/><circle cx="68" cy="25" r="4" fill="currentColor" stroke="none"/>',
+  childspose: '<circle cx="50" cy="50" r="30" opacity="0.4"/><circle cx="50" cy="50" r="20" opacity="0.7"/><circle cx="50" cy="50" r="9" fill="currentColor" stroke="none"/>',
+  seatedtwist: '<path d="M32 28 Q72 28 72 50 Q72 72 32 72"/>',
+  tree: '<line x1="50" y1="35" x2="50" y2="82"/><circle cx="50" cy="22" r="10"/>',
 };
 function poseArt(key, size) {
   size = size || 160;
-  return `<svg width="${size}" height="${Math.round(size * 1.25)}" viewBox="0 0 120 150" fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round">${POSE_PATHS[key] || ''}</svg>`;
+  return `<svg class="yogaGlyph" width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--sand)">${POSE_PATHS[key] || ''}</svg>`;
 }
 const POSE_NAMES = {
   no: { mountain: 'Fjellstilling', forwardfold: 'Frembøy', downdog: 'Nedadvendt hund', cat: 'Katt', cow: 'Ku', cobra: 'Kobra', childspose: 'Barnets positur', seatedtwist: 'Sittende vridning', tree: 'Trestilling' },
@@ -671,9 +682,9 @@ const POSE_CUES = {
   },
 };
 const YOGA_ROUTINES_DEF = [
-  { id: 'yoga-morning', titleNo: 'Morgenflyt', titleEn: 'Morning flow', poses: [['mountain', 40], ['forwardfold', 45], ['downdog', 60], ['cobra', 45], ['childspose', 60]] },
-  { id: 'yoga-deskbreak', titleNo: 'Kontorpause', titleEn: 'Desk break', poses: [['seatedtwist', 30], ['cat', 30], ['cow', 30], ['forwardfold', 40], ['mountain', 20]] },
-  { id: 'yoga-evening', titleNo: 'Kveldsro', titleEn: 'Evening wind-down', poses: [['childspose', 60], ['cobra', 40], ['seatedtwist', 40], ['forwardfold', 40], ['mountain', 20]] },
+  { id: 'yoga-morning', titleNo: 'Morgenflyt', titleEn: 'Morning flow', poses: [['mountain', 20], ['forwardfold', 20], ['downdog', 20], ['cobra', 20], ['childspose', 30]] },
+  { id: 'yoga-deskbreak', titleNo: 'Kontorpause', titleEn: 'Desk break', poses: [['seatedtwist', 15], ['cat', 15], ['cow', 15], ['forwardfold', 20], ['mountain', 20]] },
+  { id: 'yoga-evening', titleNo: 'Kveldsro', titleEn: 'Evening wind-down', poses: [['childspose', 30], ['cobra', 20], ['seatedtwist', 15], ['forwardfold', 20], ['mountain', 20]] },
 ];
 function yogaRoutines() {
   return YOGA_ROUTINES_DEF.map(r => ({
@@ -872,7 +883,31 @@ function renderHome() {
     </div>
   `;
 }
-function setMood(v) { state.checkins[todayStr()] = v; save(); render(); }
+function setMood(v) {
+  state.checkins[todayStr()] = v;
+  save();
+  render();
+  if (v <= 2) {
+    document.getElementById('modalSheet').innerHTML = `
+      <h2>${t('moodLowTitle')}</h2>
+      <p class="sub">${t('moodLowMsg')}</p>
+      <button class="btn full sand" onclick="closeModal();startBreathing('box')">${t('moodLowCta')}</button>
+      <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('moodDismiss')}</button>
+    `;
+    document.getElementById('modalWrap').classList.add('show');
+  } else if (v >= 4) {
+    document.getElementById('modalSheet').innerHTML = `
+      <h2>${t('moodHighTitle')}</h2>
+      <p class="sub">${t('moodHighMsg')}</p>
+      <button class="btn full sand" onclick="closeModal();openMasteryLog()">${t('moodHighCta')}</button>
+      <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('moodDismiss')}</button>
+    `;
+    document.getElementById('modalWrap').classList.add('show');
+  } else {
+    toast(t('moodMidToast'));
+  }
+}
+function openMasteryLog() { window._progressTab = 'mastery'; navigate('progress'); }
 
 /* ---------- Explore ---------- */
 function exCardHtml(e) {
