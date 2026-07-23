@@ -214,6 +214,15 @@
   #yogaOverlay .btnRow button { flex: 1; padding: 12px; border-radius: 12px; font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; }
   #yogaOverlay .yPause { background: var(--sand); color: #fff; }
   #yogaOverlay .ySkip { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.4); }
+  #ritualOverlay { position: absolute; inset: 0; background: radial-gradient(circle at 50% 34%, var(--blue), var(--blue-d) 78%); z-index: 40; display: none; flex-direction: column; align-items: center; color: #eaf1f5; padding: calc(20px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom)); overflow: hidden; text-align: center; }
+  #ritualOverlay.show { display: flex; }
+  #ritualOverlay .closeRow { width: 100%; display: flex; justify-content: flex-end; z-index: 5; }
+  #ritualOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; }
+  #ritualStage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; width: 100%; }
+  .ritualLabel { font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.7; }
+  .ritualText { font-size: 1.5rem; font-weight: 700; line-height: 1.35; max-width: 320px; }
+  .ritualSub { font-size: 0.9rem; opacity: 0.75; }
+  #ritualOverlay .btn.full { max-width: 300px; }
 </style>
 </head>
 <body>
@@ -262,6 +271,11 @@
       <button class="yPause" id="yogaPauseBtn" onclick="toggleYogaPause()"></button>
       <button class="ySkip" id="yogaSkipBtn" onclick="skipYogaPose()"></button>
     </div>
+  </div>
+
+  <div id="ritualOverlay">
+    <div class="closeRow"><button onclick="closeRitual()">✕</button></div>
+    <div id="ritualStage"></div>
   </div>
 
   <div class="modalWrap" id="modalWrap"><div class="modalSheet" id="modalSheet"></div></div>
@@ -316,6 +330,12 @@ const T = {
     yogaTitle: 'Yoga', yogaDesc: 'Lette, animerte yogaøkter du kan følge steg for steg.', yogaPosesLabel: 'positurer',
     yogaPause: 'Pause', yogaResume: 'Fortsett', yogaSkip: 'Neste', yogaClose: 'Lukk',
     yogaDoneTitle: 'Økt fullført', yogaDoneMsg: 'Bra jobbet. Fremgangen din er lagret.',
+    ritualTitle: 'Ditt ritual', ritualSetupDesc: 'Lag et fast ritual du kan kjøre rett før en konkurranse, eksamen eller presentasjon: ett mantra, en kort pusteøvelse og et fokuspunkt.',
+    ritualSetupBtn: 'Sett opp ritualet ditt', ritualEditBtn: 'Rediger', ritualStartBtn: 'Start ritual',
+    ritualMantraLabel: 'Ditt mantra', ritualFocusLabel: 'Fokuspunkt', ritualSaveBtn: 'Lagre ritual', ritualDeleteBtn: 'Fjern ritual',
+    ritualMissing: 'Skriv inn både mantra og fokuspunkt',
+    ritualBreathLabel: 'Pust med meg', ritualMantraSub: 'Pust, og kjenn etter.', ritualFocusSub: 'Du er klar.',
+    ritualNext: 'Neste', ritualFinish: 'Fullfør',
   },
   en: {
     appname: 'Keelstone', navHome: 'Home', navExplore: 'Explore', navProgress: 'Progress', navProfile: 'Profile',
@@ -358,6 +378,12 @@ const T = {
     yogaTitle: 'Yoga', yogaDesc: 'Light, animated yoga sessions you can follow step by step.', yogaPosesLabel: 'poses',
     yogaPause: 'Pause', yogaResume: 'Resume', yogaSkip: 'Next', yogaClose: 'Close',
     yogaDoneTitle: 'Session complete', yogaDoneMsg: 'Great work. Your progress is saved.',
+    ritualTitle: 'Your ritual', ritualSetupDesc: 'Build a fixed ritual you can run right before a competition, exam, or presentation: one mantra, a short breathing exercise, and a focus cue.',
+    ritualSetupBtn: 'Set up your ritual', ritualEditBtn: 'Edit', ritualStartBtn: 'Start ritual',
+    ritualMantraLabel: 'Your mantra', ritualFocusLabel: 'Focus cue', ritualSaveBtn: 'Save ritual', ritualDeleteBtn: 'Remove ritual',
+    ritualMissing: 'Enter both a mantra and a focus cue',
+    ritualBreathLabel: 'Breathe with me', ritualMantraSub: 'Breathe, and feel it.', ritualFocusSub: "You're ready.",
+    ritualNext: 'Next', ritualFinish: 'Finish',
   },
 };
 function t(k) { return T[state.lang][k]; }
@@ -472,7 +498,7 @@ const MOODS = ['😔', '😕', '😐', '🙂', '😄'];
 
 /* ---------- State ---------- */
 function detectLang() { const l = (navigator.language || 'en').toLowerCase(); return (l.startsWith('nb') || l.startsWith('nn') || l.startsWith('no')) ? 'no' : 'en'; }
-let state = { streak: 0, lastCompletedDate: null, completedIds: [], journal: [], notifOn: false, lang: null, goal: null, favorites: [], checkins: {}, reminderTime: '09:00', onboarded: false, theme: 'system', lastOpenDate: null };
+let state = { streak: 0, lastCompletedDate: null, completedIds: [], journal: [], notifOn: false, lang: null, goal: null, favorites: [], checkins: {}, reminderTime: '09:00', onboarded: false, theme: 'system', lastOpenDate: null, ritual: null };
 function load() {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -687,6 +713,17 @@ function renderHome() {
       <p style="margin-bottom:10px;font-size:0.9rem;color:var(--text-soft)">${t('quickBreathDesc')}</p>
       <button class="btn full sand" onclick="startBreathing()">${t('startBreathBtn')}</button>
     </div>
+    <h2>${t('ritualTitle')}</h2>
+    ${state.ritual
+      ? `<div class="card">
+          <p style="margin-bottom:10px;font-size:0.9rem;color:var(--text-soft)">${escapeHtml(state.ritual.mantra)}</p>
+          <button class="btn full sand" onclick="startRitual()">${t('ritualStartBtn')}</button>
+          <button class="btn ghost full" style="margin-top:6px" onclick="showRitualSetup()">${t('ritualEditBtn')}</button>
+        </div>`
+      : `<div class="card">
+          <p style="margin-bottom:10px;font-size:0.9rem;color:var(--text-soft)">${t('ritualSetupDesc')}</p>
+          <button class="btn full secondary" onclick="showRitualSetup()">${t('ritualSetupBtn')}</button>
+        </div>`}
   `;
 }
 function setMood(v) { state.checkins[todayStr()] = v; save(); render(); }
@@ -989,6 +1026,33 @@ function showContactModal() {
   `;
   document.getElementById('modalWrap').classList.add('show');
 }
+function showRitualSetup() {
+  const r = state.ritual || { mantra: '', focusNote: '' };
+  document.getElementById('modalSheet').innerHTML = `
+    <h2>${t('ritualTitle')}</h2>
+    <p class="sub">${t('ritualSetupDesc')}</p>
+    <div class="qBlock"><label>${t('ritualMantraLabel')}</label><input type="text" id="rMantra" value="${escapeHtml(r.mantra)}"></div>
+    <div class="qBlock"><label>${t('ritualFocusLabel')}</label><textarea id="rFocus" rows="2">${escapeHtml(r.focusNote)}</textarea></div>
+    <button class="btn full sand" onclick="saveRitual()">${t('ritualSaveBtn')}</button>
+    ${state.ritual ? `<button class="btn full ghost" style="margin-top:8px" onclick="deleteRitual()">${t('ritualDeleteBtn')}</button>` : ''}
+  `;
+  document.getElementById('modalWrap').classList.add('show');
+}
+function saveRitual() {
+  const mantra = document.getElementById('rMantra').value.trim();
+  const focusNote = document.getElementById('rFocus').value.trim();
+  if (!mantra || !focusNote) { toast(t('ritualMissing')); return; }
+  state.ritual = { mantra, focusNote };
+  save();
+  closeModal();
+  render();
+}
+function deleteRitual() {
+  state.ritual = null;
+  save();
+  closeModal();
+  render();
+}
 function submitContact() {
   const name = document.getElementById('cName').value.trim();
   const phone = document.getElementById('cPhone').value.trim();
@@ -1200,6 +1264,73 @@ function closeYoga() {
   document.getElementById('yogaOverlay').classList.remove('show');
   yogaState = null;
   render();
+}
+
+/* ---------- Pre-performance ritual player ---------- */
+let ritualStage = 0, ritRaf = null, ritPhase = 0, ritStart = null;
+function renderRitualStageHtml() {
+  const r = state.ritual;
+  if (ritualStage === 0) {
+    return `<div class="ritualLabel">${t('ritualTitle')}</div><div class="ritualText">${escapeHtml(r.mantra)}</div><div class="ritualSub">${t('ritualMantraSub')}</div><button class="btn full sand" style="margin-top:10px" onclick="advanceRitualStage()">${t('ritualNext')}</button>`;
+  }
+  if (ritualStage === 1) {
+    return `
+      <div class="ritualLabel">${t('ritualBreathLabel')}</div>
+      <div class="orbWrap">
+        <div class="aura" id="ritAura2"></div><div class="aura" id="ritAura1"></div>
+        <div class="orb" id="ritOrb"></div>
+        <svg width="220" height="220" viewBox="0 0 220 220" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)">
+          <circle cx="110" cy="110" r="92" fill="none" stroke="rgba(255,255,255,.13)" stroke-width="4"/>
+          <circle id="ritRing" cx="110" cy="110" r="92" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-dasharray="578.1" stroke-dashoffset="578.1" transform="rotate(-90 110 110)"/>
+        </svg>
+      </div>
+      <button class="btn full ghost" style="margin-top:10px;border:1px solid rgba(255,255,255,.4);color:#fff" onclick="advanceRitualStage()">${t('ritualNext')}</button>
+    `;
+  }
+  return `<div class="ritualLabel">${t('ritualTitle')}</div><div class="ritualText">${escapeHtml(r.focusNote)}</div><div class="ritualSub">${t('ritualFocusSub')}</div><button class="btn full sand" style="margin-top:10px" onclick="closeRitual()">${t('ritualFinish')}</button>`;
+}
+function startRitual() {
+  if (!state.ritual) return;
+  ritualStage = 0;
+  document.getElementById('ritualOverlay').classList.add('show');
+  document.getElementById('ritualStage').innerHTML = renderRitualStageHtml();
+}
+function advanceRitualStage() {
+  stopRitualBreath();
+  ritualStage++;
+  if (ritualStage > 2) { closeRitual(); return; }
+  document.getElementById('ritualStage').innerHTML = renderRitualStageHtml();
+  if (ritualStage === 1) { ritPhase = 0; ritStart = null; runRitualBreathTick(); }
+}
+function runRitualBreathTick() {
+  const tick = ts => {
+    const orb = document.getElementById('ritOrb');
+    if (!orb) { ritRaf = null; return; }
+    const tempoMs = 4000;
+    if (ritStart === null) ritStart = ts;
+    const frac = Math.min((ts - ritStart) / tempoMs, 1);
+    const ph = ritPhase % 4;
+    let bv;
+    if (ph === 0) bv = easeInOut(frac); else if (ph === 1) bv = 1; else if (ph === 2) bv = easeInOut(1 - frac); else bv = 0;
+    orb.style.transform = `translate(-50%,-50%) scale(${(0.5 + 0.5 * bv).toFixed(3)})`;
+    const a1 = document.getElementById('ritAura1'), a2 = document.getElementById('ritAura2');
+    if (a1) { a1.style.transform = `translate(-50%,-50%) scale(${(0.6 + 0.5 * bv).toFixed(3)})`; a1.style.opacity = (0.14 + 0.34 * bv).toFixed(2); }
+    if (a2) { a2.style.transform = `translate(-50%,-50%) scale(${(0.72 + 0.82 * bv).toFixed(3)})`; a2.style.opacity = (0.08 + 0.2 * bv).toFixed(2); }
+    const ring = document.getElementById('ritRing');
+    if (ring) ring.style.strokeDashoffset = (BR_C * (1 - bv)).toFixed(1);
+    if (frac >= 1) {
+      ritPhase++;
+      ritStart = null;
+      if (ritPhase >= 12) { advanceRitualStage(); return; }
+    }
+    ritRaf = requestAnimationFrame(tick);
+  };
+  ritRaf = requestAnimationFrame(tick);
+}
+function stopRitualBreath() { if (ritRaf) { cancelAnimationFrame(ritRaf); ritRaf = null; } }
+function closeRitual() {
+  stopRitualBreath();
+  document.getElementById('ritualOverlay').classList.remove('show');
 }
 
 /* ---------- Init ---------- */
