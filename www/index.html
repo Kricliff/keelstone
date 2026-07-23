@@ -315,6 +315,7 @@ const T = {
     weekDetailExercises: 'Øvelser', weekDetailMood: 'Humør', weekDetailJournal: 'Dagbok',
     weekDetailJournalCount: n => n + (n === 1 ? ' dagboknotat denne uken' : ' dagboknotater denne uken'),
     weekDetailNoJournal: 'Ingen dagboknotater denne uken.',
+    dayDetailEmpty: 'Ingen øvelser fullført denne dagen.', dayDetailNoJournal: 'Ingen dagboknotat denne dagen.', dayDetailNoMood: 'Ikke registrert',
     categoryBalanceTitle: 'Balanse mellom kategoriene',
     noActivityYet: 'Ingen fullførte øvelser ennå. Innsikten din dukker opp her når du kommer i gang.',
     journalTitle: 'Dagbok', journalSub: 'Tre enkle spørsmål hver dag bygger selvinnsikt over tid.',
@@ -391,6 +392,7 @@ const T = {
     weekDetailExercises: 'Exercises', weekDetailMood: 'Mood', weekDetailJournal: 'Journal',
     weekDetailJournalCount: n => n + (n === 1 ? ' journal entry this week' : ' journal entries this week'),
     weekDetailNoJournal: 'No journal entries this week.',
+    dayDetailEmpty: 'No exercises completed that day.', dayDetailNoJournal: 'No journal entry that day.', dayDetailNoMood: 'Not logged',
     categoryBalanceTitle: 'Category balance',
     noActivityYet: 'No completed exercises yet. Your insights will show up here once you get going.',
     journalTitle: 'Journal', journalSub: 'Three questions, every day. Builds self-awareness over time.',
@@ -1102,6 +1104,43 @@ function buildWeekChart() {
   const max = Math.max(1, ...days.map(d => d.count));
   return days.map(d => ({ ...d, h: Math.round(6 + (d.count / max) * 46) }));
 }
+function describeCompletedKey(key) {
+  const id = key.split(':')[0];
+  const ex = exs().find(e => e.id === id);
+  if (ex) return ex.title;
+  const yoga = yogaRoutines().find(r => r.id === id);
+  if (yoga) return yoga.title;
+  return id;
+}
+function showDayDetail(dateStr) {
+  const dayLabel = new Date(dateStr + 'T00:00:00').toLocaleDateString(t('dateLocale'), { weekday: 'long', day: 'numeric', month: 'long' });
+  const ids = state.completedIds.filter(k => k.split(':')[1] === dateStr);
+  const exerciseLines = ids.length
+    ? ids.map(k => `<p style="font-size:0.9rem;margin-top:6px">${escapeHtml(describeCompletedKey(k))}</p>`).join('')
+    : `<p class="sub" style="margin-top:6px">${t('dayDetailEmpty')}</p>`;
+  const mood = state.checkins[dateStr];
+  const entries = state.journal.filter(j => j.dateISO === dateStr);
+  const journalHtml = entries.length ? entries.map(j => `
+    <div class="card journalEntry">
+      <b>${t('qGood')}</b><p>${escapeHtml(j.good)}</p>
+      <b>${t('qHard')}</b><p>${escapeHtml(j.hard)}</p>
+      <b>${t('qFocus')}</b><p>${escapeHtml(j.focus)}</p>
+    </div>`).join('') : `<p class="sub">${t('dayDetailNoJournal')}</p>`;
+  document.getElementById('modalSheet').innerHTML = `
+    <h2>${dayLabel}</h2>
+    <div class="card">
+      <div class="cardLabel">${t('weekDetailExercises')}</div>
+      ${exerciseLines}
+    </div>
+    <div class="card">
+      <div class="cardLabel">${t('weekDetailMood')}</div>
+      <p style="font-size:1.6rem;margin-top:6px">${mood ? MOODS[mood - 1] : `<span class="sub" style="font-size:0.9rem">${t('dayDetailNoMood')}</span>`}</p>
+    </div>
+    <h2>${t('weekDetailJournal')}</h2>
+    ${journalHtml}
+  `;
+  document.getElementById('modalWrap').classList.add('show');
+}
 function buildTenWeekChart() {
   const weeks = [];
   for (let w = 9; w >= 0; w--) {
@@ -1179,7 +1218,7 @@ function renderInsights() {
   return `
     <div class="card">
       <div class="cardLabel">${t('weekChartTitle')}</div>
-      <div class="weekChart">${week.map(d => `<div class="weekBar"><span class="weekVal">${d.count || ''}</span><div class="weekBarFill" style="height:${d.h}px"></div><span class="weekDay ${d.isToday ? 'today' : ''}">${d.label}</span></div>`).join('')}</div>
+      <div class="weekChart">${week.map(d => `<div class="weekBar" onclick="showDayDetail('${d.date}')" style="cursor:pointer"><span class="weekVal">${d.count || ''}</span><div class="weekBarFill" style="height:${d.h}px"></div><span class="weekDay ${d.isToday ? 'today' : ''}">${d.label}</span></div>`).join('')}</div>
     </div>
     <div class="card">
       <div class="cardLabel">${t('heatmapCaption')}</div>
