@@ -6,9 +6,8 @@ workflows:
     integrations:
       app_store_connect: Codemagic
     environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.kricliff.keelstone
+      vars:
+        BUNDLE_ID: "com.kricliff.keelstone"
       node: latest
       xcode: latest
     scripts:
