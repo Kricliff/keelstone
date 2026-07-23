@@ -214,7 +214,10 @@
   @keyframes yogaGlyphPulse { 0%, 100% { transform: scale(0.92); opacity: 0.8; } 50% { transform: scale(1.03); opacity: 1; } }
   .yogaPoseName { font-size: 1.2rem; font-weight: 700; text-align: center; }
   .yogaCue { font-size: 0.85rem; color: rgba(255,255,255,0.75); text-align: center; max-width: 260px; line-height: 1.4; margin-top: -6px; }
-  .yogaCount { font-size: 2.6rem; font-weight: 700; min-height: 1em; }
+  .yogaCount { font-size: 2.6rem; font-weight: 700; min-height: 1em; transition: color 0.2s; }
+  .yogaCount.countdown { color: var(--sand); animation: yogaCountPulse 1s ease-in-out infinite; }
+  @keyframes yogaCountPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+  .yogaIntroMeta { font-size: 0.9rem; color: rgba(255,255,255,0.75); }
   .yogaDots { display: flex; gap: 6px; }
   .yogaDot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.25); transition: transform 0.15s, background 0.15s; }
   .yogaDot.on { background: var(--sand); transform: scale(1.3); }
@@ -279,7 +282,7 @@
   </div>
 
   <div id="yogaOverlay">
-    <div class="closeRow"><span class="routineTitle" id="yogaRoutineTitle"></span><button onclick="closeYoga()">✕</button></div>
+    <div class="closeRow"><span class="routineTitle" id="yogaRoutineTitle"></span><div style="display:flex;gap:8px"><button onclick="toggleYogaSound()" id="yogaSoundBtn" aria-label="sound"></button><button onclick="closeYoga()">✕</button></div></div>
     <div id="yogaStage"></div>
     <div class="btnRow" id="yogaBtnRow"></div>
   </div>
@@ -348,7 +351,7 @@ const T = {
     contactSubmit: 'Send henvendelse', contactNote: 'Jeg tar kontakt innen 24 timer.',
     contactMissing: 'Fyll ut navn, minst én kontaktmåte og grunn først', contactSent: 'Åpner e-post … husk å sende den',
     yogaTitle: 'Yoga', yogaDesc: 'Lette, animerte yogaøkter du kan følge steg for steg.', yogaPosesLabel: 'positurer',
-    yogaPause: 'Pause', yogaResume: 'Fortsett', yogaSkip: 'Neste', yogaClose: 'Lukk',
+    yogaStart: 'Start økten', yogaPause: 'Pause', yogaResume: 'Fortsett', yogaSkip: 'Neste', yogaClose: 'Lukk',
     yogaDoneTitle: 'Økt fullført', yogaDoneMsg: 'Bra jobbet. Fremgangen din er lagret.',
     ritualTitle: 'Ditt ritual', ritualSetupDesc: 'Lag et fast ritual du kan gjennomføre rett før en konkurranse, eksamen eller presentasjon: ett mantra, en kort pusteøvelse og et fokuspunkt.',
     ritualSetupBtn: 'Sett opp ritualet ditt', ritualEditBtn: 'Rediger', ritualStartBtn: 'Start ritual',
@@ -421,7 +424,7 @@ const T = {
     comebackTitle: 'Good to see you again!', comebackBody: n => `It's been ${n} days. Ready for a short session?`,
     comebackCta: 'Start an exercise', comebackDismiss: 'Not now',
     yogaTitle: 'Yoga', yogaDesc: 'Light, animated yoga sessions you can follow step by step.', yogaPosesLabel: 'poses',
-    yogaPause: 'Pause', yogaResume: 'Resume', yogaSkip: 'Next', yogaClose: 'Close',
+    yogaStart: 'Start session', yogaPause: 'Pause', yogaResume: 'Resume', yogaSkip: 'Next', yogaClose: 'Close',
     yogaDoneTitle: 'Session complete', yogaDoneMsg: 'Great work. Your progress is saved.',
     ritualTitle: 'Your ritual', ritualSetupDesc: 'Build a fixed ritual you can run right before a competition, exam, or presentation: one mantra, a short breathing exercise, and a focus cue.',
     ritualSetupBtn: 'Set up your ritual', ritualEditBtn: 'Edit', ritualStartBtn: 'Start ritual',
@@ -560,7 +563,7 @@ const MOODS = ['😔', '😕', '😐', '🙂', '😄'];
 
 /* ---------- State ---------- */
 function detectLang() { const l = (navigator.language || 'en').toLowerCase(); return (l.startsWith('nb') || l.startsWith('nn') || l.startsWith('no')) ? 'no' : 'en'; }
-let state = { streak: 0, lastCompletedDate: null, completedIds: [], journal: [], notifOn: false, lang: null, goal: null, favorites: [], checkins: {}, reminderTime: '09:00', onboarded: false, theme: 'system', lastOpenDate: null, ritual: null, mainGoal: null, wins: [], reframes: [], weeklyReflectionOn: false, weeklyReflectionTime: '18:00' };
+let state = { streak: 0, lastCompletedDate: null, completedIds: [], journal: [], notifOn: false, lang: null, goal: null, favorites: [], checkins: {}, reminderTime: '09:00', onboarded: false, theme: 'system', lastOpenDate: null, ritual: null, mainGoal: null, wins: [], reframes: [], weeklyReflectionOn: false, weeklyReflectionTime: '18:00', yogaSoundOn: true };
 function load() {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -633,6 +636,8 @@ const ICON_PATHS = {
   chevron: '<path d="M9 6 L15 12 L9 18"/>',
   yoga: '<path d="M12 20 L12 10 M12 12 C9 12 6 9 6 5 M12 12 C15 12 18 9 18 5 M12 10 C10 10 8 8 8 5 M12 10 C14 10 16 8 16 5"/>',
   breath: '<path d="M4 8 C4 8 8 4 13 4 C16.5 4 16.5 7.5 13 7.5 C11 7.5 9.5 6.3 9.5 5"/><path d="M4 13 C4 13 11 9 16 9 C20 9 20 13.5 16 13.5 C13 13.5 11 12 11 10.8"/><path d="M4 18 C4 18 8 16 11 16 C13 16 13 18.3 11 18.3"/>',
+  soundOn: '<path d="M3 9 H6.5 L11 5 V19 L6.5 15 H3 Z" stroke-linejoin="round"/><path d="M15 8.5 C16.5 10 16.5 14 15 15.5"/><path d="M17.5 6 C20 8.5 20 15.5 17.5 18"/>',
+  soundOff: '<path d="M3 9 H6.5 L11 5 V19 L6.5 15 H3 Z" stroke-linejoin="round"/><path d="M15 9 L20 15 M20 9 L15 15"/>',
 };
 function icon(name, size) {
   size = size || 20;
@@ -693,9 +698,9 @@ const POSE_CUES = {
   },
 };
 const YOGA_ROUTINES_DEF = [
-  { id: 'yoga-morning', titleNo: 'Morgenflyt', titleEn: 'Morning flow', poses: [['mountain', 20], ['forwardfold', 20], ['downdog', 20], ['cobra', 20], ['childspose', 30]] },
-  { id: 'yoga-deskbreak', titleNo: 'Kontorpause', titleEn: 'Desk break', poses: [['seatedtwist', 15], ['cat', 15], ['cow', 15], ['forwardfold', 20], ['mountain', 20]] },
-  { id: 'yoga-evening', titleNo: 'Kveldsro', titleEn: 'Evening wind-down', poses: [['childspose', 30], ['cobra', 20], ['seatedtwist', 15], ['forwardfold', 20], ['mountain', 20]] },
+  { id: 'yoga-morning', titleNo: 'Morgenflyt', titleEn: 'Morning flow', poses: [['mountain', 25], ['forwardfold', 25], ['downdog', 25], ['cobra', 25], ['childspose', 25]] },
+  { id: 'yoga-deskbreak', titleNo: 'Kontorpause', titleEn: 'Desk break', poses: [['seatedtwist', 25], ['cat', 25], ['cow', 25], ['forwardfold', 25], ['mountain', 25]] },
+  { id: 'yoga-evening', titleNo: 'Kveldsro', titleEn: 'Evening wind-down', poses: [['childspose', 25], ['cobra', 25], ['seatedtwist', 25], ['forwardfold', 25], ['mountain', 25]] },
 ];
 function yogaRoutines() {
   return YOGA_ROUTINES_DEF.map(r => ({
@@ -1669,22 +1674,63 @@ function stopBreathing() {
 
 /* ---------- Yoga player (animated) ---------- */
 let yogaState = null;
+let yogaAudioCtx = null;
+function playYogaTone(freq, duration, vol) {
+  try {
+    yogaAudioCtx = yogaAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = yogaAudioCtx;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = freq;
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + duration);
+  } catch (e) {}
+}
+function playYogaTick() { playYogaTone(700, 0.12, 0.15); }
+function playYogaChime() { playYogaTone(1000, 0.35, 0.2); setTimeout(() => playYogaTone(1400, 0.4, 0.15), 90); }
+function toggleYogaSound() {
+  state.yogaSoundOn = !state.yogaSoundOn;
+  save();
+  const btn = document.getElementById('yogaSoundBtn');
+  if (btn) btn.innerHTML = icon(state.yogaSoundOn ? 'soundOn' : 'soundOff', 16);
+}
 function openYoga(id) {
   const routine = yogaRoutines().find(r => r.id === id);
   if (!routine) return;
   if (yogaState && yogaState.timer) clearInterval(yogaState.timer);
-  yogaState = { routine, idx: 0, remaining: routine.poses[0].sec, paused: false, timer: null, done: false };
+  yogaState = { routine, idx: 0, remaining: routine.poses[0].sec, paused: false, timer: null, done: false, intro: true };
   document.getElementById('yogaOverlay').classList.add('show');
+  const soundBtn = document.getElementById('yogaSoundBtn');
+  if (soundBtn) soundBtn.innerHTML = icon(state.yogaSoundOn ? 'soundOn' : 'soundOff', 16);
+  renderYogaStage();
+}
+function startYogaSession() {
+  if (!yogaState) return;
+  yogaState.intro = false;
   renderYogaStage();
   startYogaTimer();
 }
 function renderYogaStage() {
   if (!yogaState) return;
-  const { routine, idx, remaining, paused, done } = yogaState;
+  const { routine, idx, remaining, paused, done, intro } = yogaState;
   const titleEl = document.getElementById('yogaRoutineTitle');
   if (titleEl) titleEl.textContent = routine.title;
   const stageEl = document.getElementById('yogaStage');
   const btnRowEl = document.getElementById('yogaBtnRow');
+  if (intro) {
+    const mins = Math.round(routine.totalSec / 60);
+    if (stageEl) stageEl.innerHTML = `
+      <div class="yogaArtWrap">${poseArt(routine.poses[0].key, 170)}</div>
+      <div class="yogaPoseName">${escapeHtml(routine.title)}</div>
+      <div class="yogaIntroMeta">${mins} min · ${routine.poses.length} ${t('yogaPosesLabel')}</div>
+    `;
+    if (btnRowEl) btnRowEl.innerHTML = `<button class="yPause" onclick="startYogaSession()">${t('yogaStart')}</button>`;
+    return;
+  }
   if (done) {
     if (stageEl) stageEl.innerHTML = `<div class="doneCard"><b>${t('yogaDoneTitle')}</b><p style="color:rgba(255,255,255,0.75)">${t('yogaDoneMsg')}</p></div>`;
     if (btnRowEl) btnRowEl.innerHTML = `<button class="yPause" onclick="closeYoga()">${t('yogaClose')}</button>`;
@@ -1695,7 +1741,7 @@ function renderYogaStage() {
     <div class="yogaArtWrap">${poseArt(pose.key, 170)}</div>
     <div class="yogaPoseName">${escapeHtml(pose.name)}</div>
     <div class="yogaCue">${escapeHtml(pose.cue)}</div>
-    <div class="yogaCount">${remaining}</div>
+    <div class="yogaCount ${remaining <= 3 ? 'countdown' : ''}">${remaining}</div>
     <div class="yogaDots">${routine.poses.map((p, i) => `<span class="yogaDot ${i === idx ? 'on' : ''} ${i < idx ? 'done' : ''}"></span>`).join('')}</div>
   `;
   if (btnRowEl) btnRowEl.innerHTML = `
@@ -1710,14 +1756,16 @@ function startYogaTimer() {
     if (!yogaState || yogaState.paused || yogaState.done) return;
     yogaState.remaining--;
     if (yogaState.remaining <= 0) { advanceYogaPose(); return; }
+    if (state.yogaSoundOn && yogaState.remaining <= 3) playYogaTick();
     const countEl = document.querySelector('#yogaStage .yogaCount');
-    if (countEl) countEl.textContent = yogaState.remaining;
+    if (countEl) { countEl.textContent = yogaState.remaining; countEl.classList.toggle('countdown', yogaState.remaining <= 3); }
   }, 1000);
 }
 function advanceYogaPose() {
   if (!yogaState) return;
   yogaState.idx++;
   if (yogaState.idx >= yogaState.routine.poses.length) { finishYoga(); return; }
+  if (state.yogaSoundOn) playYogaChime();
   yogaState.remaining = yogaState.routine.poses[yogaState.idx].sec;
   renderYogaStage();
 }
