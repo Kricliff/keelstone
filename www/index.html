@@ -67,6 +67,7 @@
   body { font-family: "PT Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--page-bg); color: var(--text); display: flex; justify-content: center; }
   #app { width: 100%; max-width: 460px; min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.15); }
   #app.onboarding header, #app.onboarding nav { display: none; }
+  #app.onboarding main { padding-top: calc(26px + env(safe-area-inset-top)); }
   main { flex: 1; overflow-y: auto; padding: 20px 18px 90px; }
   h1 { font-size: 1.45rem; font-weight: 700; margin-bottom: 2px; letter-spacing: 0.2px; }
   h2 { font-size: 1.05rem; font-weight: 600; margin: 22px 0 10px; }
@@ -196,6 +197,23 @@
   #breathOverlay .btnRow button { flex: 1; padding: 12px; border-radius: 12px; font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; }
   #breathOverlay .bStart { background: var(--sand); color: #fff; }
   #breathOverlay .bEnd { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.4); }
+  #yogaOverlay { position: absolute; inset: 0; background: radial-gradient(circle at 50% 30%, var(--blue), var(--blue-d) 80%); z-index: 40; display: none; flex-direction: column; align-items: center; color: #eaf1f5; padding: calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom)); overflow: hidden; }
+  #yogaOverlay.show { display: flex; }
+  #yogaOverlay .closeRow { width: 100%; display: flex; justify-content: space-between; align-items: center; z-index: 5; }
+  #yogaOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; flex-shrink: 0; }
+  #yogaOverlay .routineTitle { font-size: 0.85rem; opacity: 0.85; }
+  #yogaStage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; width: 100%; }
+  .yogaArtWrap { width: 190px; height: 200px; display: flex; align-items: center; justify-content: center; }
+  .yogaPoseName { font-size: 1.2rem; font-weight: 700; text-align: center; }
+  .yogaCount { font-size: 2.6rem; font-weight: 700; min-height: 1em; }
+  .yogaDots { display: flex; gap: 6px; }
+  .yogaDot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.25); transition: transform 0.15s, background 0.15s; }
+  .yogaDot.on { background: var(--sand); transform: scale(1.3); }
+  .yogaDot.done { background: rgba(255,255,255,0.6); }
+  #yogaOverlay .btnRow { display: flex; gap: 10px; width: 100%; max-width: 340px; padding-bottom: 10px; }
+  #yogaOverlay .btnRow button { flex: 1; padding: 12px; border-radius: 12px; font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; }
+  #yogaOverlay .yPause { background: var(--sand); color: #fff; }
+  #yogaOverlay .ySkip { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.4); }
 </style>
 </head>
 <body>
@@ -232,6 +250,20 @@
     </div>
   </div>
 
+  <div id="yogaOverlay">
+    <div class="closeRow"><span class="routineTitle" id="yogaRoutineTitle"></span><button onclick="closeYoga()">✕</button></div>
+    <div id="yogaStage">
+      <div class="yogaArtWrap" id="yogaArt"></div>
+      <div class="yogaPoseName" id="yogaPoseName"></div>
+      <div class="yogaCount" id="yogaCount"></div>
+      <div class="yogaDots" id="yogaDots"></div>
+    </div>
+    <div class="btnRow">
+      <button class="yPause" id="yogaPauseBtn" onclick="toggleYogaPause()"></button>
+      <button class="ySkip" id="yogaSkipBtn" onclick="skipYogaPose()"></button>
+    </div>
+  </div>
+
   <div class="modalWrap" id="modalWrap"><div class="modalSheet" id="modalSheet"></div></div>
   <div class="toast" id="toast"></div>
 </div>
@@ -260,13 +292,14 @@ const T = {
     saveNote: 'Lagre notat', prevNotes: 'Tidligere notater', noNotes: 'Ingen notater ennå. Skriv ditt første under.',
     noteSaved: 'Notat lagret', writeFirst: 'Skriv i minst ett felt først',
     profileTitle: 'Profil', proTitle: 'Keelstone Pro', freeTitle: 'Gratis versjon',
-    proDesc: 'Du har tilgang til alle øvelser. Takk for støtten!', freeDesc: 'Du har tilgang til 2 øvelser gratis. Oppgrader for full tilgang til alle kategorier.',
+    proDesc: 'Du har tilgang til alle øvelser. Takk for støtten!', freeDesc: 'Du har tilgang til én gratis øvelse i hver kategori. Oppgrader for full tilgang til alle kategorier og yoga-øktene.',
     becomePro: 'Bli Pro', dailyReminder: 'Daglig påminnelse', reminderTimeLabel: 'Tidspunkt', goalLabel: 'Mitt fokus',
     appearance: 'Utseende', themeSystem: 'System', themeLight: 'Lys', themeDark: 'Mørk',
     restoreLabel: 'Gjenopprett kjøp', restoreBtn: 'Gjenopprett',
     language: 'Språk', disclaimer: 'Keelstone er et støtteverktøy for mental trening og prestasjon. Det er ikke en erstatning for behandling eller terapi.',
     modalTitle: 'Bli Pro', modalSub: 'Full tilgang til alle øvelser i Fokus, Ro, Selvtillit og Restitusjon.',
-    planName: 'Keelstone Pro', planDesc: 'Månedlig abonnement', startPro: 'Start Pro', notNow: 'Ikke nå',
+    planName: 'Keelstone Pro', planDesc: 'Månedlig abonnement', startPro: 'Start 3 dager gratis', notNow: 'Ikke nå',
+    trialBadge: '3 dager gratis prøveperiode', trialNote: 'Ingen belastning før prøveperioden er over. Avslutt når som helst i App Store-innstillingene.',
     streakToast: n => 'Bra jobbet! Streak: ' + n + ' dager', proWelcome: 'Velkommen til Pro!',
     noSub: 'Fant ikke abonnement', restored: 'Pro-tilgang gjenopprettet', noActiveSub: 'Ingen aktivt abonnement funnet',
     purchaseInAppOnly: 'Kjøp er bare tilgjengelig i appen', restoreInAppOnly: 'Bare tilgjengelig i appen',
@@ -274,6 +307,15 @@ const T = {
     breath: { phases: ['Pust inn','Hold','Pust ut','Hold'], press: 'Trykk start', pace: 'Tempo', sec: 'sek per fase', start: 'Start', pause: 'Pause', cont: 'Fortsett', end: 'Avslutt', round: 'Runde', paused: 'Pause' },
     notifTitle: 'Keelstone', notifBody: 'Tid for dagens mentale trening.',
     dateLocale: 'nb-NO',
+    comebackTitle: 'Godt å se deg igjen!', comebackBody: n => `Det er ${n} dager siden sist. Klar for en kort økt?`,
+    comebackCta: 'Start en øvelse', comebackDismiss: 'Ikke nå',
+    contactTitle: 'Book en samtale med meg', contactDesc: 'Ønsker du å ta prat med meg som coach? Fyll ut skjemaet, så tar jeg kontakt.',
+    contactBtn: 'Kontakt meg', contactName: 'Navn', contactPhone: 'Telefonnummer', contactEmail: 'E-postadresse', contactReason: 'Hva gjelder henvendelsen?',
+    contactSubmit: 'Send henvendelse', contactNote: 'Du vil bli kontaktet innen 24 timer.',
+    contactMissing: 'Fyll ut navn, en kontaktmåte og grunn først', contactSent: 'Åpner e-post... husk å trykke send',
+    yogaTitle: 'Yoga', yogaDesc: 'Lette, animerte yogaøkter du kan følge steg for steg.', yogaPosesLabel: 'positurer',
+    yogaPause: 'Pause', yogaResume: 'Fortsett', yogaSkip: 'Neste', yogaClose: 'Lukk',
+    yogaDoneTitle: 'Økt fullført', yogaDoneMsg: 'Bra jobbet. Fremgangen din er lagret.',
   },
   en: {
     appname: 'Keelstone', navHome: 'Home', navExplore: 'Explore', navProgress: 'Progress', navProfile: 'Profile',
@@ -296,13 +338,14 @@ const T = {
     saveNote: 'Save entry', prevNotes: 'Previous entries', noNotes: 'No entries yet. Write your first one below.',
     noteSaved: 'Entry saved', writeFirst: 'Write in at least one field first',
     profileTitle: 'Profile', proTitle: 'Keelstone Pro', freeTitle: 'Free version',
-    proDesc: 'You have access to all exercises. Thanks for your support!', freeDesc: 'You have access to 2 free exercises. Upgrade for full access to all categories.',
+    proDesc: 'You have access to all exercises. Thanks for your support!', freeDesc: 'You have access to one free exercise in each category. Upgrade for full access to all categories and the yoga sessions.',
     becomePro: 'Go Pro', dailyReminder: 'Daily reminder', reminderTimeLabel: 'Time', goalLabel: 'My focus',
     appearance: 'Appearance', themeSystem: 'System', themeLight: 'Light', themeDark: 'Dark',
     restoreLabel: 'Restore purchases', restoreBtn: 'Restore',
     language: 'Language', disclaimer: 'Keelstone is a support tool for mental training and performance. It is not a substitute for treatment or therapy.',
     modalTitle: 'Go Pro', modalSub: 'Full access to all exercises in Focus, Calm, Confidence and Recovery.',
-    planName: 'Keelstone Pro', planDesc: 'Monthly subscription', startPro: 'Start Pro', notNow: 'Not now',
+    planName: 'Keelstone Pro', planDesc: 'Monthly subscription', startPro: 'Start 3-day free trial', notNow: 'Not now',
+    trialBadge: '3-day free trial', trialNote: "You won't be charged until the trial ends. Cancel anytime in your App Store settings.",
     streakToast: n => 'Great work! Streak: ' + n + ' days', proWelcome: 'Welcome to Pro!',
     noSub: 'Couldn\'t find a subscription', restored: 'Pro access restored', noActiveSub: 'No active subscription found',
     purchaseInAppOnly: 'Purchases are only available in the app', restoreInAppOnly: 'Only available in the app',
@@ -310,6 +353,11 @@ const T = {
     breath: { phases: ['Breathe in','Hold','Breathe out','Hold'], press: 'Press start', pace: 'Pace', sec: 'sec per phase', start: 'Start', pause: 'Pause', cont: 'Continue', end: 'End', round: 'Round', paused: 'Paused' },
     notifTitle: 'Keelstone', notifBody: "Time for today's mental training.",
     dateLocale: 'en-US',
+    comebackTitle: 'Good to see you again!', comebackBody: n => `It's been ${n} days. Ready for a short session?`,
+    comebackCta: 'Start an exercise', comebackDismiss: 'Not now',
+    yogaTitle: 'Yoga', yogaDesc: 'Light, animated yoga sessions you can follow step by step.', yogaPosesLabel: 'poses',
+    yogaPause: 'Pause', yogaResume: 'Resume', yogaSkip: 'Next', yogaClose: 'Close',
+    yogaDoneTitle: 'Session complete', yogaDoneMsg: 'Great work. Your progress is saved.',
   },
 };
 function t(k) { return T[state.lang][k]; }
@@ -417,14 +465,14 @@ const EXERCISES = {
   ],
 };
 
-const FREE_EXERCISE_IDS = new Set(['fokus-1', 'ro-1']);
+const FREE_EXERCISE_IDS = new Set(['fokus-1', 'ro-1', 'selvtillit-1', 'restitusjon-1']);
 const LS_KEY = 'keelstone_state_v1';
 const SUPPORT_EMAIL = 'keelstone@cliffordcoaching.no';
 const MOODS = ['😔', '😕', '😐', '🙂', '😄'];
 
 /* ---------- State ---------- */
 function detectLang() { const l = (navigator.language || 'en').toLowerCase(); return (l.startsWith('nb') || l.startsWith('nn') || l.startsWith('no')) ? 'no' : 'en'; }
-let state = { streak: 0, lastCompletedDate: null, completedIds: [], journal: [], notifOn: false, lang: null, goal: null, favorites: [], checkins: {}, reminderTime: '09:00', onboarded: false, theme: 'system' };
+let state = { streak: 0, lastCompletedDate: null, completedIds: [], journal: [], notifOn: false, lang: null, goal: null, favorites: [], checkins: {}, reminderTime: '09:00', onboarded: false, theme: 'system', lastOpenDate: null };
 function load() {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -442,6 +490,25 @@ function applyTheme() {
   else document.documentElement.removeAttribute('data-theme');
 }
 function setTheme(v) { state.theme = v; save(); applyTheme(); render(); }
+let pendingComebackDays = 0;
+function checkComeback() {
+  const today = todayStr();
+  if (state.onboarded && state.lastOpenDate && state.lastOpenDate !== today) {
+    const days = Math.round((new Date(today) - new Date(state.lastOpenDate)) / 86400000);
+    if (days >= 3) pendingComebackDays = days;
+  }
+  state.lastOpenDate = today;
+  save();
+}
+function showComebackModal() {
+  document.getElementById('modalSheet').innerHTML = `
+    <h2>${t('comebackTitle')}</h2>
+    <p class="sub">${t('comebackBody')(pendingComebackDays)}</p>
+    <button class="btn full sand" onclick="closeModal();navigate('home')">${t('comebackCta')}</button>
+    <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('comebackDismiss')}</button>
+  `;
+  document.getElementById('modalWrap').classList.add('show');
+}
 
 let IS_PRO = false;
 let currentView = 'home';
@@ -474,10 +541,45 @@ const ICON_PATHS = {
   headphones: '<path d="M4 13 C4 7.5 7.5 4 12 4 C16.5 4 20 7.5 20 13"/><rect x="2.5" y="13" width="4.5" height="6.5" rx="2"/><rect x="17" y="13" width="4.5" height="6.5" rx="2"/>',
   back: '<path d="M19 12 H5 M11 6 L5 12 L11 18"/>',
   chevron: '<path d="M9 6 L15 12 L9 18"/>',
+  yoga: '<path d="M12 20 L12 10 M12 12 C9 12 6 9 6 5 M12 12 C15 12 18 9 18 5 M12 10 C10 10 8 8 8 5 M12 10 C14 10 16 8 16 5"/>',
 };
 function icon(name, size) {
   size = size || 20;
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;vertical-align:-3px" aria-hidden="true">${ICON_PATHS[name] || ''}</svg>`;
+}
+
+/* ---------- Yoga pose art + routines ---------- */
+const POSE_PATHS = {
+  mountain: '<circle cx="60" cy="20" r="9"/><path d="M60,29 L60,95 M60,40 L42,75 M60,40 L78,75 M60,95 L48,135 M60,95 L72,135"/>',
+  forwardfold: '<circle cx="35" cy="60" r="9"/><path d="M35,69 L42,75 L60,92 M42,75 L28,115 M60,92 L52,135 M60,92 L70,135"/>',
+  downdog: '<circle cx="48" cy="80" r="9"/><path d="M60,45 L25,120 M60,45 L95,120 M60,45 L48,80"/>',
+  cat: '<circle cx="28" cy="102" r="8"/><path d="M20,120 L35,90 L60,75 L85,70 L100,120 M35,90 L28,102"/>',
+  cow: '<circle cx="22" cy="78" r="8"/><path d="M20,110 L35,95 L60,112 L85,95 L100,110 M35,95 L22,78"/>',
+  cobra: '<circle cx="63" cy="52" r="9"/><path d="M40,130 L95,130 M40,130 L50,90 L60,60 M50,90 L30,105"/>',
+  childspose: '<circle cx="30" cy="106" r="8"/><path d="M95,80 L85,120 M95,80 L105,120 M95,80 L32,108 L12,112"/>',
+  seatedtwist: '<circle cx="67" cy="62" r="9"/><path d="M60,120 L65,70 M65,90 L90,100 M65,95 L45,110 M35,130 L85,130"/>',
+  tree: '<circle cx="60" cy="33" r="9"/><path d="M50,20 L60,45 L70,20 M60,45 L60,95 M60,95 L55,135 M60,95 L78,100 L58,95"/>',
+};
+function poseArt(key, size) {
+  size = size || 160;
+  return `<svg width="${size}" height="${Math.round(size * 1.25)}" viewBox="0 0 120 150" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">${POSE_PATHS[key] || ''}</svg>`;
+}
+const POSE_NAMES = {
+  no: { mountain: 'Fjellstilling', forwardfold: 'Frembøy', downdog: 'Nedadvendt hund', cat: 'Katt', cow: 'Ku', cobra: 'Kobra', childspose: 'Barnets positur', seatedtwist: 'Sittende vridning', tree: 'Trestilling' },
+  en: { mountain: 'Mountain pose', forwardfold: 'Forward fold', downdog: 'Downward dog', cat: 'Cat pose', cow: 'Cow pose', cobra: 'Cobra pose', childspose: "Child's pose", seatedtwist: 'Seated twist', tree: 'Tree pose' },
+};
+const YOGA_ROUTINES_DEF = [
+  { id: 'yoga-morning', titleNo: 'Morgenflyt', titleEn: 'Morning flow', poses: [['mountain', 40], ['forwardfold', 45], ['downdog', 60], ['cobra', 45], ['childspose', 60]] },
+  { id: 'yoga-deskbreak', titleNo: 'Kontorpause', titleEn: 'Desk break', poses: [['seatedtwist', 30], ['cat', 30], ['cow', 30], ['forwardfold', 40], ['mountain', 20]] },
+  { id: 'yoga-evening', titleNo: 'Kveldsro', titleEn: 'Evening wind-down', poses: [['childspose', 60], ['cobra', 40], ['seatedtwist', 40], ['forwardfold', 40], ['mountain', 20]] },
+];
+function yogaRoutines() {
+  return YOGA_ROUTINES_DEF.map(r => ({
+    id: r.id,
+    title: state.lang === 'no' ? r.titleNo : r.titleEn,
+    poses: r.poses.map(([key, sec]) => ({ key, sec, name: POSE_NAMES[state.lang][key] })),
+    totalSec: r.poses.reduce((a, [, s]) => a + s, 0),
+  }));
 }
 
 /* ---------- Navigation / render ---------- */
@@ -601,6 +703,15 @@ function exCardHtml(e) {
     <div class="lockDot">${locked ? icon('lock', 17) : icon('chevron', 17)}</div>
   </div>`;
 }
+function yogaCardHtml(r) {
+  const locked = !IS_PRO;
+  const mins = Math.round(r.totalSec / 60);
+  return `<div class="card exCard" onclick="${locked ? 'showProModal()' : `openYoga('${r.id}')`}" style="${locked ? 'opacity:0.72' : ''}">
+    <div class="exIcon">${icon('yoga', 22)}</div>
+    <div class="meta"><b>${escapeHtml(r.title)}</b><span>${mins} min · ${r.poses.length} ${t('yogaPosesLabel')}</span></div>
+    <div class="lockDot">${locked ? icon('lock', 17) : icon('chevron', 17)}</div>
+  </div>`;
+}
 function inDuration(e) {
   const n = parseInt(e.duration);
   if (window._durFilter === 'short') return n <= 5;
@@ -627,9 +738,10 @@ function renderExplore() {
   const recent = recentIds.map(id => exs().find(e => e.id === id)).filter(Boolean);
   const recentBlock = (noFilters && recent.length) ? `<h2>${t('recentlyCompleted')}</h2>${recent.map(exCardHtml).join('')}<h2>${t('all')}</h2>` : '';
   const cards = list.length ? list.map(exCardHtml).join('') : `<p class="sub">${t('noResults')}</p>`;
+  const yogaBlock = noFilters ? `<h2>${t('yogaTitle')}</h2><p class="sub" style="margin-top:-8px">${t('yogaDesc')}</p>${yogaRoutines().map(yogaCardHtml).join('')}` : '';
   return `<h1>${t('exTitle')}</h1><p class="sub">${t('exSub')}</p>
     <input type="text" id="searchInput" placeholder="${t('searchPlaceholder')}" value="${escapeHtml(window._search)}" oninput="setSearch(this.value)" style="margin-bottom:12px">
-    ${chips}${durChips}${recentBlock}${cards}`;
+    ${chips}${durChips}${recentBlock}${cards}${yogaBlock}`;
 }
 function setCatFilter(id) { window._catFilter = id; render(); }
 function setDurFilter(id) { window._durFilter = id; render(); }
@@ -851,6 +963,11 @@ function renderProfile() {
         <button class="btn small secondary" onclick="restorePurchases()">${t('restoreBtn')}</button>
       </div>
     </div>
+    ${state.lang === 'no' ? `<div class="card">
+      <b>${t('contactTitle')}</b>
+      <p style="font-size:0.85rem;color:var(--text-soft);margin:6px 0 12px">${t('contactDesc')}</p>
+      <button class="btn secondary full" onclick="showContactModal()">${t('contactBtn')}</button>
+    </div>` : ''}
     <div class="card">
       <p style="font-size:0.85rem;color:var(--text-soft)">${t('disclaimer')}</p>
       <p style="font-size:0.85rem;margin-top:8px"><a href="mailto:${SUPPORT_EMAIL}" style="color:var(--blue)">${SUPPORT_EMAIL}</a></p>
@@ -859,11 +976,38 @@ function renderProfile() {
 }
 function setGoal(id) { state.goal = (state.goal === id) ? null : id; save(); render(); }
 
+function showContactModal() {
+  document.getElementById('modalSheet').innerHTML = `
+    <h2>${t('contactTitle')}</h2>
+    <p class="sub">${t('contactDesc')}</p>
+    <div class="qBlock"><label>${t('contactName')}</label><input type="text" id="cName"></div>
+    <div class="qBlock"><label>${t('contactPhone')}</label><input type="text" id="cPhone"></div>
+    <div class="qBlock"><label>${t('contactEmail')}</label><input type="text" id="cEmail"></div>
+    <div class="qBlock"><label>${t('contactReason')}</label><textarea id="cReason" rows="3"></textarea></div>
+    <p class="sub" style="font-size:0.78rem">${t('contactNote')}</p>
+    <button class="btn full sand" onclick="submitContact()">${t('contactSubmit')}</button>
+  `;
+  document.getElementById('modalWrap').classList.add('show');
+}
+function submitContact() {
+  const name = document.getElementById('cName').value.trim();
+  const phone = document.getElementById('cPhone').value.trim();
+  const email = document.getElementById('cEmail').value.trim();
+  const reason = document.getElementById('cReason').value.trim();
+  if (!name || (!phone && !email) || !reason) { toast(t('contactMissing')); return; }
+  const subject = encodeURIComponent('Henvendelse fra Keelstone-app');
+  const body = encodeURIComponent(`Navn: ${name}\nTelefon: ${phone || '-'}\nE-post: ${email || '-'}\nGrunn: ${reason}`);
+  window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
+  closeModal();
+  toast(t('contactSent'));
+}
+
 function showProModal() {
   document.getElementById('modalSheet').innerHTML = `
     <h2>${t('modalTitle')}</h2>
     <p class="sub">${t('modalSub')}</p>
-    <div class="card"><b>${t('planName')}</b><p style="font-size:0.85rem;color:var(--text-soft);margin-top:4px">${t('planDesc')}</p></div>
+    <div class="card"><span class="tag sand">${t('trialBadge')}</span><b style="display:block;margin-top:8px">${t('planName')}</b><p style="font-size:0.85rem;color:var(--text-soft);margin-top:4px">${t('planDesc')}</p></div>
+    <p class="sub" style="font-size:0.78rem">${t('trialNote')}</p>
     <button class="btn full sand" onclick="purchasePro()">${t('startPro')}</button>
     <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('notNow')}</button>
   `;
@@ -996,10 +1140,74 @@ function stopBreathing() {
   document.getElementById('breathOverlay').classList.remove('show');
 }
 
+/* ---------- Yoga player (animated) ---------- */
+let yogaState = null;
+function openYoga(id) {
+  const routine = yogaRoutines().find(r => r.id === id);
+  if (!routine) return;
+  yogaState = { routine, idx: 0, remaining: routine.poses[0].sec, paused: false, timer: null };
+  document.getElementById('yogaSkipBtn').textContent = t('yogaSkip');
+  document.getElementById('yogaOverlay').classList.add('show');
+  renderYogaStage();
+  startYogaTimer();
+}
+function renderYogaStage() {
+  const { routine, idx, remaining, paused } = yogaState;
+  const pose = routine.poses[idx];
+  document.getElementById('yogaArt').innerHTML = poseArt(pose.key, 170);
+  document.getElementById('yogaPoseName').textContent = pose.name;
+  document.getElementById('yogaCount').textContent = remaining;
+  document.getElementById('yogaRoutineTitle').textContent = routine.title;
+  document.getElementById('yogaDots').innerHTML = routine.poses.map((p, i) => `<span class="yogaDot ${i === idx ? 'on' : ''} ${i < idx ? 'done' : ''}"></span>`).join('');
+  document.getElementById('yogaPauseBtn').textContent = paused ? t('yogaResume') : t('yogaPause');
+}
+function startYogaTimer() {
+  clearInterval(yogaState.timer);
+  yogaState.timer = setInterval(() => {
+    if (!yogaState || yogaState.paused) return;
+    yogaState.remaining--;
+    if (yogaState.remaining <= 0) { advanceYogaPose(); return; }
+    document.getElementById('yogaCount').textContent = yogaState.remaining;
+  }, 1000);
+}
+function advanceYogaPose() {
+  yogaState.idx++;
+  if (yogaState.idx >= yogaState.routine.poses.length) { finishYoga(); return; }
+  yogaState.remaining = yogaState.routine.poses[yogaState.idx].sec;
+  renderYogaStage();
+}
+function toggleYogaPause() { yogaState.paused = !yogaState.paused; renderYogaStage(); }
+function skipYogaPose() { advanceYogaPose(); }
+function finishYoga() {
+  clearInterval(yogaState.timer);
+  const key = yogaState.routine.id + ':' + todayStr();
+  if (!state.completedIds.includes(key)) {
+    state.completedIds.push(key);
+    const today = todayStr();
+    if (state.lastCompletedDate !== today) {
+      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      state.streak = (state.lastCompletedDate === yesterday) ? state.streak + 1 : 1;
+      state.lastCompletedDate = today;
+    }
+    save();
+  }
+  hapticSuccess();
+  document.getElementById('yogaStage').innerHTML = `<div class="doneCard"><b>${t('yogaDoneTitle')}</b><p style="color:rgba(255,255,255,0.75)">${t('yogaDoneMsg')}</p></div>`;
+  document.querySelector('#yogaOverlay .btnRow').innerHTML = `<button class="yPause" onclick="closeYoga()">${t('yogaClose')}</button>`;
+}
+function closeYoga() {
+  if (yogaState) clearInterval(yogaState.timer);
+  document.getElementById('yogaOverlay').classList.remove('show');
+  yogaState = null;
+  render();
+}
+
 /* ---------- Init ---------- */
 load();
 applyTheme();
+checkComeback();
 render();
+if (pendingComebackDays) showComebackModal();
 initRevenueCat();
 </script>
 </body>
