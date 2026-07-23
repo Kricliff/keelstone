@@ -14,7 +14,7 @@
 <meta name="apple-mobile-web-app-title" content="Keelstone">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --blue: #2F4F4F;
@@ -64,7 +64,7 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; }
-  body { font-family: "PT Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--page-bg); color: var(--text); display: flex; justify-content: center; }
+  body { font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--page-bg); color: var(--text); display: flex; justify-content: center; }
   #app { width: 100%; max-width: 460px; min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.15); }
   #app.onboarding header, #app.onboarding nav { display: none; }
   #app.onboarding main { padding-top: calc(26px + env(safe-area-inset-top)); }
@@ -179,8 +179,8 @@
   #splashRing1 { transform-origin: 50px 50px; opacity: 0; animation: splashRing1In 0.6s cubic-bezier(0.34, 1.35, 0.64, 1) 0.1s both; }
   #splashRing2 { transform-origin: 50px 50px; opacity: 0; animation: splashRing2In 0.6s cubic-bezier(0.34, 1.35, 0.64, 1) 0.28s both; }
   #splashDot { transform-origin: 50px 50px; opacity: 0; animation: splashDotIn 0.45s cubic-bezier(0.34, 1.35, 0.64, 1) 0.5s both; }
-  #splashWord { font-family: "PT Sans", -apple-system, sans-serif; font-size: 1.5rem; font-weight: 700; color: #fff; letter-spacing: 0.14em; margin-top: 18px; opacity: 0; animation: splashWordIn 0.5s ease 0.85s both; }
-  #splashTagline { font-family: "PT Sans", -apple-system, sans-serif; font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-top: 9px; opacity: 0; text-align: center; max-width: 230px; line-height: 1.45; animation: splashWordIn 0.4s ease 1.15s both; }
+  #splashWord { font-family: "Manrope", -apple-system, sans-serif; font-size: 1.5rem; font-weight: 700; color: #fff; letter-spacing: 0.14em; margin-top: 18px; opacity: 0; animation: splashWordIn 0.5s ease 0.85s both; }
+  #splashTagline { font-family: "Manrope", -apple-system, sans-serif; font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-top: 9px; opacity: 0; text-align: center; max-width: 230px; line-height: 1.45; animation: splashWordIn 0.4s ease 1.15s both; }
   @keyframes splashRing1In { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 0.35; } }
   @keyframes splashRing2In { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 0.7; } }
   @keyframes splashDotIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -216,6 +216,7 @@
   #yogaStage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; width: 100%; }
   .yogaArtWrap { width: 190px; height: 200px; display: flex; align-items: center; justify-content: center; }
   .yogaPoseName { font-size: 1.2rem; font-weight: 700; text-align: center; }
+  .yogaCue { font-size: 0.85rem; color: rgba(255,255,255,0.75); text-align: center; max-width: 260px; line-height: 1.4; margin-top: -6px; }
   .yogaCount { font-size: 2.6rem; font-weight: 700; min-height: 1em; }
   .yogaDots { display: flex; gap: 6px; }
   .yogaDot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.25); transition: transform 0.15s, background 0.15s; }
@@ -248,7 +249,7 @@
     <div id="splashTagline">Steady as a keel. Solid as a stone.</div>
   </div>
   <header>
-    <div class="brand"><span class="mark">K</span> Keelstone</div>
+    <div class="brand"><span class="mark"><svg width="18" height="18" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="8" opacity="0.4"/><circle cx="50" cy="50" r="24" fill="none" stroke="currentColor" stroke-width="8" opacity="0.75"/><circle cx="50" cy="50" r="13" fill="currentColor"/></svg></span> Keelstone</div>
     <div class="streakBadge"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 21 C7.5 21 5 18 5 14.5 C5 11.5 7 9.5 7.5 7 C9 8.5 9.5 9.5 9.5 9.5 C9.5 9.5 9 6 12 3 C12.5 6.5 14 7.5 15.5 9.5 C17 11.5 19 12.5 19 15 C19 18.5 16 21 12 21 Z"/></svg> <span id="streakNum">0</span></div>
   </header>
   <main id="main"></main>
@@ -281,16 +282,8 @@
 
   <div id="yogaOverlay">
     <div class="closeRow"><span class="routineTitle" id="yogaRoutineTitle"></span><button onclick="closeYoga()">✕</button></div>
-    <div id="yogaStage">
-      <div class="yogaArtWrap" id="yogaArt"></div>
-      <div class="yogaPoseName" id="yogaPoseName"></div>
-      <div class="yogaCount" id="yogaCount"></div>
-      <div class="yogaDots" id="yogaDots"></div>
-    </div>
-    <div class="btnRow">
-      <button class="yPause" id="yogaPauseBtn" onclick="toggleYogaPause()"></button>
-      <button class="ySkip" id="yogaSkipBtn" onclick="skipYogaPose()"></button>
-    </div>
+    <div id="yogaStage"></div>
+    <div class="btnRow" id="yogaBtnRow"></div>
   </div>
 
   <div id="ritualOverlay">
@@ -596,26 +589,54 @@ function icon(name, size) {
   size = size || 20;
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;vertical-align:-3px" aria-hidden="true">${ICON_PATHS[name] || ''}</svg>`;
 }
+function appMark(size) {
+  size = size || 18;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="8" opacity="0.4"/><circle cx="50" cy="50" r="24" fill="none" stroke="currentColor" stroke-width="8" opacity="0.75"/><circle cx="50" cy="50" r="13" fill="currentColor"/></svg>`;
+}
 
 /* ---------- Yoga pose art + routines ---------- */
 const POSE_PATHS = {
-  mountain: '<circle cx="60" cy="20" r="9"/><path d="M60,29 L60,95 M60,40 L42,75 M60,40 L78,75 M60,95 L48,135 M60,95 L72,135"/>',
-  forwardfold: '<circle cx="35" cy="60" r="9"/><path d="M35,69 L42,75 L60,92 M42,75 L28,115 M60,92 L52,135 M60,92 L70,135"/>',
-  downdog: '<circle cx="48" cy="80" r="9"/><path d="M60,45 L25,120 M60,45 L95,120 M60,45 L48,80"/>',
-  cat: '<circle cx="28" cy="102" r="8"/><path d="M20,120 L35,90 L60,75 L85,70 L100,120 M35,90 L28,102"/>',
-  cow: '<circle cx="22" cy="78" r="8"/><path d="M20,110 L35,95 L60,112 L85,95 L100,110 M35,95 L22,78"/>',
-  cobra: '<circle cx="63" cy="52" r="9"/><path d="M40,130 L95,130 M40,130 L50,90 L60,60 M50,90 L30,105"/>',
-  childspose: '<circle cx="30" cy="106" r="8"/><path d="M95,80 L85,120 M95,80 L105,120 M95,80 L32,108 L12,112"/>',
-  seatedtwist: '<circle cx="67" cy="62" r="9"/><path d="M60,120 L65,70 M65,90 L90,100 M65,95 L45,110 M35,130 L85,130"/>',
-  tree: '<circle cx="60" cy="33" r="9"/><path d="M50,20 L60,45 L70,20 M60,45 L60,95 M60,95 L55,135 M60,95 L78,100 L58,95"/>',
+  mountain: '<circle cx="60" cy="18" r="10"/><path d="M60,28 L60,95 M60,38 L42,74 M60,38 L78,74 M60,95 L50,136 M60,95 L70,136"/><circle cx="60" cy="38" r="4.5" fill="currentColor" stroke="none"/><circle cx="60" cy="95" r="4.5" fill="currentColor" stroke="none"/><line x1="26" y1="136" x2="94" y2="136" stroke-width="4" opacity="0.3"/>',
+  forwardfold: '<circle cx="32" cy="58" r="10"/><path d="M32,68 L46,74 L60,94 M46,74 L30,118 M60,94 L52,136 M60,94 L70,136"/><circle cx="46" cy="74" r="4.5" fill="currentColor" stroke="none"/><circle cx="60" cy="94" r="4.5" fill="currentColor" stroke="none"/><line x1="22" y1="136" x2="92" y2="136" stroke-width="4" opacity="0.3"/>',
+  downdog: '<circle cx="42" cy="78" r="10"/><path d="M60,42 L24,118 M60,42 L98,118 M60,42 L42,78"/><circle cx="60" cy="42" r="4.5" fill="currentColor" stroke="none"/><line x1="12" y1="122" x2="108" y2="122" stroke-width="4" opacity="0.3"/>',
+  cat: '<circle cx="26" cy="102" r="9"/><path d="M18,120 L34,90 L60,74 L86,70 L100,120 M34,90 L26,102"/><circle cx="34" cy="90" r="4.5" fill="currentColor" stroke="none"/><circle cx="86" cy="70" r="4.5" fill="currentColor" stroke="none"/><line x1="10" y1="124" x2="108" y2="124" stroke-width="4" opacity="0.3"/>',
+  cow: '<circle cx="20" cy="74" r="9"/><path d="M18,110 L34,95 L60,113 L86,95 L100,110 M34,95 L20,74"/><circle cx="34" cy="95" r="4.5" fill="currentColor" stroke="none"/><circle cx="86" cy="95" r="4.5" fill="currentColor" stroke="none"/><line x1="10" y1="114" x2="108" y2="114" stroke-width="4" opacity="0.3"/>',
+  cobra: '<circle cx="62" cy="54" r="10"/><path d="M42,132 L96,132 M42,132 L48,94 L60,60 M48,94 L30,108"/><circle cx="42" cy="132" r="4.5" fill="currentColor" stroke="none"/><line x1="42" y1="132" x2="96" y2="132" stroke-width="4" opacity="0.3"/>',
+  childspose: '<circle cx="30" cy="106" r="9"/><path d="M96,78 L34,106 L14,110 M96,78 L86,120 M96,78 L106,120"/><circle cx="96" cy="78" r="4.5" fill="currentColor" stroke="none"/><line x1="8" y1="124" x2="108" y2="124" stroke-width="4" opacity="0.3"/>',
+  seatedtwist: '<circle cx="67" cy="60" r="10"/><path d="M60,118 L65,70 M65,88 L92,98 M65,92 L43,108"/><circle cx="60" cy="118" r="4.5" fill="currentColor" stroke="none"/><line x1="32" y1="130" x2="88" y2="130" stroke-width="4" opacity="0.3"/>',
+  tree: '<circle cx="60" cy="32" r="10"/><path d="M48,20 L60,45 L72,20 M60,45 L60,95 L54,136 M60,95 L80,100 L58,92"/><circle cx="60" cy="45" r="4.5" fill="currentColor" stroke="none"/><circle cx="60" cy="95" r="4.5" fill="currentColor" stroke="none"/><line x1="33" y1="136" x2="87" y2="136" stroke-width="4" opacity="0.3"/>',
 };
 function poseArt(key, size) {
   size = size || 160;
-  return `<svg width="${size}" height="${Math.round(size * 1.25)}" viewBox="0 0 120 150" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">${POSE_PATHS[key] || ''}</svg>`;
+  return `<svg width="${size}" height="${Math.round(size * 1.25)}" viewBox="0 0 120 150" fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round">${POSE_PATHS[key] || ''}</svg>`;
 }
 const POSE_NAMES = {
   no: { mountain: 'Fjellstilling', forwardfold: 'Frembøy', downdog: 'Nedadvendt hund', cat: 'Katt', cow: 'Ku', cobra: 'Kobra', childspose: 'Barnets positur', seatedtwist: 'Sittende vridning', tree: 'Trestilling' },
   en: { mountain: 'Mountain pose', forwardfold: 'Forward fold', downdog: 'Downward dog', cat: 'Cat pose', cow: 'Cow pose', cobra: 'Cobra pose', childspose: "Child's pose", seatedtwist: 'Seated twist', tree: 'Tree pose' },
+};
+const POSE_CUES = {
+  no: {
+    mountain: 'Stå rett med føttene samlet, skuldrene avslappet.',
+    forwardfold: 'Bøy deg fremover fra hoftene, la armene henge.',
+    downdog: 'Hender og føtter i gulvet, løft hoftene opp.',
+    cat: 'På alle fire, rund ryggen opp mot taket.',
+    cow: 'På alle fire, senk magen og løft blikket.',
+    cobra: 'Ligg på magen, press overkroppen opp.',
+    childspose: 'Sitt på hælene, strekk armene langt frem.',
+    seatedtwist: 'Sitt med beina i kors, vri overkroppen til siden.',
+    tree: 'Stå på ett bein, sett foten mot innsiden av låret.',
+  },
+  en: {
+    mountain: 'Stand tall, feet together, shoulders relaxed.',
+    forwardfold: 'Fold forward from your hips, let your arms hang.',
+    downdog: 'Hands and feet on the floor, lift your hips up.',
+    cat: 'On all fours, round your spine up toward the ceiling.',
+    cow: 'On all fours, drop your belly and look up.',
+    cobra: 'Lie on your stomach, press your chest upward.',
+    childspose: 'Sit back on your heels, stretch your arms forward.',
+    seatedtwist: 'Sit cross-legged, twist your upper body to the side.',
+    tree: 'Stand on one leg, foot against your inner thigh.',
+  },
 };
 const YOGA_ROUTINES_DEF = [
   { id: 'yoga-morning', titleNo: 'Morgenflyt', titleEn: 'Morning flow', poses: [['mountain', 40], ['forwardfold', 45], ['downdog', 60], ['cobra', 45], ['childspose', 60]] },
@@ -626,7 +647,7 @@ function yogaRoutines() {
   return YOGA_ROUTINES_DEF.map(r => ({
     id: r.id,
     title: state.lang === 'no' ? r.titleNo : r.titleEn,
-    poses: r.poses.map(([key, sec]) => ({ key, sec, name: POSE_NAMES[state.lang][key] })),
+    poses: r.poses.map(([key, sec]) => ({ key, sec, name: POSE_NAMES[state.lang][key], cue: POSE_CUES[state.lang][key] })),
     totalSec: r.poses.reduce((a, [, s]) => a + s, 0),
   }));
 }
@@ -671,7 +692,7 @@ function renderOnboarding() {
   const goals = cats();
   return `
     <div style="padding-top:6px">
-      <div class="brand" style="margin-bottom:26px"><span class="mark">K</span> ${t('appname')}</div>
+      <div class="brand" style="margin-bottom:26px"><span class="mark">${appMark(18)}</span> ${t('appname')}</div>
       <h1>${t('onbTitle')}</h1>
       <p class="sub">${t('onbSub')}</p>
       ${goals.map(g => `<div class="card onbCard" onclick="pickGoal('${g.id}')">
@@ -1241,40 +1262,59 @@ let yogaState = null;
 function openYoga(id) {
   const routine = yogaRoutines().find(r => r.id === id);
   if (!routine) return;
-  yogaState = { routine, idx: 0, remaining: routine.poses[0].sec, paused: false, timer: null };
-  document.getElementById('yogaSkipBtn').textContent = t('yogaSkip');
+  if (yogaState && yogaState.timer) clearInterval(yogaState.timer);
+  yogaState = { routine, idx: 0, remaining: routine.poses[0].sec, paused: false, timer: null, done: false };
   document.getElementById('yogaOverlay').classList.add('show');
   renderYogaStage();
   startYogaTimer();
 }
 function renderYogaStage() {
-  const { routine, idx, remaining, paused } = yogaState;
+  if (!yogaState) return;
+  const { routine, idx, remaining, paused, done } = yogaState;
+  const titleEl = document.getElementById('yogaRoutineTitle');
+  if (titleEl) titleEl.textContent = routine.title;
+  const stageEl = document.getElementById('yogaStage');
+  const btnRowEl = document.getElementById('yogaBtnRow');
+  if (done) {
+    if (stageEl) stageEl.innerHTML = `<div class="doneCard"><b>${t('yogaDoneTitle')}</b><p style="color:rgba(255,255,255,0.75)">${t('yogaDoneMsg')}</p></div>`;
+    if (btnRowEl) btnRowEl.innerHTML = `<button class="yPause" onclick="closeYoga()">${t('yogaClose')}</button>`;
+    return;
+  }
   const pose = routine.poses[idx];
-  document.getElementById('yogaArt').innerHTML = poseArt(pose.key, 170);
-  document.getElementById('yogaPoseName').textContent = pose.name;
-  document.getElementById('yogaCount').textContent = remaining;
-  document.getElementById('yogaRoutineTitle').textContent = routine.title;
-  document.getElementById('yogaDots').innerHTML = routine.poses.map((p, i) => `<span class="yogaDot ${i === idx ? 'on' : ''} ${i < idx ? 'done' : ''}"></span>`).join('');
-  document.getElementById('yogaPauseBtn').textContent = paused ? t('yogaResume') : t('yogaPause');
+  if (stageEl) stageEl.innerHTML = `
+    <div class="yogaArtWrap">${poseArt(pose.key, 170)}</div>
+    <div class="yogaPoseName">${escapeHtml(pose.name)}</div>
+    <div class="yogaCue">${escapeHtml(pose.cue)}</div>
+    <div class="yogaCount">${remaining}</div>
+    <div class="yogaDots">${routine.poses.map((p, i) => `<span class="yogaDot ${i === idx ? 'on' : ''} ${i < idx ? 'done' : ''}"></span>`).join('')}</div>
+  `;
+  if (btnRowEl) btnRowEl.innerHTML = `
+    <button class="yPause" onclick="toggleYogaPause()">${paused ? t('yogaResume') : t('yogaPause')}</button>
+    <button class="ySkip" onclick="skipYogaPose()">${t('yogaSkip')}</button>
+  `;
 }
 function startYogaTimer() {
+  if (!yogaState) return;
   clearInterval(yogaState.timer);
   yogaState.timer = setInterval(() => {
-    if (!yogaState || yogaState.paused) return;
+    if (!yogaState || yogaState.paused || yogaState.done) return;
     yogaState.remaining--;
     if (yogaState.remaining <= 0) { advanceYogaPose(); return; }
-    document.getElementById('yogaCount').textContent = yogaState.remaining;
+    const countEl = document.querySelector('#yogaStage .yogaCount');
+    if (countEl) countEl.textContent = yogaState.remaining;
   }, 1000);
 }
 function advanceYogaPose() {
+  if (!yogaState) return;
   yogaState.idx++;
   if (yogaState.idx >= yogaState.routine.poses.length) { finishYoga(); return; }
   yogaState.remaining = yogaState.routine.poses[yogaState.idx].sec;
   renderYogaStage();
 }
-function toggleYogaPause() { yogaState.paused = !yogaState.paused; renderYogaStage(); }
+function toggleYogaPause() { if (!yogaState) return; yogaState.paused = !yogaState.paused; renderYogaStage(); }
 function skipYogaPose() { advanceYogaPose(); }
 function finishYoga() {
+  if (!yogaState) return;
   clearInterval(yogaState.timer);
   const key = yogaState.routine.id + ':' + todayStr();
   if (!state.completedIds.includes(key)) {
@@ -1288,12 +1328,13 @@ function finishYoga() {
     save();
   }
   hapticSuccess();
-  document.getElementById('yogaStage').innerHTML = `<div class="doneCard"><b>${t('yogaDoneTitle')}</b><p style="color:rgba(255,255,255,0.75)">${t('yogaDoneMsg')}</p></div>`;
-  document.querySelector('#yogaOverlay .btnRow').innerHTML = `<button class="yPause" onclick="closeYoga()">${t('yogaClose')}</button>`;
+  yogaState.done = true;
+  renderYogaStage();
 }
 function closeYoga() {
-  if (yogaState) clearInterval(yogaState.timer);
-  document.getElementById('yogaOverlay').classList.remove('show');
+  try { if (yogaState && yogaState.timer) clearInterval(yogaState.timer); } catch (e) {}
+  const ov = document.getElementById('yogaOverlay');
+  if (ov) ov.classList.remove('show');
   yogaState = null;
   render();
 }
