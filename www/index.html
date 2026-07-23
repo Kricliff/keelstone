@@ -514,6 +514,7 @@ const EXERCISES = {
 const FREE_EXERCISE_IDS = new Set(['fokus-1', 'ro-1', 'selvtillit-1', 'restitusjon-1']);
 const LS_KEY = 'keelstone_state_v1';
 const SUPPORT_EMAIL = 'keelstone@cliffordcoaching.no';
+const COACH_WEBSITE = 'https://www.cliffordcoaching.no';
 const MOODS = ['😔', '😕', '😐', '🙂', '😄'];
 
 /* ---------- State ---------- */
@@ -1033,6 +1034,7 @@ function renderProfile() {
       <b>${t('contactTitle')}</b>
       <p style="font-size:0.85rem;color:var(--text-soft);margin:6px 0 12px">${t('contactDesc')}</p>
       <button class="btn secondary full" onclick="showContactModal()">${t('contactBtn')}</button>
+      <p style="font-size:0.85rem;margin-top:10px"><a href="${COACH_WEBSITE}" target="_blank" style="color:var(--blue)">www.cliffordcoaching.no</a></p>
     </div>` : ''}
     <div class="card">
       <p style="font-size:0.85rem;color:var(--text-soft)">${t('disclaimer')}</p>
@@ -1046,6 +1048,7 @@ function showContactModal() {
   document.getElementById('modalSheet').innerHTML = `
     <h2>${t('contactTitle')}</h2>
     <p class="sub">${t('contactDesc')}</p>
+    <p style="font-size:0.85rem;margin:-8px 0 14px"><a href="${COACH_WEBSITE}" target="_blank" style="color:var(--blue)">www.cliffordcoaching.no</a></p>
     <div class="qBlock"><label>${t('contactName')}</label><input type="text" id="cName"></div>
     <div class="qBlock"><label>${t('contactPhone')}</label><input type="text" id="cPhone"></div>
     <div class="qBlock"><label>${t('contactEmail')}</label><input type="text" id="cEmail"></div>
