@@ -332,7 +332,7 @@ const T = {
     noSub: 'Fant ikke abonnement', restored: 'Pro-tilgang gjenopprettet', noActiveSub: 'Ingen aktivt abonnement funnet',
     purchaseInAppOnly: 'Kjøp er bare tilgjengelig i appen', restoreInAppOnly: 'Bare tilgjengelig i appen',
     onbTitle: 'Velkommen til Keelstone', onbSub: 'Hva ønsker du å jobbe mest med akkurat nå? Vi tilpasser forslagene dine.', onbSkip: 'Hopp over, vis meg alt',
-    breath: { press: 'Trykk for å starte', pace: 'Tempo', sec: 'sek per fase', start: 'Start', pause: 'Pause', cont: 'Fortsett', end: 'Avslutt', round: 'Runde', paused: 'Pause' },
+    breath: { press: 'Trykk for å starte', pace: 'Tempo', sec: 'sek per fase', start: 'Start', pause: 'Pause', cont: 'Fortsett', end: 'Avslutt', round: 'Runde', paused: 'Pause', doneLabel: 'Ferdig!', doneCloseBtn: 'Lukk' },
     breathworkTitle: 'Pusteøvelser', breathworkDesc: 'Ulike pustemønstre for ulike behov. Velg det som passer situasjonen din.',
     notifTitle: 'Keelstone', notifBody: 'Tid for dagens mentale trening.',
     dateLocale: 'nb-NO',
@@ -398,7 +398,7 @@ const T = {
     noSub: 'Couldn\'t find a subscription', restored: 'Pro access restored', noActiveSub: 'No active subscription found',
     purchaseInAppOnly: 'Purchases are only available in the app', restoreInAppOnly: 'Only available in the app',
     onbTitle: 'Welcome to Keelstone', onbSub: 'What do you want to work on most right now? We\'ll tailor your suggestions.', onbSkip: 'Skip, show me everything',
-    breath: { press: 'Press start', pace: 'Pace', sec: 'sec per phase', start: 'Start', pause: 'Pause', cont: 'Continue', end: 'End', round: 'Round', paused: 'Paused' },
+    breath: { press: 'Press start', pace: 'Pace', sec: 'sec per phase', start: 'Start', pause: 'Pause', cont: 'Continue', end: 'End', round: 'Round', paused: 'Paused', doneLabel: 'Done!', doneCloseBtn: 'Close' },
     breathworkTitle: 'Breathing exercises', breathworkDesc: 'Different breathing patterns for different needs. Pick the one that fits your moment.',
     notifTitle: 'Keelstone', notifBody: "Time for today's mental training.",
     dateLocale: 'en-US',
@@ -690,6 +690,7 @@ const BREATH_TECHNIQUES_DEF = [
     descNo: 'Fire like faser: inn, hold, ut, hold. Rolig, fokusert kontroll rett før en prestasjon.',
     descEn: 'Four equal phases: in, hold, out, hold. Calm, focused control right before you perform.',
     adjustable: true,
+    maxRounds: 8,
     phases: [
       { type: 'in', labelNo: 'Pust inn', labelEn: 'Breathe in' },
       { type: 'holdFull', labelNo: 'Hold', labelEn: 'Hold' },
@@ -703,6 +704,7 @@ const BREATH_TECHNIQUES_DEF = [
     descNo: 'Pust inn i 4, hold i 7, pust ut i 8. Den lange utpusten roer nervesystemet raskt, bra før søvn eller når uroen er sterk.',
     descEn: 'Inhale for 4, hold for 7, exhale for 8. The long exhale calms your nervous system fast, good before sleep or when anxiety runs high.',
     adjustable: false,
+    maxRounds: 4,
     phases: [
       { type: 'in', seconds: 4, labelNo: 'Pust inn', labelEn: 'Breathe in' },
       { type: 'holdFull', seconds: 7, labelNo: 'Hold', labelEn: 'Hold' },
@@ -715,6 +717,7 @@ const BREATH_TECHNIQUES_DEF = [
     descNo: 'Rask, jevn pust uten pause. Øker årvåkenhet og energi før en krevende økt.',
     descEn: 'Quick, even breathing with no pause. Boosts alertness and energy before a demanding session.',
     adjustable: false,
+    maxRounds: 10,
     phases: [
       { type: 'in', seconds: 2, labelNo: 'Pust inn', labelEn: 'Breathe in' },
       { type: 'out', seconds: 2, labelNo: 'Pust ut', labelEn: 'Breathe out' },
@@ -727,6 +730,7 @@ function breathTechniques() {
     title: state.lang === 'no' ? tech.titleNo : tech.titleEn,
     desc: state.lang === 'no' ? tech.descNo : tech.descEn,
     adjustable: tech.adjustable,
+    maxRounds: tech.maxRounds,
     phases: tech.phases.map(p => ({ type: p.type, seconds: p.seconds, label: state.lang === 'no' ? p.labelNo : p.labelEn })),
   }));
 }
@@ -1411,6 +1415,7 @@ function startBreathing(techId) {
   document.getElementById('bRound').textContent = '';
   document.getElementById('brStart').textContent = b.start;
   document.getElementById('brEnd').textContent = b.end;
+  document.getElementById('brEnd').style.display = '';
   if (tech.adjustable) {
     document.getElementById('tempoLabel').innerHTML = b.pace + ': <b id="brTempoVal">4</b> ' + b.sec + '<input type="range" id="brTempo" min="3" max="6" step="0.5" value="4">';
     document.getElementById('brTempo').oninput = e => { document.getElementById('brTempoVal').textContent = e.target.value; };
@@ -1457,11 +1462,31 @@ function runBreathTick() {
     document.getElementById('orbPhase').textContent = phase.label;
     const secs = Math.ceil((phaseMs - (ts - brStart)) / 1000);
     document.getElementById('orbCount').textContent = secs > 0 ? secs : '';
-    document.getElementById('bRound').textContent = t('breath').round + ' ' + (Math.floor(brPhaseIdx / phases.length) + 1);
-    if (frac >= 1) { brPhaseIdx++; brStart = null; }
+    const round = Math.floor(brPhaseIdx / phases.length) + 1;
+    document.getElementById('bRound').textContent = t('breath').round + ' ' + round + (currentBreathTech.maxRounds ? ' / ' + currentBreathTech.maxRounds : '');
+    if (frac >= 1) {
+      brPhaseIdx++; brStart = null;
+      const completedRounds = Math.floor(brPhaseIdx / phases.length);
+      if (currentBreathTech.maxRounds && completedRounds >= currentBreathTech.maxRounds) {
+        finishBreathingSession();
+        return;
+      }
+    }
     brRaf = requestAnimationFrame(tick);
   };
   brRaf = requestAnimationFrame(tick);
+}
+function finishBreathingSession() {
+  stopBreathTick();
+  const b = t('breath');
+  const orb = document.getElementById('orb');
+  if (orb) orb.style.transform = 'translate(-50%,-50%) scale(0.75)';
+  document.getElementById('orbPhase').textContent = b.doneLabel;
+  document.getElementById('orbCount').textContent = '';
+  const startBtn = document.getElementById('brStart');
+  startBtn.textContent = b.doneCloseBtn;
+  startBtn.onclick = stopBreathing;
+  document.getElementById('brEnd').style.display = 'none';
 }
 function stopBreathTick() { brRunning = false; if (brRaf) { cancelAnimationFrame(brRaf); brRaf = null; } }
 function stopBreathing() {
