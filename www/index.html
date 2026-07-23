@@ -1107,9 +1107,9 @@ function buildWeekChart() {
 function describeCompletedKey(key) {
   const id = key.split(':')[0];
   const ex = exs().find(e => e.id === id);
-  if (ex) return ex.title;
+  if (ex) { const cat = cats().find(c => c.id === ex.category); return cat ? `${ex.title} (${cat.label})` : ex.title; }
   const yoga = yogaRoutines().find(r => r.id === id);
-  if (yoga) return yoga.title;
+  if (yoga) return `${yoga.title} (${t('yogaTitle')})`;
   return id;
 }
 function showDayDetail(dateStr) {
