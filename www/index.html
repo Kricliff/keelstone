@@ -325,6 +325,7 @@ const T = {
     qGood: 'Hva gikk bra i dag?', qHard: 'Hva var vanskelig?', qFocus: 'Hva vil du fokusere på i morgen?',
     saveNote: 'Lagre notat', prevNotes: 'Tidligere notater', noNotes: 'Ingen notater ennå. Skriv ditt første under.',
     noteSaved: 'Notat lagret', writeFirst: 'Skriv i minst ett felt først',
+    deleteEntry: 'Slett', deleteConfirm: 'Er du sikker på at du vil slette dette?', entryDeleted: 'Slettet',
     profileTitle: 'Profil', proTitle: 'Keelstone Pro', freeTitle: 'Gratis versjon',
     proDesc: 'Du har tilgang til alle øvelser. Takk for støtten!', freeDesc: 'Du har tilgang til én gratis øvelse i hver kategori. Oppgrader til Pro for full tilgang til alle kategorier og yoga-øktene.',
     becomePro: 'Bli Pro', dailyReminder: 'Daglig påminnelse', reminderTimeLabel: 'Tidspunkt', goalLabel: 'Mitt fokus',
@@ -402,6 +403,7 @@ const T = {
     qGood: 'What went well today?', qHard: 'What was hard?', qFocus: 'What will you focus on tomorrow?',
     saveNote: 'Save entry', prevNotes: 'Previous entries', noNotes: 'No entries yet. Write your first one below.',
     noteSaved: 'Entry saved', writeFirst: 'Write in at least one field first',
+    deleteEntry: 'Delete', deleteConfirm: 'Are you sure you want to delete this?', entryDeleted: 'Deleted',
     profileTitle: 'Profile', proTitle: 'Keelstone Pro', freeTitle: 'Free version',
     proDesc: 'You have access to all exercises. Thanks for your support!', freeDesc: 'You have access to one free exercise in each category. Upgrade for full access to all categories and the yoga sessions.',
     becomePro: 'Go Pro', dailyReminder: 'Daily reminder', reminderTimeLabel: 'Time', goalLabel: 'My focus',
@@ -719,7 +721,7 @@ const BREATH_TECHNIQUES_DEF = [
     descNo: 'Fire like faser: inn, hold, ut, hold. Rolig, fokusert kontroll rett før en prestasjon.',
     descEn: 'Four equal phases: in, hold, out, hold. Calm, focused control right before you perform.',
     adjustable: true,
-    maxRounds: 8,
+    maxRounds: 4,
     phases: [
       { type: 'in', labelNo: 'Pust inn', labelEn: 'Breathe in' },
       { type: 'holdFull', labelNo: 'Hold', labelEn: 'Hold' },
@@ -733,7 +735,7 @@ const BREATH_TECHNIQUES_DEF = [
     descNo: 'Pust inn i 4, hold i 7, pust ut i 8. Den lange utpusten roer nervesystemet raskt, bra før søvn eller når uroen er sterk.',
     descEn: 'Inhale for 4, hold for 7, exhale for 8. The long exhale calms your nervous system fast, good before sleep or when anxiety runs high.',
     adjustable: false,
-    maxRounds: 4,
+    maxRounds: 2,
     phases: [
       { type: 'in', seconds: 4, labelNo: 'Pust inn', labelEn: 'Breathe in' },
       { type: 'holdFull', seconds: 7, labelNo: 'Hold', labelEn: 'Hold' },
@@ -746,7 +748,7 @@ const BREATH_TECHNIQUES_DEF = [
     descNo: 'Rask, jevn pust uten pause. Øker årvåkenhet og energi før en krevende økt.',
     descEn: 'Quick, even breathing with no pause. Boosts alertness and energy before a demanding session.',
     adjustable: false,
-    maxRounds: 10,
+    maxRounds: 5,
     phases: [
       { type: 'in', seconds: 2, labelNo: 'Pust inn', labelEn: 'Breathe in' },
       { type: 'out', seconds: 2, labelNo: 'Pust ut', labelEn: 'Breathe out' },
@@ -862,7 +864,7 @@ function renderHome() {
     <div class="card heroCard" onclick="${(!IS_PRO && !FREE_EXERCISE_IDS.has(pick.id)) ? 'showProModal()' : `openExercise('${pick.id}')`}">
       <span class="tag">${t('todaysExercise')}</span>
       <p>${escapeHtml(pick.title)}</p>
-      <span style="font-size:0.85rem;opacity:0.85">${pick.duration} · ${cat.label}${(!IS_PRO && !FREE_EXERCISE_IDS.has(pick.id)) ? ' · ' + icon('lock', 12) + ' Pro' : ''}</span>
+      <span style="font-size:0.85rem;opacity:0.85">${cat.label}${(!IS_PRO && !FREE_EXERCISE_IDS.has(pick.id)) ? ' · ' + icon('lock', 12) + ' Pro' : ''}</span>
     </div>
     <h2>${t('quickBreath')}</h2>
     <div class="card">
@@ -932,7 +934,7 @@ function exCardHtml(e) {
   const fav = state.favorites.includes(e.id);
   return `<div class="card exCard" onclick="${locked ? 'showProModal()' : `openExercise('${e.id}')`}" style="${locked ? 'opacity:0.72' : ''}">
     <div class="exIcon">${icon(cat.id, 22)}</div>
-    <div class="meta"><b>${escapeHtml(e.title)}</b><span>${e.duration} · ${cat.label}</span></div>
+    <div class="meta"><b>${escapeHtml(e.title)}</b><span>${cat.label}</span></div>
     <button class="favBtn" onclick="event.stopPropagation();toggleFavorite('${e.id}')" aria-label="favorite">${icon(fav ? 'heart-filled' : 'heart', 19)}</button>
     <div class="lockDot">${locked ? icon('lock', 17) : icon('chevron', 17)}</div>
   </div>`;
@@ -1027,7 +1029,6 @@ function renderExerciseDetail(id) {
       <button class="favBtn" style="margin-left:auto" onclick="toggleFavorite('${id}');renderPlayerFav('${id}')" id="playerFavBtn">${icon(fav ? 'heart-filled' : 'heart', 23)}</button>
     </div>
     <h1>${escapeHtml(e.title)}</h1>
-    <p class="sub">${e.duration}</p>
     <div class="playerBar"><div class="playerBarFill" id="playerFill"></div></div>
     <div class="audioFallback">${icon('headphones', 18)}<span>${t('audioSoon')}</span></div>
     <audio controls preload="none" src="assets/audio/${state.lang}/${e.id}.mp3"></audio>
@@ -1237,13 +1238,17 @@ function renderInsights() {
   `;
 }
 function renderJournalBody() {
-  const entries = [...state.journal].reverse().map(j => `
+  const entries = [...state.journal].reverse().map((j, i) => {
+    const idx = state.journal.length - 1 - i;
+    return `
     <div class="card journalEntry">
       <div class="date">${j.date}</div>
       <b>${t('qGood')}</b><p>${escapeHtml(j.good)}</p>
       <b>${t('qHard')}</b><p>${escapeHtml(j.hard)}</p>
       <b>${t('qFocus')}</b><p>${escapeHtml(j.focus)}</p>
-    </div>`).join('') || `<p class="sub">${t('noNotes')}</p>`;
+      <button class="btn small ghost" style="margin-top:4px" onclick="deleteJournalEntry(${idx})">${t('deleteEntry')}</button>
+    </div>`;
+  }).join('') || `<p class="sub">${t('noNotes')}</p>`;
   return `
     <div class="card">
       <div class="qBlock"><label>${t('qGood')}</label><textarea id="jGood" rows="2"></textarea></div>
@@ -1265,12 +1270,23 @@ function saveJournal() {
   toast(t('noteSaved'));
   render();
 }
+function deleteJournalEntry(idx) {
+  if (!confirm(t('deleteConfirm'))) return;
+  state.journal.splice(idx, 1);
+  save();
+  toast(t('entryDeleted'));
+  render();
+}
 function renderMasteryBody() {
-  const entries = [...state.wins].reverse().map(w => `
+  const entries = [...state.wins].reverse().map((w, i) => {
+    const idx = state.wins.length - 1 - i;
+    return `
     <div class="card journalEntry">
       <div class="date">${w.date}</div>
       <p>${escapeHtml(w.text)}</p>
-    </div>`).join('') || `<p class="sub">${t('masteryEmpty')}</p>`;
+      <button class="btn small ghost" style="margin-top:4px" onclick="deleteWin(${idx})">${t('deleteEntry')}</button>
+    </div>`;
+  }).join('') || `<p class="sub">${t('masteryEmpty')}</p>`;
   return `
     <div class="card">
       <p class="cardLabel">${t('masteryTitle')}</p>
@@ -1287,6 +1303,13 @@ function saveWin() {
   state.wins.push({ date: new Date().toLocaleDateString(t('dateLocale')), text });
   save();
   toast(t('masterySaved'));
+  render();
+}
+function deleteWin(idx) {
+  if (!confirm(t('deleteConfirm'))) return;
+  state.wins.splice(idx, 1);
+  save();
+  toast(t('entryDeleted'));
   render();
 }
 
@@ -1420,13 +1443,17 @@ function deleteGoal() {
   render();
 }
 function showReframeModal() {
-  const history = [...state.reframes].reverse().map(r => `
+  const history = [...state.reframes].reverse().map((r, i) => {
+    const idx = state.reframes.length - 1 - i;
+    return `
     <div class="card journalEntry">
       <div class="date">${r.date}</div>
       <b>${t('reframeSituationLabel')}</b><p>${escapeHtml(r.situation)}</p>
       <b>${t('reframeThoughtLabel')}</b><p>${escapeHtml(r.thought)}</p>
       <b>${t('reframeReframeLabel')}</b><p>${escapeHtml(r.reframe)}</p>
-    </div>`).join('') || `<p class="sub">${t('reframeEmpty')}</p>`;
+      <button class="btn small ghost" style="margin-top:4px" onclick="deleteReframe(${idx})">${t('deleteEntry')}</button>
+    </div>`;
+  }).join('') || `<p class="sub">${t('reframeEmpty')}</p>`;
   document.getElementById('modalSheet').innerHTML = `
     <h2>${t('reframeCardTitle')}</h2>
     <p class="sub">${t('reframeCardDesc')}</p>
@@ -1445,6 +1472,12 @@ function saveReframe() {
   const reframe = document.getElementById('rfReframe').value.trim();
   if (!situation || !thought || !reframe) { toast(t('reframeMissing')); return; }
   state.reframes.push({ date: new Date().toLocaleDateString(t('dateLocale')), situation, thought, reframe });
+  save();
+  showReframeModal();
+}
+function deleteReframe(idx) {
+  if (!confirm(t('deleteConfirm'))) return;
+  state.reframes.splice(idx, 1);
   save();
   showReframeModal();
 }
