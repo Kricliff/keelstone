@@ -15,6 +15,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
   :root {
     --blue: #2F4F4F;
@@ -326,6 +329,7 @@ const T = {
     saveNote: 'Lagre notat', prevNotes: 'Tidligere notater', noNotes: 'Ingen notater ennå. Skriv ditt første under.',
     noteSaved: 'Notat lagret', writeFirst: 'Skriv i minst ett felt først',
     deleteEntry: 'Slett', deleteConfirm: 'Er du sikker på at du vil slette dette?', entryDeleted: 'Slettet',
+    backupRestored: 'Fremgangen din er gjenopprettet fra sikkerhetskopi',
     profileTitle: 'Profil', proTitle: 'Keelstone Pro', freeTitle: 'Gratis versjon',
     proDesc: 'Du har tilgang til alle øvelser. Takk for støtten!', freeDesc: 'Du har tilgang til én gratis øvelse i hver kategori. Oppgrader til Pro for full tilgang til alle kategorier og yoga-øktene.',
     becomePro: 'Bli Pro', dailyReminder: 'Daglig påminnelse', reminderTimeLabel: 'Tidspunkt', goalLabel: 'Mitt fokus',
@@ -404,6 +408,7 @@ const T = {
     saveNote: 'Save entry', prevNotes: 'Previous entries', noNotes: 'No entries yet. Write your first one below.',
     noteSaved: 'Entry saved', writeFirst: 'Write in at least one field first',
     deleteEntry: 'Delete', deleteConfirm: 'Are you sure you want to delete this?', entryDeleted: 'Deleted',
+    backupRestored: 'Your progress was restored from backup',
     profileTitle: 'Profile', proTitle: 'Keelstone Pro', freeTitle: 'Free version',
     proDesc: 'You have access to all exercises. Thanks for your support!', freeDesc: 'You have access to one free exercise in each category. Upgrade for full access to all categories and the yoga sessions.',
     becomePro: 'Go Pro', dailyReminder: 'Daily reminder', reminderTimeLabel: 'Time', goalLabel: 'My focus',
@@ -577,7 +582,7 @@ function load() {
   } catch (e) { console.warn('load()', e); }
   if (!state.lang) state.lang = detectLang();
 }
-function save() { localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+function save() { localStorage.setItem(LS_KEY, JSON.stringify(state)); scheduleCloudBackup(); }
 function applyTheme() {
   if (state.theme === 'light' || state.theme === 'dark') document.documentElement.setAttribute('data-theme', state.theme);
   else document.documentElement.removeAttribute('data-theme');
@@ -1544,6 +1549,49 @@ async function restorePurchases() {
   } catch (e) { console.warn('restorePurchases:', e); }
 }
 
+/* ---------- Cloud backup (Firebase, anonymous) ---------- */
+// TODO: create a Firebase project for Keelstone and paste its config below (see CLAUDE.md for the steps)
+const FIREBASE_CONFIG = {
+  apiKey: 'SETT_INN_API_KEY_HER',
+  authDomain: 'SETT_INN_PROSJEKT_ID_HER.firebaseapp.com',
+  projectId: 'SETT_INN_PROSJEKT_ID_HER',
+  storageBucket: 'SETT_INN_PROSJEKT_ID_HER.firebasestorage.app',
+  messagingSenderId: 'SETT_INN_SENDER_ID_HER',
+  appId: 'SETT_INN_APP_ID_HER',
+};
+let fbAuth = null, fbDb = null, fbUser = null, fbSyncTimer = null;
+async function initCloudBackup() {
+  if (typeof firebase === 'undefined' || FIREBASE_CONFIG.apiKey.startsWith('SETT_INN')) return;
+  try {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    fbAuth = firebase.auth();
+    fbDb = firebase.firestore();
+    const cred = await fbAuth.signInAnonymously();
+    fbUser = cred.user;
+    if (!state.onboarded) {
+      const doc = await fbDb.collection('backups').doc(fbUser.uid).get();
+      if (doc.exists && doc.data().state) {
+        const restored = JSON.parse(doc.data().state);
+        state = Object.assign({}, state, restored);
+        save();
+        applyTheme();
+        render();
+        toast(t('backupRestored'));
+      }
+    }
+  } catch (e) { console.warn('initCloudBackup:', e); }
+}
+function scheduleCloudBackup() {
+  if (!fbDb || !fbUser) return;
+  clearTimeout(fbSyncTimer);
+  fbSyncTimer = setTimeout(() => {
+    fbDb.collection('backups').doc(fbUser.uid).set({
+      state: JSON.stringify(state),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    }).catch(e => console.warn('scheduleCloudBackup:', e));
+  }, 2500);
+}
+
 /* ---------- Local notifications ---------- */
 async function scheduleNotifications() {
   const LN = window.Capacitor?.Plugins?.LocalNotifications;
@@ -1904,6 +1952,7 @@ checkComeback();
 render();
 if (pendingComebackDays) showComebackModal();
 initRevenueCat();
+initCloudBackup();
 (function() {
   const sp = document.getElementById('splash');
   if (sp) setTimeout(() => sp.remove(), 3000);
