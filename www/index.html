@@ -1550,14 +1550,13 @@ async function restorePurchases() {
 }
 
 /* ---------- Cloud backup (Firebase, anonymous) ---------- */
-// TODO: create a Firebase project for Keelstone and paste its config below (see CLAUDE.md for the steps)
 const FIREBASE_CONFIG = {
-  apiKey: 'SETT_INN_API_KEY_HER',
-  authDomain: 'SETT_INN_PROSJEKT_ID_HER.firebaseapp.com',
-  projectId: 'SETT_INN_PROSJEKT_ID_HER',
-  storageBucket: 'SETT_INN_PROSJEKT_ID_HER.firebasestorage.app',
-  messagingSenderId: 'SETT_INN_SENDER_ID_HER',
-  appId: 'SETT_INN_APP_ID_HER',
+  apiKey: 'AIzaSyAZpCS44JwuKWnW-HVE1VEM8lGVuNh9NhE',
+  authDomain: 'backup-keelstone.firebaseapp.com',
+  projectId: 'backup-keelstone',
+  storageBucket: 'backup-keelstone.firebasestorage.app',
+  messagingSenderId: '174381891640',
+  appId: '1:174381891640:web:40154dfa25e9333c1d66cd',
 };
 let fbAuth = null, fbDb = null, fbUser = null, fbSyncTimer = null;
 async function initCloudBackup() {
