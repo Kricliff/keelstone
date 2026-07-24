@@ -330,6 +330,15 @@ const T = {
     noteSaved: 'Notat lagret', writeFirst: 'Skriv i minst ett felt først',
     deleteEntry: 'Slett', deleteConfirm: 'Er du sikker på at du vil slette dette?', entryDeleted: 'Slettet',
     backupRestored: 'Fremgangen din er gjenopprettet fra sikkerhetskopi',
+    yourDataTitle: 'Dine data', backupMyData: 'Sikkerhetskopier data', restoreFromBackupLabel: 'Gjenopprett fra kopi',
+    backupBtn: 'Sikkerhetskopier', restoreBackupBtn: 'Gjenopprett',
+    backupDesc: 'Kopier denne sikkerhetskopien og oppbevar den trygt (Notater, e-post eller Filer). Hvis du sletter eller installerer appen på nytt, limer du den inn under Gjenopprett for å få dataene tilbake.',
+    copyBackupBtn: 'Kopier sikkerhetskopi', shareBtn: 'Del…', closeBtn: 'Lukk',
+    restoreDesc: 'Lim inn en sikkerhetskopi du lagret tidligere. Dette erstatter alle data som er i appen nå.',
+    restorePlaceholder: 'Lim inn sikkerhetskopien her', restoreReplaceBtn: 'Gjenopprett og erstatt', cancelBtn: 'Avbryt',
+    backupCopied: 'Sikkerhetskopi kopiert. Oppbevar den trygt.', dataRestored: 'Data gjenopprettet.',
+    pasteFirst: 'Lim inn en sikkerhetskopi først.', invalidBackup: 'Dette ser ikke ut som en gyldig sikkerhetskopi.',
+    notKeelstoneBackup: 'Dette ser ikke ut som en Keelstone-sikkerhetskopi.',
     profileTitle: 'Profil', proTitle: 'Keelstone Pro', freeTitle: 'Gratis versjon',
     proDesc: 'Du har tilgang til alle øvelser. Takk for støtten!', freeDesc: 'Du har tilgang til én gratis øvelse i hver kategori. Oppgrader til Pro for full tilgang til alle kategorier og yoga-øktene.',
     becomePro: 'Bli Pro', dailyReminder: 'Daglig påminnelse', reminderTimeLabel: 'Tidspunkt', goalLabel: 'Mitt fokus',
@@ -409,6 +418,15 @@ const T = {
     noteSaved: 'Entry saved', writeFirst: 'Write in at least one field first',
     deleteEntry: 'Delete', deleteConfirm: 'Are you sure you want to delete this?', entryDeleted: 'Deleted',
     backupRestored: 'Your progress was restored from backup',
+    yourDataTitle: 'Your data', backupMyData: 'Back up my data', restoreFromBackupLabel: 'Restore from backup',
+    backupBtn: 'Back up', restoreBackupBtn: 'Restore',
+    backupDesc: 'Copy this backup and keep it somewhere safe (Notes, email, or Files). If you delete or reinstall the app, paste it back under Restore to get your data back.',
+    copyBackupBtn: 'Copy backup', shareBtn: 'Share…', closeBtn: 'Close',
+    restoreDesc: 'Paste a backup you saved earlier. This replaces all data currently in the app.',
+    restorePlaceholder: 'Paste your backup here', restoreReplaceBtn: 'Restore and replace', cancelBtn: 'Cancel',
+    backupCopied: 'Backup copied. Save it somewhere safe.', dataRestored: 'Data restored.',
+    pasteFirst: 'Paste a backup first.', invalidBackup: "That doesn't look like a valid backup.",
+    notKeelstoneBackup: "That doesn't look like a Keelstone backup.",
     profileTitle: 'Profile', proTitle: 'Keelstone Pro', freeTitle: 'Free version',
     proDesc: 'You have access to all exercises. Thanks for your support!', freeDesc: 'You have access to one free exercise in each category. Upgrade for full access to all categories and the yoga sessions.',
     becomePro: 'Go Pro', dailyReminder: 'Daily reminder', reminderTimeLabel: 'Time', goalLabel: 'My focus',
@@ -1361,6 +1379,17 @@ function renderProfile() {
         <button class="btn small secondary" onclick="restorePurchases()">${t('restoreBtn')}</button>
       </div>
     </div>
+    <div class="card">
+      <b>${t('yourDataTitle')}</b>
+      <div class="toggleRow" style="margin-top:10px">
+        <span>${t('backupMyData')}</span>
+        <button class="btn small secondary" onclick="showBackupModal()">${t('backupBtn')}</button>
+      </div>
+      <div class="toggleRow" style="border-bottom:none">
+        <span>${t('restoreFromBackupLabel')}</span>
+        <button class="btn small secondary" onclick="showRestoreModal()">${t('restoreBackupBtn')}</button>
+      </div>
+    </div>
     ${state.lang === 'no' ? `<div class="card">
       <b>${t('contactTitle')}</b>
       <p style="font-size:0.85rem;color:var(--text-soft);margin:6px 0 12px">${t('contactDesc')}</p>
@@ -1445,6 +1474,50 @@ function deleteGoal() {
   state.mainGoal = null;
   save();
   closeModal();
+  render();
+}
+function showBackupModal() {
+  const data = JSON.stringify(state);
+  document.getElementById('modalSheet').innerHTML = `
+    <h2>${t('backupMyData')}</h2>
+    <p class="sub">${t('backupDesc')}</p>
+    <textarea id="backupText" readonly rows="6" style="width:100%;font-family:monospace;font-size:0.78rem">${escapeHtml(data)}</textarea>
+    <button class="btn full sand" style="margin-top:12px" onclick="copyBackupText()">${t('copyBackupBtn')}</button>
+    ${navigator.share ? `<button class="btn full secondary" style="margin-top:8px" onclick="shareBackupText()">${t('shareBtn')}</button>` : ''}
+    <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('closeBtn')}</button>
+  `;
+  document.getElementById('modalWrap').classList.add('show');
+}
+function copyBackupText() {
+  const ta = document.getElementById('backupText');
+  const done = () => toast(t('backupCopied'));
+  if (navigator.clipboard) navigator.clipboard.writeText(ta.value).then(done, () => { ta.select(); document.execCommand('copy'); done(); });
+  else { ta.select(); document.execCommand('copy'); done(); }
+}
+async function shareBackupText() {
+  try { await navigator.share({ title: 'Keelstone backup', text: document.getElementById('backupText').value }); } catch (e) {}
+}
+function showRestoreModal() {
+  document.getElementById('modalSheet').innerHTML = `
+    <h2>${t('restoreFromBackupLabel')}</h2>
+    <p class="sub">${t('restoreDesc')}</p>
+    <textarea id="restoreText" rows="6" placeholder="${t('restorePlaceholder')}" style="width:100%;font-family:monospace;font-size:0.78rem"></textarea>
+    <button class="btn full" style="margin-top:12px;background:#b9503c" onclick="confirmRestoreBackup()">${t('restoreReplaceBtn')}</button>
+    <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('cancelBtn')}</button>
+  `;
+  document.getElementById('modalWrap').classList.add('show');
+}
+function confirmRestoreBackup() {
+  const raw = (document.getElementById('restoreText').value || '').trim();
+  if (!raw) { toast(t('pasteFirst')); return; }
+  let obj;
+  try { obj = JSON.parse(raw); } catch (e) { toast(t('invalidBackup')); return; }
+  if (!obj || typeof obj !== 'object' || !('completedIds' in obj)) { toast(t('notKeelstoneBackup')); return; }
+  state = Object.assign({}, state, obj);
+  save();
+  closeModal();
+  applyTheme();
+  toast(t('dataRestored'));
   render();
 }
 function showReframeModal() {
