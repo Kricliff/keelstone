@@ -230,6 +230,11 @@
   #yogaOverlay .closeRow button:active { transform: scale(0.9); }
   #yogaOverlay .routineTitle { font-size: 0.85rem; opacity: 0.85; }
   #yogaStage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; width: 100%; }
+  .yogaPoseContent { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  @keyframes yogaPoseIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .yogaPoseContent.yogaPoseEnter { animation: yogaPoseIn 0.2s cubic-bezier(0.16,1,0.3,1) both; }
+  @keyframes yogaDoneIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+  .doneCard.yogaDoneEnter { animation: yogaDoneIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both; }
   .yogaArtWrap { width: 190px; height: 200px; display: flex; align-items: center; justify-content: center; }
   .yogaGlyph { animation: yogaGlyphPulse 3.2s ease-in-out infinite; transform-origin: 50% 50%; filter: drop-shadow(0 0 14px rgba(217,178,92,0.35)); }
   @keyframes yogaGlyphPulse { 0%, 100% { transform: scale(0.92); opacity: 0.8; } 50% { transform: scale(1.03); opacity: 1; } }
@@ -266,6 +271,8 @@
     main.viewEnter { animation: none; }
     .yogaGlyph { animation: none; }
     .yogaCount.countdown { animation: none; }
+    .yogaPoseContent.yogaPoseEnter { animation: none; }
+    .doneCard.yogaDoneEnter { animation: none; }
     .bParticle { animation: none; display: none; }
     #splashRing1, #splashRing2, #splashDot, #splashWord, #splashTagline { animation: none; opacity: 1; }
     .modalWrap, .modalSheet, #breathOverlay, #yogaOverlay, #ritualOverlay {
@@ -1936,10 +1943,10 @@ function openYoga(id) {
 function startYogaSession() {
   if (!yogaState) return;
   yogaState.intro = false;
-  renderYogaStage();
+  renderYogaStage(true);
   startYogaTimer();
 }
-function renderYogaStage() {
+function renderYogaStage(animate) {
   if (!yogaState) return;
   const { routine, idx, remaining, paused, done, intro } = yogaState;
   const titleEl = document.getElementById('yogaRoutineTitle');
@@ -1957,18 +1964,31 @@ function renderYogaStage() {
     return;
   }
   if (done) {
-    if (stageEl) stageEl.innerHTML = `<div class="doneCard"><b>${t('yogaDoneTitle')}</b><p style="color:rgba(255,255,255,0.75)">${t('yogaDoneMsg')}</p></div>`;
+    if (stageEl) stageEl.innerHTML = `<div class="doneCard yogaDoneEnter"><b>${t('yogaDoneTitle')}</b><p style="color:rgba(255,255,255,0.75)">${t('yogaDoneMsg')}</p></div>`;
     if (btnRowEl) btnRowEl.innerHTML = `<button class="yPause" onclick="closeYoga()">${t('yogaClose')}</button>`;
     return;
   }
   const pose = routine.poses[idx];
-  if (stageEl) stageEl.innerHTML = `
-    <div class="yogaArtWrap">${poseArt(pose.key, 170)}</div>
-    <div class="yogaPoseName">${escapeHtml(pose.name)}</div>
-    <div class="yogaCue">${escapeHtml(pose.cue)}</div>
-    <div class="yogaCount ${remaining <= 3 ? 'countdown' : ''}">${remaining}</div>
-    <div class="yogaDots">${routine.poses.map((p, i) => `<span class="yogaDot ${i === idx ? 'on' : ''} ${i < idx ? 'done' : ''}"></span>`).join('')}</div>
-  `;
+  if (stageEl) {
+    if (!stageEl.querySelector('.yogaDots')) {
+      stageEl.innerHTML = `
+        <div class="yogaPoseContent"></div>
+        <div class="yogaDots">${routine.poses.map(() => `<span class="yogaDot"></span>`).join('')}</div>
+      `;
+    }
+    const contentEl = stageEl.querySelector('.yogaPoseContent');
+    contentEl.innerHTML = `
+      <div class="yogaArtWrap">${poseArt(pose.key, 170)}</div>
+      <div class="yogaPoseName">${escapeHtml(pose.name)}</div>
+      <div class="yogaCue">${escapeHtml(pose.cue)}</div>
+      <div class="yogaCount ${remaining <= 3 ? 'countdown' : ''}">${remaining}</div>
+    `;
+    contentEl.classList.toggle('yogaPoseEnter', !!animate);
+    stageEl.querySelectorAll('.yogaDot').forEach((dot, i) => {
+      dot.classList.toggle('on', i === idx);
+      dot.classList.toggle('done', i < idx);
+    });
+  }
   if (btnRowEl) btnRowEl.innerHTML = `
     <button class="yPause" onclick="toggleYogaPause()">${paused ? t('yogaResume') : t('yogaPause')}</button>
     <button class="ySkip" onclick="skipYogaPose()">${t('yogaSkip')}</button>
@@ -1992,7 +2012,7 @@ function advanceYogaPose() {
   if (yogaState.idx >= yogaState.routine.poses.length) { finishYoga(); return; }
   if (state.yogaSoundOn) playYogaChime();
   yogaState.remaining = yogaState.routine.poses[yogaState.idx].sec;
-  renderYogaStage();
+  renderYogaStage(true);
 }
 function toggleYogaPause() { if (!yogaState) return; yogaState.paused = !yogaState.paused; renderYogaStage(); }
 function skipYogaPose() { advanceYogaPose(); }
