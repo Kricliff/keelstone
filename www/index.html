@@ -226,8 +226,8 @@
   #yogaOverlay.show { display: flex; }
   #yogaOverlay.open { opacity: 1; transform: none; }
   #yogaOverlay .closeRow { width: 100%; display: flex; justify-content: space-between; align-items: center; z-index: 5; }
-  #yogaOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; flex-shrink: 0; transition: transform 0.1s ease; }
-  #yogaOverlay .closeRow button:active { transform: scale(0.9); }
+  #yogaOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; flex-shrink: 0; transition: transform 0.1s ease-out; }
+  #yogaOverlay .closeRow button:active { transform: scale(0.96); }
   #yogaOverlay .routineTitle { font-size: 0.85rem; opacity: 0.85; }
   #yogaStage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; width: 100%; }
   .yogaPoseContent { display: flex; flex-direction: column; align-items: center; gap: 14px; }
@@ -243,13 +243,14 @@
   .yogaCount { font-size: 2.6rem; font-weight: 700; min-height: 1em; letter-spacing: -0.02em; transition: color 0.2s; }
   .yogaCount.countdown { color: var(--sand); animation: yogaCountPulse 1s ease-in-out infinite; }
   @keyframes yogaCountPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+  #yogaStage.paused .yogaGlyph, #yogaStage.paused .yogaCount.countdown { animation-play-state: paused; }
   .yogaIntroMeta { font-size: 0.9rem; color: rgba(255,255,255,0.75); }
   .yogaDots { display: flex; gap: 6px; }
   .yogaDot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.25); transition: transform 0.15s, background 0.15s; }
   .yogaDot.on { background: var(--sand); transform: scale(1.3); }
   .yogaDot.done { background: rgba(255,255,255,0.6); }
   #yogaOverlay .btnRow { display: flex; gap: 10px; width: 100%; max-width: 340px; padding-bottom: 10px; }
-  #yogaOverlay .btnRow button { flex: 1; padding: 12px; border-radius: 12px; font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; transition: transform 0.1s ease; }
+  #yogaOverlay .btnRow button { flex: 1; padding: 12px; border-radius: 12px; font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; transition: transform 0.1s ease-out; }
   #yogaOverlay .btnRow button:active { transform: scale(0.96); }
   #yogaOverlay .yPause { background: var(--sand); color: #fff; }
   #yogaOverlay .ySkip { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.4); }
@@ -273,6 +274,7 @@
     .yogaCount.countdown { animation: none; }
     .yogaPoseContent.yogaPoseEnter { animation: none; }
     .doneCard.yogaDoneEnter { animation: none; }
+    .yogaDot { transition: none; }
     .bParticle { animation: none; display: none; }
     #splashRing1, #splashRing2, #splashDot, #splashWord, #splashTagline { animation: none; opacity: 1; }
     .modalWrap, .modalSheet, #breathOverlay, #yogaOverlay, #ritualOverlay {
@@ -1954,6 +1956,7 @@ function renderYogaStage(animate) {
   const stageEl = document.getElementById('yogaStage');
   const btnRowEl = document.getElementById('yogaBtnRow');
   if (intro) {
+    if (stageEl) stageEl.classList.remove('paused');
     const mins = Math.round(routine.totalSec / 60);
     if (stageEl) stageEl.innerHTML = `
       <div class="yogaArtWrap">${poseArt(routine.poses[0].key, 170)}</div>
@@ -1983,11 +1986,18 @@ function renderYogaStage(animate) {
       <div class="yogaCue">${escapeHtml(pose.cue)}</div>
       <div class="yogaCount ${remaining <= 3 ? 'countdown' : ''}">${remaining}</div>
     `;
-    contentEl.classList.toggle('yogaPoseEnter', !!animate);
+    if (animate) {
+      contentEl.classList.remove('yogaPoseEnter');
+      void contentEl.offsetWidth;
+      contentEl.classList.add('yogaPoseEnter');
+    } else {
+      contentEl.classList.remove('yogaPoseEnter');
+    }
     stageEl.querySelectorAll('.yogaDot').forEach((dot, i) => {
       dot.classList.toggle('on', i === idx);
       dot.classList.toggle('done', i < idx);
     });
+    stageEl.classList.toggle('paused', !!paused);
   }
   if (btnRowEl) btnRowEl.innerHTML = `
     <button class="yPause" onclick="toggleYogaPause()">${paused ? t('yogaResume') : t('yogaPause')}</button>
