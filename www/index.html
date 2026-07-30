@@ -34,6 +34,8 @@
     --shadow: 0 1px 3px rgba(31,54,54,0.06), 0 4px 14px rgba(31,54,54,0.09);
     --page-bg: #d6dbd9;
     --cat-fokus: #2a78d6; --cat-ro: #1baf7a; --cat-selvtillit: #4a3aa7; --cat-restitusjon: #e34948;
+    --nav-bg: rgba(255,255,255,0.82);
+    --scrim: rgba(18,40,58,0.5);
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -43,6 +45,8 @@
       --border: #2b3432; --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 14px rgba(0,0,0,0.35);
       --page-bg: #0c0f0e;
       --cat-fokus: #3987e5; --cat-ro: #199e70; --cat-selvtillit: #9085e9; --cat-restitusjon: #e66767;
+      --nav-bg: rgba(28,36,34,0.82);
+      --scrim: rgba(0,0,0,0.6);
     }
   }
   :root[data-theme="dark"] {
@@ -52,6 +56,8 @@
     --border: #2b3432; --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 14px rgba(0,0,0,0.35);
     --page-bg: #0c0f0e;
     --cat-fokus: #3987e5; --cat-ro: #199e70; --cat-selvtillit: #9085e9; --cat-restitusjon: #e66767;
+    --nav-bg: rgba(28,36,34,0.82);
+    --scrim: rgba(0,0,0,0.6);
   }
   :root[data-theme="light"] {
     --blue: #2F4F4F; --blue-d: #1f3636; --blue-light: #e4ecea;
@@ -60,6 +66,8 @@
     --border: #e5e3dd; --shadow: 0 1px 3px rgba(31,54,54,0.06), 0 4px 14px rgba(31,54,54,0.09);
     --page-bg: #d6dbd9;
     --cat-fokus: #2a78d6; --cat-ro: #1baf7a; --cat-selvtillit: #4a3aa7; --cat-restitusjon: #e34948;
+    --nav-bg: rgba(255,255,255,0.82);
+    --scrim: rgba(18,40,58,0.5);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; }
@@ -68,7 +76,7 @@
   #app.onboarding header, #app.onboarding nav { display: none; }
   #app.onboarding main { padding-top: calc(26px + env(safe-area-inset-top)); }
   main { flex: 1; overflow-y: auto; padding: 20px 18px calc(90px + env(safe-area-inset-bottom)); }
-  h1 { font-size: 1.45rem; font-weight: 700; margin-bottom: 2px; letter-spacing: 0.2px; }
+  h1 { font-size: 1.45rem; font-weight: 700; margin-bottom: 2px; letter-spacing: -0.01em; }
   h2 { font-size: 1.05rem; font-weight: 600; margin: 22px 0 10px; }
   .sub { color: var(--text-soft); font-size: 0.9rem; margin-bottom: 18px; }
   .card { background: var(--card); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); margin-bottom: 14px; transition: transform 0.15s ease, box-shadow 0.15s ease; }
@@ -86,13 +94,15 @@
   .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--blue); font-size: 1.15rem; letter-spacing: 0.2px; }
   .brand .mark { width: 30px; height: 30px; border-radius: 8px; background: var(--blue); color: var(--sand); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; flex-shrink: 0; }
   .streakBadge { background: var(--sand-light); color: var(--sand); border-radius: 999px; padding: 6px 12px; font-size: 0.82rem; font-weight: 700; display: flex; align-items: center; gap: 5px; }
-  nav { position: absolute; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid var(--border); display: flex; padding: 6px 4px calc(8px + env(safe-area-inset-bottom)); }
-  nav button { flex: 1; background: none; border: none; font-family: inherit; font-size: 0.68rem; color: var(--text-soft); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 0; }
+  nav { position: absolute; bottom: 0; left: 0; right: 0; background: var(--nav-bg); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-top: 1px solid var(--border); display: flex; padding: 6px 4px calc(8px + env(safe-area-inset-bottom)); }
+  nav button { flex: 1; background: none; border: none; font-family: inherit; font-size: 0.68rem; color: var(--text-soft); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 0; transition: transform 0.1s ease; }
+  nav button:active { transform: scale(0.93); }
   nav button .ico { display: flex; align-items: center; justify-content: center; line-height: 1; border-radius: 8px; padding: 6px 14px; transition: background 0.18s; }
   nav button.active { color: var(--blue-d); font-weight: 700; }
   nav button.active .ico { background: var(--blue-light); }
   .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 6px; }
-  .chips button { border: 1px solid var(--border); background: var(--card); border-radius: 999px; padding: 7px 14px; font-size: 0.82rem; font-family: inherit; cursor: pointer; white-space: nowrap; color: var(--text-soft); }
+  .chips button { border: 1px solid var(--border); background: var(--card); border-radius: 999px; padding: 7px 14px; font-size: 0.82rem; font-family: inherit; cursor: pointer; white-space: nowrap; color: var(--text-soft); transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.1s ease; }
+  .chips button:active { transform: scale(0.94); }
   .chips button.active { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 600; }
   .exCard { display: flex; align-items: center; gap: 12px; cursor: pointer; }
   .exIcon { width: 46px; height: 46px; border-radius: 12px; background: var(--blue-light); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
@@ -108,11 +118,11 @@
   .heroCard p { font-size: 1.02rem; font-weight: 600; margin: 8px 0 12px; }
   .statRow { display: flex; gap: 10px; margin-bottom: 14px; }
   .statBox { flex: 1; background: var(--card); border-radius: var(--radius); padding: 14px; text-align: center; box-shadow: var(--shadow); }
-  .statBox b { font-size: 1.4rem; display: block; color: var(--blue); }
+  .statBox b { font-size: 1.4rem; display: block; color: var(--blue); letter-spacing: -0.01em; }
   .statBox span { font-size: 0.75rem; color: var(--text-soft); }
   .ringCard { display: flex; align-items: center; gap: 16px; }
   .ringMeta { display: flex; flex-direction: column; }
-  .ringMeta b { font-size: 1.5rem; color: var(--blue); }
+  .ringMeta b { font-size: 1.5rem; color: var(--blue); letter-spacing: -0.01em; }
   .ringMeta span { font-size: 0.8rem; color: var(--text-soft); }
   .moodRow { display: flex; justify-content: space-between; gap: 6px; }
   .moodBtn { flex: 1; background: var(--blue-light); border: none; border-radius: 12px; font-size: 1.35rem; padding: 9px 0; cursor: pointer; opacity: 0.5; transition: opacity 0.15s, transform 0.15s; }
@@ -148,12 +158,14 @@
   .weekMoodRow { display: flex; justify-content: space-between; gap: 4px; margin-top: 8px; }
   .weekMoodCell { flex: 1; text-align: center; font-size: 1.25rem; }
   .weekMoodCell.empty { color: var(--border); font-size: 1rem; }
-  .modalWrap { position: absolute; inset: 0; background: rgba(18,40,58,0.5); z-index: 50; display: none; align-items: flex-end; justify-content: center; }
+  .modalWrap { position: absolute; inset: 0; background: var(--scrim); z-index: 50; display: none; align-items: flex-end; justify-content: center; opacity: 0; transition: opacity 0.28s cubic-bezier(0.16,1,0.3,1); }
   .modalWrap.show { display: flex; }
-  .modalSheet { width: 100%; max-width: 460px; background: var(--card); border-radius: 20px 20px 0 0; padding: 22px 20px calc(24px + env(safe-area-inset-bottom)); max-height: 85vh; overflow-y: auto; }
+  .modalWrap.open { opacity: 1; }
+  .modalSheet { width: 100%; max-width: 460px; background: var(--card); border-radius: 20px 20px 0 0; padding: 22px 20px calc(24px + env(safe-area-inset-bottom)); max-height: 85vh; overflow-y: auto; transform: translateY(100%); transition: transform 0.32s cubic-bezier(0.16,1,0.3,1); }
+  .modalWrap.open .modalSheet { transform: translateY(0); }
   .modalSheet h2 { margin-top: 0; }
-  .toast { position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%); background: var(--blue-d); color: #fff; padding: 10px 18px; border-radius: 999px; font-size: 0.85rem; z-index: 60; opacity: 0; transition: opacity 0.25s; pointer-events: none; }
-  .toast.show { opacity: 1; }
+  .toast { position: absolute; bottom: 90px; left: 50%; transform: translate(-50%, 8px); background: var(--blue-d); color: #fff; padding: 10px 18px; border-radius: 999px; font-size: 0.85rem; z-index: 60; opacity: 0; transition: opacity 0.25s cubic-bezier(0.16,1,0.3,1), transform 0.25s cubic-bezier(0.16,1,0.3,1); pointer-events: none; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
   .toggleRow { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); gap: 10px; }
   .toggleRow input[type=time] { width: auto; padding: 6px 10px; }
   .switch { position: relative; width: 44px; height: 26px; background: var(--border); border-radius: 999px; cursor: pointer; flex-shrink: 0; }
@@ -163,13 +175,14 @@
   .qBlock { margin-bottom: 14px; }
   .qBlock label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--blue-d); }
   .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 9px; overflow: hidden; flex-shrink: 0; }
-  .seg button { border: none; background: var(--card); padding: 6px 14px; font-size: 0.8rem; font-family: inherit; color: var(--text-soft); cursor: pointer; }
+  .seg button { border: none; background: var(--card); padding: 6px 14px; font-size: 0.8rem; font-family: inherit; color: var(--text-soft); cursor: pointer; transition: background 0.16s ease, color 0.16s ease; }
   .seg button.on { background: var(--blue); color: #fff; }
   .segFull { display: flex; width: 100%; margin-bottom: 18px; }
   .segFull button { flex: 1; padding: 9px 0; }
   .onbCard { display: flex; align-items: center; gap: 14px; cursor: pointer; }
   .goalGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; width: 100%; margin-top: 10px; }
-  .goalBtn { display: flex; align-items: center; gap: 7px; border: 1px solid var(--border); background: var(--card); border-radius: 10px; padding: 9px 10px; font-size: 0.82rem; font-family: inherit; color: var(--text-soft); cursor: pointer; }
+  .goalBtn { display: flex; align-items: center; gap: 7px; border: 1px solid var(--border); background: var(--card); border-radius: 10px; padding: 9px 10px; font-size: 0.82rem; font-family: inherit; color: var(--text-soft); cursor: pointer; transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.1s ease; }
+  .goalBtn:active { transform: scale(0.96); }
   .goalBtn.on { background: var(--blue); border-color: var(--blue); color: #fff; }
   #splash { position: absolute; inset: 0; z-index: 100; background: var(--blue-d); display: flex; align-items: center; justify-content: center; flex-direction: column; animation: splashExit 0.45s ease 2.55s both; pointer-events: none; }
   #splashRing1 { transform-origin: 50px 50px; opacity: 0; animation: splashRing1In 0.6s cubic-bezier(0.34, 1.35, 0.64, 1) 0.1s both; }
@@ -182,10 +195,12 @@
   @keyframes splashDotIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   @keyframes splashWordIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
   @keyframes splashExit { to { opacity: 0; } }
-  #breathOverlay { position: absolute; inset: 0; background: radial-gradient(circle at 50% 36%, var(--blue), var(--blue-d) 78%); z-index: 40; display: none; flex-direction: column; align-items: center; color: #eaf1f5; padding: calc(20px + env(safe-area-inset-top)) 20px 20px; overflow: hidden; }
+  #breathOverlay { position: absolute; inset: 0; background: radial-gradient(circle at 50% 36%, var(--blue), var(--blue-d) 78%); z-index: 40; display: none; flex-direction: column; align-items: center; color: #eaf1f5; padding: calc(20px + env(safe-area-inset-top)) 20px 20px; overflow: hidden; opacity: 0; transform: scale(0.96); transition: opacity 0.28s cubic-bezier(0.16,1,0.3,1), transform 0.28s cubic-bezier(0.16,1,0.3,1); }
   #breathOverlay.show { display: flex; }
+  #breathOverlay.open { opacity: 1; transform: none; }
   #breathOverlay .closeRow { width: 100%; display: flex; justify-content: space-between; align-items: center; z-index: 5; }
-  #breathOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; flex-shrink: 0; }
+  #breathOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; flex-shrink: 0; transition: transform 0.1s ease; }
+  #breathOverlay .closeRow button:active { transform: scale(0.9); }
   #breathOverlay .routineTitle { font-size: 0.85rem; opacity: 0.85; }
   #breathStage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; width: 100%; position: relative; }
   .orbWrap { position: relative; width: 240px; height: 240px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -194,7 +209,7 @@
   #breathRingS { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); }
   .orbTxt { position: relative; z-index: 3; text-align: center; pointer-events: none; }
   .orbPhase { font-size: 15px; font-weight: 700; letter-spacing: 0.02em; color: #1f3636; }
-  .orbCount { font-size: 46px; font-weight: 800; line-height: 1; margin-top: 2px; min-height: 0.9em; color: #1f3636; }
+  .orbCount { font-size: 46px; font-weight: 800; line-height: 1; margin-top: 2px; min-height: 0.9em; color: #1f3636; letter-spacing: -0.02em; }
   .bParticle { position: absolute; border-radius: 50%; background: #fff; opacity: 0; animation: bdrift linear infinite; }
   @keyframes bdrift { 0%{opacity:0;transform:translateY(16px)} 25%{opacity:.5} 75%{opacity:.35} 100%{opacity:0;transform:translateY(-56px)} }
   .bRound { font-size: 12.5px; color: rgba(234,241,245,.65); min-height: 1.2em; }
@@ -203,13 +218,16 @@
   #breathOverlay .tempoRow { text-align: center; font-size: 13px; color: rgba(234,241,245,.75); margin-bottom: 15px; }
   #breathOverlay .tempoRow input { width: 100%; margin-top: 8px; accent-color: var(--sand); }
   #breathOverlay .btnRow { display: flex; gap: 10px; }
-  #breathOverlay .btnRow button { flex: 1; padding: 12px; border-radius: 12px; font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; }
+  #breathOverlay .btnRow button { flex: 1; padding: 12px; border-radius: 12px; font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; transition: transform 0.1s ease; }
+  #breathOverlay .btnRow button:active { transform: scale(0.96); }
   #breathOverlay .bStart { background: var(--sand); color: #fff; }
   #breathOverlay .bEnd { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.4); }
-  #yogaOverlay { position: absolute; inset: 0; background: radial-gradient(circle at 50% 30%, var(--blue), var(--blue-d) 80%); z-index: 40; display: none; flex-direction: column; align-items: center; color: #eaf1f5; padding: calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom)); overflow: hidden; }
+  #yogaOverlay { position: absolute; inset: 0; background: radial-gradient(circle at 50% 30%, var(--blue), var(--blue-d) 80%); z-index: 40; display: none; flex-direction: column; align-items: center; color: #eaf1f5; padding: calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom)); overflow: hidden; opacity: 0; transform: scale(0.96); transition: opacity 0.28s cubic-bezier(0.16,1,0.3,1), transform 0.28s cubic-bezier(0.16,1,0.3,1); }
   #yogaOverlay.show { display: flex; }
+  #yogaOverlay.open { opacity: 1; transform: none; }
   #yogaOverlay .closeRow { width: 100%; display: flex; justify-content: space-between; align-items: center; z-index: 5; }
-  #yogaOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; flex-shrink: 0; }
+  #yogaOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; flex-shrink: 0; transition: transform 0.1s ease; }
+  #yogaOverlay .closeRow button:active { transform: scale(0.9); }
   #yogaOverlay .routineTitle { font-size: 0.85rem; opacity: 0.85; }
   #yogaStage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; width: 100%; }
   .yogaArtWrap { width: 190px; height: 200px; display: flex; align-items: center; justify-content: center; }
@@ -217,7 +235,7 @@
   @keyframes yogaGlyphPulse { 0%, 100% { transform: scale(0.92); opacity: 0.8; } 50% { transform: scale(1.03); opacity: 1; } }
   .yogaPoseName { font-size: 1.2rem; font-weight: 700; text-align: center; }
   .yogaCue { font-size: 0.85rem; color: rgba(255,255,255,0.75); text-align: center; max-width: 260px; line-height: 1.4; margin-top: -6px; }
-  .yogaCount { font-size: 2.6rem; font-weight: 700; min-height: 1em; transition: color 0.2s; }
+  .yogaCount { font-size: 2.6rem; font-weight: 700; min-height: 1em; letter-spacing: -0.02em; transition: color 0.2s; }
   .yogaCount.countdown { color: var(--sand); animation: yogaCountPulse 1s ease-in-out infinite; }
   @keyframes yogaCountPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
   .yogaIntroMeta { font-size: 0.9rem; color: rgba(255,255,255,0.75); }
@@ -226,18 +244,45 @@
   .yogaDot.on { background: var(--sand); transform: scale(1.3); }
   .yogaDot.done { background: rgba(255,255,255,0.6); }
   #yogaOverlay .btnRow { display: flex; gap: 10px; width: 100%; max-width: 340px; padding-bottom: 10px; }
-  #yogaOverlay .btnRow button { flex: 1; padding: 12px; border-radius: 12px; font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; }
+  #yogaOverlay .btnRow button { flex: 1; padding: 12px; border-radius: 12px; font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; transition: transform 0.1s ease; }
+  #yogaOverlay .btnRow button:active { transform: scale(0.96); }
   #yogaOverlay .yPause { background: var(--sand); color: #fff; }
   #yogaOverlay .ySkip { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.4); }
-  #ritualOverlay { position: absolute; inset: 0; background: radial-gradient(circle at 50% 34%, var(--blue), var(--blue-d) 78%); z-index: 40; display: none; flex-direction: column; align-items: center; color: #eaf1f5; padding: calc(20px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom)); overflow: hidden; text-align: center; }
+  #ritualOverlay { position: absolute; inset: 0; background: radial-gradient(circle at 50% 34%, var(--blue), var(--blue-d) 78%); z-index: 40; display: none; flex-direction: column; align-items: center; color: #eaf1f5; padding: calc(20px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom)); overflow: hidden; text-align: center; opacity: 0; transform: scale(0.96); transition: opacity 0.28s cubic-bezier(0.16,1,0.3,1), transform 0.28s cubic-bezier(0.16,1,0.3,1); }
   #ritualOverlay.show { display: flex; }
+  #ritualOverlay.open { opacity: 1; transform: none; }
   #ritualOverlay .closeRow { width: 100%; display: flex; justify-content: flex-end; z-index: 5; }
-  #ritualOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; }
+  #ritualOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; transition: transform 0.1s ease; }
+  #ritualOverlay .closeRow button:active { transform: scale(0.9); }
   #ritualStage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; width: 100%; }
   .ritualLabel { font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.7; }
   .ritualText { font-size: 1.5rem; font-weight: 700; line-height: 1.35; max-width: 320px; }
   .ritualSub { font-size: 0.9rem; opacity: 0.75; }
   #ritualOverlay .btn.full { max-width: 300px; }
+  @keyframes viewFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  main.viewEnter { animation: viewFadeIn 0.22s cubic-bezier(0.16,1,0.3,1) both; }
+
+  @media (prefers-reduced-motion: reduce) {
+    main.viewEnter { animation: none; }
+    .yogaGlyph { animation: none; }
+    .yogaCount.countdown { animation: none; }
+    .bParticle { animation: none; display: none; }
+    #splashRing1, #splashRing2, #splashDot, #splashWord, #splashTagline { animation: none; opacity: 1; }
+    .modalWrap, .modalSheet, #breathOverlay, #yogaOverlay, #ritualOverlay {
+      transition-property: opacity;
+      transition-duration: 0.15s;
+    }
+    .modalSheet, #breathOverlay, #yogaOverlay, #ritualOverlay { transform: none !important; }
+    .card:active, .btn:active, .goalBtn:active, .chips button:active, nav button:active,
+    #breathOverlay .btnRow button:active, #yogaOverlay .btnRow button:active,
+    #breathOverlay .closeRow button:active, #yogaOverlay .closeRow button:active, #ritualOverlay .closeRow button:active {
+      transform: none;
+    }
+  }
+  @media (prefers-contrast: more) {
+    nav, .modalWrap { backdrop-filter: none; -webkit-backdrop-filter: none; }
+    nav { background: var(--card); border-top: 1px solid var(--text); }
+  }
 </style>
 </head>
 <body>
@@ -623,7 +668,7 @@ function showComebackModal() {
     <button class="btn full sand" onclick="closeModal();navigate('home')">${t('comebackCta')}</button>
     <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('comebackDismiss')}</button>
   `;
-  document.getElementById('modalWrap').classList.add('show');
+  openModalWrap();
 }
 
 // TEMPORARY: unlocks all Pro content for TestFlight testing. MUST be set back to false before App Store release.
@@ -799,6 +844,13 @@ function navigate(view) {
   currentExerciseId = null;
   document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.view === view));
   render();
+  replayViewEnter();
+}
+function replayViewEnter() {
+  const main = document.getElementById('main');
+  main.classList.remove('viewEnter');
+  void main.offsetWidth;
+  main.classList.add('viewEnter');
 }
 function setLang(l) { state.lang = l; save(); window._catFilter = 'alle'; render(); }
 
@@ -935,7 +987,7 @@ function setMood(v) {
       <button class="btn full sand" onclick="closeModal();startBreathing('box')">${t('moodLowCta')}</button>
       <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('moodDismiss')}</button>
     `;
-    document.getElementById('modalWrap').classList.add('show');
+    openModalWrap();
   } else if (v >= 4) {
     document.getElementById('modalSheet').innerHTML = `
       <h2>${t('moodHighTitle')}</h2>
@@ -943,7 +995,7 @@ function setMood(v) {
       <button class="btn full sand" onclick="closeModal();openMasteryLog()">${t('moodHighCta')}</button>
       <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('moodDismiss')}</button>
     `;
-    document.getElementById('modalWrap').classList.add('show');
+    openModalWrap();
   } else {
     toast(t('moodMidToast'));
   }
@@ -1069,9 +1121,10 @@ function renderPlayerFav(id) {
 function openExercise(id) {
   currentExerciseId = id;
   render();
+  replayViewEnter();
   startPlayerTimer(id);
 }
-function closeExercise() { stopPlayerTimer(); currentExerciseId = null; render(); }
+function closeExercise() { stopPlayerTimer(); currentExerciseId = null; render(); replayViewEnter(); }
 function startPlayerTimer(id) {
   stopPlayerTimer();
   const e = exs().find(x => x.id === id);
@@ -1168,7 +1221,7 @@ function showDayDetail(dateStr) {
     <h2>${t('weekDetailJournal')}</h2>
     ${journalHtml}
   `;
-  document.getElementById('modalWrap').classList.add('show');
+  openModalWrap();
 }
 function buildTenWeekChart() {
   const weeks = [];
@@ -1226,7 +1279,7 @@ function showWeekDetail(weekIndex) {
       <p style="font-size:0.9rem;color:var(--text-soft);margin-top:6px">${journalCount ? t('weekDetailJournalCount')(journalCount) : t('weekDetailNoJournal')}</p>
     </div>
   `;
-  document.getElementById('modalWrap').classList.add('show');
+  openModalWrap();
 }
 function buildCategoryBalance() {
   const counts = {};
@@ -1416,7 +1469,7 @@ function showContactModal() {
     <p class="sub" style="font-size:0.78rem">${t('contactNote')}</p>
     <button class="btn full sand" onclick="submitContact()">${t('contactSubmit')}</button>
   `;
-  document.getElementById('modalWrap').classList.add('show');
+  openModalWrap();
 }
 function showRitualSetup() {
   const r = state.ritual || { mantra: '', focusNote: '' };
@@ -1428,7 +1481,7 @@ function showRitualSetup() {
     <button class="btn full sand" onclick="saveRitual()">${t('ritualSaveBtn')}</button>
     ${state.ritual ? `<button class="btn full ghost" style="margin-top:8px" onclick="deleteRitual()">${t('ritualDeleteBtn')}</button>` : ''}
   `;
-  document.getElementById('modalWrap').classList.add('show');
+  openModalWrap();
 }
 function saveRitual() {
   const mantra = document.getElementById('rMantra').value.trim();
@@ -1457,7 +1510,7 @@ function showGoalSetup() {
     <button class="btn full sand" onclick="saveGoal()">${t('goalSaveBtn')}</button>
     ${state.mainGoal ? `<button class="btn full ghost" style="margin-top:8px" onclick="deleteGoal()">${t('goalDeleteBtn')}</button>` : ''}
   `;
-  document.getElementById('modalWrap').classList.add('show');
+  openModalWrap();
 }
 function saveGoal() {
   const title = document.getElementById('gTitle').value.trim();
@@ -1486,7 +1539,7 @@ function showBackupModal() {
     ${navigator.share ? `<button class="btn full secondary" style="margin-top:8px" onclick="shareBackupText()">${t('shareBtn')}</button>` : ''}
     <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('closeBtn')}</button>
   `;
-  document.getElementById('modalWrap').classList.add('show');
+  openModalWrap();
 }
 function copyBackupText() {
   const ta = document.getElementById('backupText');
@@ -1505,7 +1558,7 @@ function showRestoreModal() {
     <button class="btn full" style="margin-top:12px;background:#b9503c" onclick="confirmRestoreBackup()">${t('restoreReplaceBtn')}</button>
     <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('cancelBtn')}</button>
   `;
-  document.getElementById('modalWrap').classList.add('show');
+  openModalWrap();
 }
 function confirmRestoreBackup() {
   const raw = (document.getElementById('restoreText').value || '').trim();
@@ -1542,7 +1595,7 @@ function showReframeModal() {
     <h2>${t('reframeHistoryTitle')}</h2>
     ${history}
   `;
-  document.getElementById('modalWrap').classList.add('show');
+  openModalWrap();
 }
 function saveReframe() {
   const situation = document.getElementById('rfSituation').value.trim();
@@ -1581,10 +1634,29 @@ function showProModal() {
     <button class="btn full sand" onclick="purchasePro()">${t('startPro')}</button>
     <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('notNow')}</button>
   `;
-  document.getElementById('modalWrap').classList.add('show');
+  openModalWrap();
 }
-function closeModal() { document.getElementById('modalWrap').classList.remove('show'); }
+function openModalWrap() {
+  const el = document.getElementById('modalWrap');
+  el.classList.add('show');
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('open')));
+}
+function closeModal() {
+  const el = document.getElementById('modalWrap');
+  el.classList.remove('open');
+  setTimeout(() => el.classList.remove('show'), 280);
+}
 document.getElementById('modalWrap').addEventListener('click', (e) => { if (e.target.id === 'modalWrap') closeModal(); });
+function openOverlay(id) {
+  const el = document.getElementById(id);
+  el.classList.add('show');
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('open')));
+}
+function closeOverlay(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('open');
+  setTimeout(() => el.classList.remove('show'), 280);
+}
 
 /* ---------- RevenueCat ---------- */
 // TODO: set RevenueCat API key (appl_...) before production, see Together project for the pattern
@@ -1751,7 +1823,7 @@ function startBreathing(techId) {
   } else {
     document.getElementById('tempoLabel').innerHTML = '';
   }
-  document.getElementById('breathOverlay').classList.add('show');
+  openOverlay('breathOverlay');
   document.getElementById('brStart').onclick = toggleBreath;
 }
 function toggleBreath() {
@@ -1821,7 +1893,7 @@ function finishBreathingSession() {
 function stopBreathTick() { brRunning = false; if (brRaf) { cancelAnimationFrame(brRaf); brRaf = null; } }
 function stopBreathing() {
   stopBreathTick();
-  document.getElementById('breathOverlay').classList.remove('show');
+  closeOverlay('breathOverlay');
   currentBreathTech = null;
 }
 
@@ -1856,7 +1928,7 @@ function openYoga(id) {
   if (!routine) return;
   if (yogaState && yogaState.timer) clearInterval(yogaState.timer);
   yogaState = { routine, idx: 0, remaining: routine.poses[0].sec, paused: false, timer: null, done: false, intro: true };
-  document.getElementById('yogaOverlay').classList.add('show');
+  openOverlay('yogaOverlay');
   const soundBtn = document.getElementById('yogaSoundBtn');
   if (soundBtn) soundBtn.innerHTML = icon(state.yogaSoundOn ? 'soundOn' : 'soundOff', 16);
   renderYogaStage();
@@ -1944,8 +2016,7 @@ function finishYoga() {
 }
 function closeYoga() {
   try { if (yogaState && yogaState.timer) clearInterval(yogaState.timer); } catch (e) {}
-  const ov = document.getElementById('yogaOverlay');
-  if (ov) ov.classList.remove('show');
+  closeOverlay('yogaOverlay');
   yogaState = null;
   render();
 }
@@ -1976,7 +2047,7 @@ function renderRitualStageHtml() {
 function startRitual() {
   if (!state.ritual) return;
   ritualStage = 0;
-  document.getElementById('ritualOverlay').classList.add('show');
+  openOverlay('ritualOverlay');
   document.getElementById('ritualStage').innerHTML = renderRitualStageHtml();
 }
 function advanceRitualStage() {
@@ -2014,7 +2085,7 @@ function runRitualBreathTick() {
 function stopRitualBreath() { if (ritRaf) { cancelAnimationFrame(ritRaf); ritRaf = null; } }
 function closeRitual() {
   stopRitualBreath();
-  document.getElementById('ritualOverlay').classList.remove('show');
+  closeOverlay('ritualOverlay');
 }
 
 /* ---------- Init ---------- */
