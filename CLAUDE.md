@@ -7,7 +7,7 @@ Kristian Clifford (coach og mental trener) bygger **Keelstone** — mental treni
 **2026-07-22: Keelstone og Mentalt Sterkere er slått sammen til én app.** De startet som to separate prosjekter (se historikk i `Prosjekthistorikk` under), fikk identisk innhold samme dag, og ble deretter besluttet slått sammen: **Keelstone er nå den eneste gjenlevende appen**, og dekker det norske markedet via sitt eksisterende språk-auto-deteksjon (ikke en egen norsk app lenger). `Projects\mentaltsterkere` er lagt ned som eget produkt — repoet står igjen som arkiv/historikk, ikke i aktiv drift. Ikke gjenoppliv det som en egen app med mindre brukeren eksplisitt ber om det.
 
 - **Navn:** Keelstone (App Store-sjekket rent juli 2026; bør reserveres i App Store Connect for endelig bekreftelse)
-- **GitHub**: https://github.com/Kricliff/keelstone — **offentlig repo** (endret fra privat 2026-07-22 for å kunne bruke gratis GitHub Pages til personvernsiden). Ikke legg ekte API-nøkler eller hemmeligheter i koden — `REVENUECAT_API_KEY` er fortsatt en plassholder, hold det slik til release-oppsett, bruk da miljøvariabler/Codemagic-secrets i stedet.
+- **GitHub**: https://github.com/Kricliff/keelstone — **offentlig repo** (endret fra privat 2026-07-22 for å kunne bruke gratis GitHub Pages til personvernsiden). `REVENUECAT_API_KEY` (satt 2026-08-01) er RevenueCats **public SDK-nøkkel** — designet for å ligge i klientkode (som en Stripe publishable key), gir ingen admin-tilgang og er uansett trivielt hentbar fra den kompilerte app-binæren, så den er trygg å hardkode direkte (samme mønster som Together). De ekte hemmelighetene — IAP-nøkkelen og App Store Connect API-nøkkelen — ligger kun i Codemagic-secrets (gruppe `ios_signing`) og skal ALDRI i git.
 - **Bundle ID (planlagt):** com.kricliff.keelstone
 - **Support/kontakt:** keelstone@cliffordcoaching.no (alias må opprettes, samme mønster som together@)
 - **Coaching-funnel:** Clifford Coaching (https://cliffordcoaching.no)
@@ -119,11 +119,21 @@ Innhold og UX verifisert grundig i nettleser-preview (onboarding, hjem, søk/fil
 
 **⚠️ `TESTFLIGHT_UNLOCK_ALL = true` i `www/index.html` (søk etter det navnet):** satt 2026-07-23 for at Kristian skal kunne teste alle øvelser/yoga-økter i TestFlight uten at RevenueCat-nøkkelen er på plass ennå. Overstyrer `IS_PRO` til alltid `true`, uavhengig av faktisk abonnementsstatus. **MÅ settes til `false` før innsending til App Store**, ellers er alt gratis for alle brukere. Sjekk denne flagget eksplisitt som en del av pre-release-sjekklisten.
 
+**RevenueCat-oppsett: FULLFØRT (2026-08-01).** Abonnementsprodukt `com.kricliff.keelstone.pro.monthly` opprettet i App Store Connect, RevenueCat-app «Keelstone (App Store)» opprettet (gjenbrukte Together sine IAP- og App Store Connect API-nøkler siden de er bundet til samme utviklerkonto), produktet importert og koblet til et nytt `pro`-entitlement (merk: standard-entitlementet RevenueCat foreslo het `Keelstone Pro` — identifikatoren er ikke redigerbar i RevenueCat UI, så et nytt entitlement med riktig identifikator `pro` ble opprettet i stedet for å bruke det, siden koden sjekker `entitlements.active['pro']`). API-nøkkelen `appl_vhmFnKYidvHYeEEQCbtaTFwbnFN` satt inn i `REVENUECAT_API_KEY` i `www/index.html:1672`.
+
 **Gjenstår, kun gjørbart av Kristian (Apple-ID/RevenueCat-innlogging):**
 1. Sjekk TestFlight i App Store Connect for at build #6 er prosessert og installer/test appen på en fysisk enhet
-2. Opprett RevenueCat-app for `com.kricliff.keelstone`, produkt `com.kricliff.keelstone.pro.monthly`, entitlement `pro`, sett inn API-nøkkelen i `REVENUECAT_API_KEY` i `www/index.html` (søk «SETT_INN_NOKKEL») — ikke blokkerende for TestFlight-testing av UI, men nødvendig før Pro-kjøp fungerer for testere
+2. Test et faktisk Pro-kjøp i sandbox/TestFlight for å bekrefte at `pro`-entitlementet faktisk låser opp `IS_PRO`
 3. Lydinnspilling (begge språk) — ikke blokkerende for TestFlight-intern testing
 4. Personvern-URL for App Store Connect: https://kricliff.github.io/keelstone/privacy.html (allerede live)
+5. Husk å sette `TESTFLIGHT_UNLOCK_ALL = false` i `www/index.html` før innsending til App Store (se advarsel over)
+
+## Pre-release sjekkliste (kjør rett før innsending til App Store)
+
+1. Lydinnspilling ferdig for alle øvelser/yoga-økter (begge språk)
+2. Ekte Pro-kjøp testet i sandbox/TestFlight — bekreft at `pro`-entitlementet faktisk låser opp `IS_PRO`
+3. Personvern-URL verifisert live: https://kricliff.github.io/keelstone/privacy.html
+4. **Sist:** sett `TESTFLIGHT_UNLOCK_ALL = false` i `www/index.html` (linje 684) — MÅ være siste steg, ellers er alt gratis for alle brukere fram til da
 
 ## Build-lærdommer (arvet fra Together — ikke gjenta feilene)
 
