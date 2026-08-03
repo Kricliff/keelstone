@@ -426,6 +426,8 @@ const T = {
     dateLocale: 'nb-NO',
     comebackTitle: 'Godt å se deg igjen!', comebackBody: n => `Det er ${n} ${n === 1 ? 'dag' : 'dager'} siden sist. Klar for en kort økt?`,
     comebackCta: 'Start en øvelse', comebackDismiss: 'Ikke nå',
+    accountNudgeTitle: 'Ikke mist fremgangen din', accountNudgeBody: 'Fremgangen din er kun lagret på denne enheten akkurat nå. Opprett en gratis konto med e-post for å sikre tilgang hvis du bytter telefon eller installerer appen på nytt.',
+    accountNudgeCreateBtn: 'Opprett konto', accountNudgeDismiss: 'Ikke nå',
     contactTitle: 'Avtal en samtale med meg', contactDesc: 'Ønsker du å ta en prat med meg som coach? Fyll ut skjemaet, så tar jeg kontakt.',
     contactBtn: 'Kontakt meg', contactName: 'Navn', contactPhone: 'Telefonnummer', contactEmail: 'E-postadresse', contactReason: 'Hva gjelder henvendelsen?',
     contactSubmit: 'Send henvendelse', contactNote: 'Jeg tar kontakt innen 24 timer.',
@@ -526,6 +528,8 @@ const T = {
     dateLocale: 'en-US',
     comebackTitle: 'Good to see you again!', comebackBody: n => `It's been ${n} days. Ready for a short session?`,
     comebackCta: 'Start an exercise', comebackDismiss: 'Not now',
+    accountNudgeTitle: "Don't lose your progress", accountNudgeBody: 'Your progress is only stored on this device right now. Create a free account with email to keep access if you switch phones or reinstall the app.',
+    accountNudgeCreateBtn: 'Create account', accountNudgeDismiss: 'Not now',
     yogaTitle: 'Yoga', yogaDesc: 'Light, animated yoga sessions you can follow step by step.', yogaPosesLabel: 'poses',
     yogaStart: 'Start session', yogaPause: 'Pause', yogaResume: 'Resume', yogaSkip: 'Next', yogaClose: 'Close',
     yogaDoneTitle: 'Session complete', yogaDoneMsg: 'Great work. Your progress is saved.',
@@ -666,7 +670,7 @@ const MOODS = ['😔', '😕', '😐', '🙂', '😄'];
 
 /* ---------- State ---------- */
 function detectLang() { const l = (navigator.language || 'en').toLowerCase(); return (l.startsWith('nb') || l.startsWith('nn') || l.startsWith('no')) ? 'no' : 'en'; }
-let state = { streak: 0, lastCompletedDate: null, completedIds: [], journal: [], notifOn: false, lang: null, goal: null, favorites: [], checkins: {}, reminderTime: '09:00', onboarded: false, theme: 'system', lastOpenDate: null, ritual: null, mainGoal: null, wins: [], reframes: [], weeklyReflectionOn: false, weeklyReflectionTime: '18:00', yogaSoundOn: true };
+let state = { streak: 0, lastCompletedDate: null, completedIds: [], journal: [], notifOn: false, lang: null, goal: null, favorites: [], checkins: {}, reminderTime: '09:00', onboarded: false, theme: 'system', lastOpenDate: null, ritual: null, mainGoal: null, wins: [], reframes: [], weeklyReflectionOn: false, weeklyReflectionTime: '18:00', yogaSoundOn: true, accountNudgeDismissed: false };
 function load() {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -702,6 +706,28 @@ function showComebackModal() {
     <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('comebackDismiss')}</button>
   `;
   openModalWrap();
+}
+function maybeShowAccountNudge() {
+  if (state.accountNudgeDismissed) return;
+  if (!fbUser || !fbUser.isAnonymous) return;
+  if (state.completedIds.length < 2) return;
+  if (pendingComebackDays) return;
+  if (document.getElementById('modalWrap').classList.contains('open')) return;
+  setTimeout(showAccountNudgeModal, 1200);
+}
+function showAccountNudgeModal() {
+  document.getElementById('modalSheet').innerHTML = `
+    <h2>${t('accountNudgeTitle')}</h2>
+    <p class="sub">${t('accountNudgeBody')}</p>
+    <button class="btn full sand" onclick="closeModal();showAuthModal('signup')">${t('accountNudgeCreateBtn')}</button>
+    <button class="btn full ghost" style="margin-top:8px" onclick="dismissAccountNudge()">${t('accountNudgeDismiss')}</button>
+  `;
+  openModalWrap();
+}
+function dismissAccountNudge() {
+  state.accountNudgeDismissed = true;
+  save();
+  closeModal();
 }
 
 // TEMPORARY: unlocks all Pro content for TestFlight testing. MUST be set back to false before App Store release.
@@ -1477,6 +1503,7 @@ function renderProfile() {
       <button class="btn small secondary" style="margin-left:8px" onclick="showAuthModal('login')">${t('loginBtn')}</button>
       `}
     </div>
+    ${(!fbUser || fbUser.isAnonymous) ? `
     <div class="card">
       <b>${t('yourDataTitle')}</b>
       <div class="toggleRow" style="margin-top:10px">
@@ -1487,7 +1514,7 @@ function renderProfile() {
         <span>${t('restoreFromBackupLabel')}</span>
         <button class="btn small secondary" onclick="showRestoreModal()">${t('restoreBackupBtn')}</button>
       </div>
-    </div>
+    </div>` : ''}
     ${state.lang === 'no' ? `<div class="card">
       <b>${t('contactTitle')}</b>
       <p style="font-size:0.85rem;color:var(--text-soft);margin:6px 0 12px">${t('contactDesc')}</p>
@@ -1758,6 +1785,7 @@ async function initCloudBackup() {
     const cred = await fbAuth.signInAnonymously();
     fbUser = cred.user;
     if (!state.onboarded) await restoreBackupForCurrentUser({ silent: false });
+    maybeShowAccountNudge();
   } catch (e) { console.warn('initCloudBackup:', e); }
 }
 async function restoreBackupForCurrentUser({ silent } = { silent: true }) {
