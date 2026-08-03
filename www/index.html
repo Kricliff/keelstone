@@ -393,6 +393,18 @@ const T = {
     backupCopied: 'Sikkerhetskopi kopiert. Oppbevar den trygt.', dataRestored: 'Data gjenopprettet.',
     pasteFirst: 'Lim inn en sikkerhetskopi først.', invalidBackup: 'Dette ser ikke ut som en gyldig sikkerhetskopi.',
     notKeelstoneBackup: 'Dette ser ikke ut som en Keelstone-sikkerhetskopi.',
+    accountTitle: 'Konto', accountAnonDesc: 'Dataene dine sikkerhetskopieres automatisk til denne enheten. Opprett en konto med e-post for å sikre tilgang på tvers av enheter og ved ominstallering.',
+    accountLoggedInAs: 'Innlogget som', createAccountBtn: 'Opprett konto', loginBtn: 'Logg inn', logoutBtn: 'Logg ut',
+    deleteAccountBtn: 'Slett konto', deleteAccountConfirm: 'Dette sletter kontoen din og all skylagret data permanent. Dette kan ikke angres. Er du sikker?',
+    emailLabel: 'E-post', passwordLabel: 'Passord', signupTitle: 'Opprett konto', loginTitle: 'Logg inn',
+    authSubmitBtn: 'Fortsett', forgotPasswordBtn: 'Glemt passord?',
+    switchToLogin: 'Har du allerede en konto? Logg inn', switchToSignup: 'Ny bruker? Opprett konto',
+    authMissingFields: 'Fyll ut e-post og passord.', passwordResetSent: 'Vi har sendt deg en e-post for å tilbakestille passordet.',
+    accountCreated: 'Konto opprettet.', loggedIn: 'Innlogget.', loggedOut: 'Logget ut.', accountDeleted: 'Kontoen din er slettet.',
+    reauthRequired: 'Av sikkerhetshensyn må du logge inn på nytt før du sletter kontoen.',
+    authErr_weak_password: 'Passordet må være på minst 6 tegn.', authErr_email_already_in_use: 'Denne e-posten er allerede i bruk. Prøv å logge inn i stedet.',
+    authErr_invalid_credential: 'Feil e-post eller passord.', authErr_invalid_email: 'Ugyldig e-postadresse.',
+    authErr_generic: 'Noe gikk galt. Prøv igjen.',
     profileTitle: 'Profil', proTitle: 'Keelstone Pro', freeTitle: 'Gratis versjon',
     proDesc: 'Du har tilgang til alle øvelser. Takk for støtten!', freeDesc: 'Du har tilgang til én gratis øvelse i hver kategori. Oppgrader til Pro for full tilgang til alle kategorier og yoga-øktene.',
     becomePro: 'Bli Pro', dailyReminder: 'Daglig påminnelse', reminderTimeLabel: 'Tidspunkt', goalLabel: 'Mitt fokus',
@@ -481,6 +493,18 @@ const T = {
     backupCopied: 'Backup copied. Save it somewhere safe.', dataRestored: 'Data restored.',
     pasteFirst: 'Paste a backup first.', invalidBackup: "That doesn't look like a valid backup.",
     notKeelstoneBackup: "That doesn't look like a Keelstone backup.",
+    accountTitle: 'Account', accountAnonDesc: 'Your data is automatically backed up to this device. Create an account with email to keep access across devices and after reinstalling.',
+    accountLoggedInAs: 'Logged in as', createAccountBtn: 'Create account', loginBtn: 'Log in', logoutBtn: 'Log out',
+    deleteAccountBtn: 'Delete account', deleteAccountConfirm: 'This permanently deletes your account and all cloud-stored data. This cannot be undone. Are you sure?',
+    emailLabel: 'Email', passwordLabel: 'Password', signupTitle: 'Create account', loginTitle: 'Log in',
+    authSubmitBtn: 'Continue', forgotPasswordBtn: 'Forgot password?',
+    switchToLogin: 'Already have an account? Log in', switchToSignup: 'New here? Create an account',
+    authMissingFields: 'Fill in email and password.', passwordResetSent: "We've sent you an email to reset your password.",
+    accountCreated: 'Account created.', loggedIn: 'Logged in.', loggedOut: 'Logged out.', accountDeleted: 'Your account has been deleted.',
+    reauthRequired: 'For security, please log in again before deleting your account.',
+    authErr_weak_password: 'Password must be at least 6 characters.', authErr_email_already_in_use: 'This email is already in use. Try logging in instead.',
+    authErr_invalid_credential: 'Incorrect email or password.', authErr_invalid_email: 'Invalid email address.',
+    authErr_generic: 'Something went wrong. Please try again.',
     profileTitle: 'Profile', proTitle: 'Keelstone Pro', freeTitle: 'Free version',
     proDesc: 'You have access to all exercises. Thanks for your support!', freeDesc: 'You have access to one free exercise in each category. Upgrade for full access to all categories and the yoga sessions.',
     becomePro: 'Go Pro', dailyReminder: 'Daily reminder', reminderTimeLabel: 'Time', goalLabel: 'My focus',
@@ -1442,6 +1466,18 @@ function renderProfile() {
       </div>
     </div>
     <div class="card">
+      <b>${t('accountTitle')}</b>
+      ${fbUser && !fbUser.isAnonymous ? `
+      <p style="font-size:0.85rem;color:var(--text-soft);margin:6px 0 12px">${t('accountLoggedInAs')}: ${escapeHtml(fbUser.email || '')}</p>
+      <button class="btn small secondary" onclick="doLogout()">${t('logoutBtn')}</button>
+      <button class="btn small secondary" style="margin-left:8px" onclick="showDeleteAccountModal()">${t('deleteAccountBtn')}</button>
+      ` : `
+      <p style="font-size:0.85rem;color:var(--text-soft);margin:6px 0 12px">${t('accountAnonDesc')}</p>
+      <button class="btn small sand" onclick="showAuthModal('signup')">${t('createAccountBtn')}</button>
+      <button class="btn small secondary" style="margin-left:8px" onclick="showAuthModal('login')">${t('loginBtn')}</button>
+      `}
+    </div>
+    <div class="card">
       <b>${t('yourDataTitle')}</b>
       <div class="toggleRow" style="margin-top:10px">
         <span>${t('backupMyData')}</span>
@@ -1702,7 +1738,7 @@ async function restorePurchases() {
   } catch (e) { console.warn('restorePurchases:', e); }
 }
 
-/* ---------- Cloud backup (Firebase, anonymous) ---------- */
+/* ---------- Cloud backup + account (Firebase) ---------- */
 const FIREBASE_CONFIG = {
   apiKey: 'AIzaSyAZpCS44JwuKWnW-HVE1VEM8lGVuNh9NhE',
   authDomain: 'backup-keelstone.firebaseapp.com',
@@ -1718,20 +1754,102 @@ async function initCloudBackup() {
     firebase.initializeApp(FIREBASE_CONFIG);
     fbAuth = firebase.auth();
     fbDb = firebase.firestore();
+    fbAuth.onAuthStateChanged(u => { fbUser = u; if (document.getElementById('main')) render(); });
     const cred = await fbAuth.signInAnonymously();
     fbUser = cred.user;
-    if (!state.onboarded) {
-      const doc = await fbDb.collection('backups').doc(fbUser.uid).get();
-      if (doc.exists && doc.data().state) {
-        const restored = JSON.parse(doc.data().state);
-        state = Object.assign({}, state, restored);
-        save();
-        applyTheme();
-        render();
-        toast(t('backupRestored'));
-      }
-    }
+    if (!state.onboarded) await restoreBackupForCurrentUser({ silent: false });
   } catch (e) { console.warn('initCloudBackup:', e); }
+}
+async function restoreBackupForCurrentUser({ silent } = { silent: true }) {
+  if (!fbDb || !fbUser) return;
+  const doc = await fbDb.collection('backups').doc(fbUser.uid).get();
+  if (doc.exists && doc.data().state) {
+    const restored = JSON.parse(doc.data().state);
+    state = Object.assign({}, state, restored);
+    save();
+    applyTheme();
+    render();
+    if (!silent) toast(t('backupRestored'));
+  }
+}
+function authErrorMessage(e) {
+  const code = (e && e.code || '').replace('auth/', '').replace(/-/g, '_');
+  return t('authErr_' + code) || t('authErr_generic');
+}
+function showAuthModal(mode) {
+  document.getElementById('modalSheet').innerHTML = `
+    <h2>${mode === 'signup' ? t('signupTitle') : t('loginTitle')}</h2>
+    <div class="qBlock"><label>${t('emailLabel')}</label><input type="email" id="authEmail" autocomplete="email"></div>
+    <div class="qBlock"><label>${t('passwordLabel')}</label><input type="password" id="authPassword" autocomplete="${mode === 'signup' ? 'new-password' : 'current-password'}"></div>
+    <button class="btn full sand" onclick="submitAuth('${mode}')">${t('authSubmitBtn')}</button>
+    ${mode === 'login' ? `<button class="btn full ghost" style="margin-top:8px" onclick="doForgotPassword()">${t('forgotPasswordBtn')}</button>` : ''}
+    <button class="btn full ghost" style="margin-top:8px" onclick="showAuthModal('${mode === 'signup' ? 'login' : 'signup'}')">${mode === 'signup' ? t('switchToLogin') : t('switchToSignup')}</button>
+  `;
+  openModalWrap();
+}
+async function submitAuth(mode) {
+  const email = (document.getElementById('authEmail').value || '').trim();
+  const password = document.getElementById('authPassword').value || '';
+  if (!email || !password) { toast(t('authMissingFields')); return; }
+  try {
+    if (mode === 'signup') {
+      const emailCred = firebase.auth.EmailAuthProvider.credential(email, password);
+      if (fbUser && fbUser.isAnonymous) {
+        const result = await fbUser.linkWithCredential(emailCred);
+        fbUser = result.user;
+      } else {
+        const result = await fbAuth.createUserWithEmailAndPassword(email, password);
+        fbUser = result.user;
+      }
+      toast(t('accountCreated'));
+    } else {
+      const result = await fbAuth.signInWithEmailAndPassword(email, password);
+      fbUser = result.user;
+      await restoreBackupForCurrentUser({ silent: false });
+      toast(t('loggedIn'));
+    }
+    closeModal();
+    render();
+  } catch (e) { console.warn('submitAuth:', e); toast(authErrorMessage(e)); }
+}
+async function doForgotPassword() {
+  const email = (document.getElementById('authEmail').value || '').trim();
+  if (!email) { toast(t('authMissingFields')); return; }
+  try { await fbAuth.sendPasswordResetEmail(email); toast(t('passwordResetSent')); }
+  catch (e) { console.warn('doForgotPassword:', e); toast(authErrorMessage(e)); }
+}
+async function doLogout() {
+  try {
+    await fbAuth.signOut();
+    const cred = await fbAuth.signInAnonymously();
+    fbUser = cred.user;
+    toast(t('loggedOut'));
+    render();
+  } catch (e) { console.warn('doLogout:', e); }
+}
+function showDeleteAccountModal() {
+  document.getElementById('modalSheet').innerHTML = `
+    <h2>${t('deleteAccountBtn')}</h2>
+    <p class="sub">${t('deleteAccountConfirm')}</p>
+    <button class="btn full" style="margin-top:12px;background:#b9503c" onclick="confirmDeleteAccount()">${t('deleteAccountBtn')}</button>
+    <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('cancelBtn')}</button>
+  `;
+  openModalWrap();
+}
+async function confirmDeleteAccount() {
+  if (!fbUser) return;
+  try {
+    await fbDb.collection('backups').doc(fbUser.uid).delete();
+    await fbUser.delete();
+    localStorage.removeItem(LS_KEY);
+    closeModal();
+    toast(t('accountDeleted'));
+    location.reload();
+  } catch (e) {
+    console.warn('confirmDeleteAccount:', e);
+    if (e.code === 'auth/requires-recent-login') { closeModal(); toast(t('reauthRequired')); showAuthModal('login'); }
+    else toast(authErrorMessage(e));
+  }
 }
 function scheduleCloudBackup() {
   if (!fbDb || !fbUser) return;

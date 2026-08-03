@@ -53,8 +53,9 @@ Fra 2026-07-22 er fargepaletten hentet direkte fra cliffordcoaching.no for å sk
 - i18n: `T[lang][key]` + `t(key)`; `CATEGORIES[lang]` og `EXERCISES[lang]` er parallelle strukturer med samme id-er og rekkefølge på tvers av språk
 - Fire faner: Hjem, Utforsk, Fremgang, Profil (se «UX-redesign» under for detaljer per fane)
 - `LS_KEY = 'keelstone_state_v1'`, `FREE_EXERCISE_IDS = new Set(['fokus-1', 'ro-1', 'selvtillit-1', 'restitusjon-1'])` (én gratis øvelse per kategori, 2026-07-23)
-- Capacitor 8 (iOS + Android ikke lagt til ennå, kjør `npx cap add ios` / `npx cap add android` når native oppsett skal starte), RevenueCat for abonnement (samme oppsett som Together, API-nøkkel ikke satt inn ennå)
+- Capacitor 8 (iOS lagt til 2026-07-22, Android ikke lagt til ennå — kjør `npx cap add android` når native oppsett skal starte), RevenueCat for abonnement (satt opp 2026-08-01, se «RevenueCat-oppsett» under)
 - `npm install --legacy-peer-deps` (RevenueCat v9 + Capacitor v8)
+- **Sky-konto (Firebase Auth, 2026-08-01):** valgfri e-post+passord-konto i tillegg til den eksisterende anonyme sikkerhetskopien (`www/index.html` ~linje 1729-1841, `pro`-fri kode). Bevisst valgt e-post/passord i stedet for Sign in with Apple, siden appen skal på Google Play også — e-post krever ikke Apples Guideline 4.8 (Sign in with Apple-krav gjelder kun tredjeparts-/sosial innlogging, ikke utviklerens egen e-post-løsning). Ved registrering brukes `linkWithCredential` hvis brukeren allerede er anonym, slik at eksisterende sikkerhetskopi ikke går tapt. Kontosletting er bygget inn i appen (Profil → Slett konto) for å dekke Apples Guideline 5.1.1(v) (apper med kontoopprettelse må tilby kontosletting i appen, ikke bare deaktivering). Krever at Email/Password er aktivert under Firebase Console → Authentication → Sign-in method for prosjektet `backup-keelstone` (gjort 2026-08-01).
 
 ## UX-redesign (2026-07-22)
 
@@ -132,8 +133,9 @@ Innhold og UX verifisert grundig i nettleser-preview (onboarding, hjem, søk/fil
 
 1. Lydinnspilling ferdig for alle øvelser/yoga-økter (begge språk)
 2. Ekte Pro-kjøp testet i sandbox/TestFlight — bekreft at `pro`-entitlementet faktisk låser opp `IS_PRO`
-3. Personvern-URL verifisert live: https://kricliff.github.io/keelstone/privacy.html
-4. **Sist:** sett `TESTFLIGHT_UNLOCK_ALL = false` i `www/index.html` (linje 684) — MÅ være siste steg, ellers er alt gratis for alle brukere fram til da
+3. Test konto-flyten i TestFlight: opprett konto (bekreft at eksisterende anonym sikkerhetskopi ikke går tapt), logg ut/inn på en annen enhet (bekreft at data gjenopprettes), og slett konto (bekreft at appen nullstilles og sikkerhetskopien forsvinner fra Firestore)
+4. Personvern-URL verifisert live: https://kricliff.github.io/keelstone/privacy.html
+5. **Sist:** sett `TESTFLIGHT_UNLOCK_ALL = false` i `www/index.html` (linje 684) — MÅ være siste steg, ellers er alt gratis for alle brukere fram til da
 
 ## Build-lærdommer (arvet fra Together — ikke gjenta feilene)
 
