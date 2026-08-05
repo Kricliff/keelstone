@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-05T00:00:00Z",
+  "title": "Design System: Keelstone",
+  "extensions": {
+    "colorMeta": {
+      "deep-slate-teal": {
+        "role": "primary",
+        "displayName": "Deep Slate Teal",
+        "canonical": "#2F4F4F",
+        "darkModeCounterpart": "#7fa39c",
+        "tonalRamp": ["#1d3030", "#315353", "#467676", "#5b9999", "#7cb1b1", "#9fc6c6", "#c2dbdb", "#e5f0f0"]
+      },
+      "deep-slate-teal-pressed": {
+        "role": "primary-active",
+        "displayName": "Deep Slate Teal, Pressed",
+        "canonical": "#1f3636",
+        "darkModeCounterpart": "#3f5f5c"
+      },
+      "teal-wash": {
+        "role": "primary-container",
+        "displayName": "Teal Wash",
+        "canonical": "#e4ecea",
+        "darkModeCounterpart": "#1c2a29"
+      },
+      "compass-gold": {
+        "role": "secondary",
+        "displayName": "Compass Gold",
+        "canonical": "#D9B25C",
+        "darkModeCounterpart": "#e0bb63",
+        "tonalRamp": ["#3e2f0e", "#6c5219", "#997424", "#c7972e", "#d7af55", "#e2c483", "#eddab0", "#f7efde"]
+      },
+      "gold-wash": {
+        "role": "secondary-container",
+        "displayName": "Gold Wash",
+        "canonical": "#fbf0dc",
+        "darkModeCounterpart": "#362b12"
+      },
+      "cat-focus": {
+        "role": "category-accent",
+        "displayName": "Focus Blue",
+        "canonical": "#2a78d6",
+        "darkModeCounterpart": "#3987e5",
+        "tonalRamp": ["#0c2440", "#153e6f", "#1e589e", "#2873cd", "#5090dd", "#7faee6", "#aecbef", "#dde9f8"]
+      },
+      "cat-calm": {
+        "role": "category-accent",
+        "displayName": "Calm Green",
+        "canonical": "#1baf7a",
+        "darkModeCounterpart": "#199e70",
+        "tonalRamp": ["#0a422e", "#127350", "#19a372", "#21d494", "#4ae3ac", "#7aebc2", "#abf2d9", "#dcfaef"]
+      },
+      "cat-confidence": {
+        "role": "category-accent",
+        "displayName": "Confidence Violet",
+        "canonical": "#4a3aa7",
+        "darkModeCounterpart": "#9085e9",
+        "tonalRamp": ["#191439", "#2c2262", "#3e318c", "#513fb6", "#7364c9", "#988dd8", "#beb7e6", "#e4e1f4"]
+      },
+      "cat-restitution": {
+        "role": "category-accent",
+        "displayName": "Restitution Coral",
+        "canonical": "#e34948",
+        "darkModeCounterpart": "#e66767",
+        "tonalRamp": ["#420b0a", "#731212", "#a41a19", "#d42220", "#e34b4a", "#eb7b7a", "#f2abab", "#fadcdc"]
+      },
+      "page-canvas": { "role": "neutral", "displayName": "Page Canvas", "canonical": "#d6dbd9", "darkModeCounterpart": "#0c0f0e" },
+      "surface": { "role": "neutral", "displayName": "Surface", "canonical": "#f9f9f9", "darkModeCounterpart": "#141918" },
+      "card": { "role": "neutral", "displayName": "Card", "canonical": "#ffffff", "darkModeCounterpart": "#1c2422" },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#1a1a1a", "darkModeCounterpart": "#eef1f0" },
+      "ink-soft": { "role": "neutral", "displayName": "Ink Soft", "canonical": "#5f6f6f", "darkModeCounterpart": "#9aa3a0" },
+      "hairline": { "role": "neutral", "displayName": "Hairline", "canonical": "#e5e3dd", "darkModeCounterpart": "#2b3432" },
+      "danger": { "role": "danger", "displayName": "Danger", "canonical": "#b9503c", "darkModeCounterpart": "#b9503c" }
+    },
+    "onColorMeta": {
+      "on-blue": { "purpose": "Text sitting directly on a --blue fill.", "light": "#ffffff", "dark": "#141918" },
+      "on-accent": { "purpose": "Text sitting directly on a --sand fill. Fixed; gold never gets dark enough in either theme for white text to clear 4.5:1.", "light": "#141918", "dark": "#141918" }
+    },
+    "typographyMeta": {
+      "headline": { "displayName": "Headline", "purpose": "One per screen, top of the view (e.g. \"Profile\", \"Explore\")." },
+      "title": { "displayName": "Title", "purpose": "Section headers within a screen." },
+      "lead": { "displayName": "Lead", "purpose": "The one-line explainer directly under a headline (.sub)." },
+      "body": { "displayName": "Body", "purpose": "The workhorse size: exercise scripts, descriptions, form helper text, secondary labels." },
+      "label": { "displayName": "Label", "purpose": "Card eyebrows and category tags, uppercase and quiet." },
+      "stat": { "displayName": "Stat", "purpose": "Large numerals only (weekly ring, stat boxes, mastery-log counts)." }
+    },
+    "shadows": [
+      { "name": "ambient-card", "value": "0 1px 3px rgba(31,54,54,0.06), 0 4px 14px rgba(31,54,54,0.09)", "purpose": "The system's only shadow. Static, resting card-level surfaces only, never interactive elements." },
+      { "name": "ambient-card-dark", "value": "0 1px 3px rgba(0,0,0,0.3), 0 4px 14px rgba(0,0,0,0.35)", "purpose": "Dark-mode counterpart of ambient-card." }
+    ],
+    "motion": [
+      { "name": "duration-press", "value": "0.1s", "purpose": "Every press-feedback scale transform (buttons, cards, chips, nav, tool rows, overlay controls). Consolidated 2026-08 from a 0.1-0.18s spread; this is now the single press-feedback duration." },
+      { "name": "duration-state", "value": "0.16s", "purpose": "Background/color/border state transitions on hover-adjacent or toggled elements (chips, segments, nav icon active pill, switch thumb). Consolidated 2026-08 from 0.16-0.18s." },
+      { "name": "ease-sheet", "value": "cubic-bezier(0.16,1,0.3,1)", "purpose": "Bottom sheets, modals, and full-screen flow overlays sliding/fading in and out (0.25-0.32s, longer for the physically larger sheet slide, shorter for the toast)." },
+      { "name": "ease-press", "value": "ease", "purpose": "Easing for duration-press." },
+      { "name": "scale-press-button", "value": "scale(0.96)", "purpose": "Button/interactive-element press feedback, replaces shadow-lift." },
+      { "name": "scale-press-card", "value": "scale(0.985)", "purpose": "Card press feedback, subtler than buttons." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Default call to action across the app.",
+      "html": "<button class=\"ds-btn-primary\">Start an exercise</button>",
+      "css": ".ds-btn-primary { background: #2F4F4F; color: #fff; font-family: Manrope, -apple-system, sans-serif; font-weight: 600; font-size: 0.95rem; border: none; border-radius: 12px; padding: 11px 18px; cursor: pointer; transition: transform 0.12s ease; } .ds-btn-primary:hover { opacity: 0.94; } .ds-btn-primary:active { background: #1f3636; color: #fff; transform: scale(0.96); } .ds-btn-primary:focus-visible { outline: 2px solid #e4ecea; outline-offset: 2px; } /* dark mode: --blue lightens, so text flips to near-black (see onColorMeta.on-blue) */"
+    },
+    {
+      "name": "Sand Button",
+      "kind": "button",
+      "refersTo": "button-sand",
+      "description": "The one gold action per screen, per the Rare Gold Rule.",
+      "html": "<button class=\"ds-btn-sand\">Go Pro</button>",
+      "css": ".ds-btn-sand { background: #D9B25C; color: #141918; font-family: Manrope, -apple-system, sans-serif; font-weight: 600; font-size: 0.95rem; border: none; border-radius: 12px; padding: 11px 18px; cursor: pointer; transition: transform 0.12s ease; } .ds-btn-sand:active { transform: scale(0.96); } .ds-btn-sand:focus-visible { outline: 2px solid #fbf0dc; outline-offset: 2px; } /* white text here measured 1.8-2:1, WCAG AA fail; near-black (onColorMeta.on-accent) clears 8.7-9.7:1 */"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "The base surface for nearly all content.",
+      "html": "<div class=\"ds-card\"><b>Today's focus</b><p>A short breathing exercise can help you settle right now.</p></div>",
+      "css": ".ds-card { background: #ffffff; border-radius: 16px; padding: 18px; box-shadow: 0 1px 3px rgba(31,54,54,0.06), 0 4px 14px rgba(31,54,54,0.09); transition: transform 0.15s ease; font-family: Manrope, -apple-system, sans-serif; color: #1a1a1a; } .ds-card:active { transform: scale(0.985); } .ds-card p { color: #5f6f6f; font-size: 0.9rem; margin-top: 6px; }"
+    },
+    {
+      "name": "Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Filter/category selector; active state fills solid teal.",
+      "html": "<div style=\"display:flex;gap:8px\"><button class=\"ds-chip ds-chip-active\">All</button><button class=\"ds-chip\">Focus</button></div>",
+      "css": ".ds-chip { border: 1px solid #e5e3dd; background: #ffffff; border-radius: 999px; padding: 7px 14px; font-family: Manrope, -apple-system, sans-serif; font-size: 0.85rem; color: #5f6f6f; cursor: pointer; transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.1s ease; } .ds-chip:active { transform: scale(0.94); } .ds-chip-active { background: #2F4F4F; border-color: #2F4F4F; color: #fff; font-weight: 600; } /* dark mode: use onColorMeta.on-blue, not fixed white */"
+    },
+    {
+      "name": "Input",
+      "kind": "input",
+      "refersTo": null,
+      "description": "Text field / textarea used in journal entries and forms.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Write here\">",
+      "css": ".ds-input { width: 100%; border: 1px solid #e5e3dd; border-radius: 10px; padding: 10px; font-family: Manrope, -apple-system, sans-serif; font-size: 0.85rem; background: #ffffff; color: #1a1a1a; } .ds-input:focus { outline: 2px solid #e4ecea; border-color: #2F4F4F; }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Destructive confirmation only (delete account, replace-on-restore). Never a first action.",
+      "html": "<button class=\"ds-btn-danger\">Delete account</button>",
+      "css": ".ds-btn-danger { background: #b9503c; color: #fff; font-family: Manrope, -apple-system, sans-serif; font-weight: 600; font-size: 0.95rem; border: none; border-radius: 12px; padding: 11px 18px; cursor: pointer; transition: transform 0.12s ease; } .ds-btn-danger:active { transform: scale(0.96); } .ds-btn-danger:focus-visible { outline: 2px solid #b9503c; outline-offset: 2px; }"
+    },
+    {
+      "name": "Tool Row",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Collapses 3+ secondary tools into one card as a list, instead of a full stacked card each. Reuses the exercise-list icon-tile grammar.",
+      "html": "<div class=\"ds-card\" style=\"padding:0 18px\"><button class=\"ds-tool-row\"><span class=\"ds-tool-icon\">&#9679;</span><span class=\"ds-tool-meta\"><b>Your ritual</b><span>Set up a fixed ritual</span></span><span class=\"ds-tool-chev\">&#8250;</span></button></div>",
+      "css": ".ds-tool-row { display: flex; align-items: center; gap: 12px; width: 100%; background: none; border: none; border-bottom: 1px solid #e5e3dd; padding: 12px 0; font-family: Manrope, -apple-system, sans-serif; text-align: left; cursor: pointer; color: #1a1a1a; } .ds-tool-row:last-child { border-bottom: none; } .ds-tool-icon { width: 46px; height: 46px; border-radius: 12px; background: #e4ecea; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #1f3636; } .ds-tool-meta { flex: 1; min-width: 0; } .ds-tool-meta b { font-size: 0.92rem; display: block; } .ds-tool-meta span { font-size: 0.85rem; color: #5f6f6f; } .ds-tool-chev { color: #5f6f6f; flex-shrink: 0; }"
+    },
+    {
+      "name": "Flow Overlay",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Signature full-screen takeover for guided breath/yoga/ritual sessions. Radial teal gradient, no card radius, pulsing gold focal element.",
+      "html": "<div class=\"ds-flow\"><div class=\"ds-flow-orb\"></div><div class=\"ds-flow-txt\">Breathe in</div></div>",
+      "css": ".ds-flow { position: relative; width: 100%; height: 320px; border-radius: 0; background: radial-gradient(circle at 50% 36%, #2F4F4F, #1f3636 78%); display: flex; align-items: center; justify-content: center; color: #eaf1f5; font-family: Manrope, -apple-system, sans-serif; overflow: hidden; } .ds-flow-orb { position: absolute; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle at 42% 36%, #ffffff, #D9B25C 80%); box-shadow: 0 0 40px 6px rgba(217,178,92,0.28); animation: ds-orb-pulse 3.2s ease-in-out infinite; } @keyframes ds-orb-pulse { 0%, 100% { transform: scale(0.92); } 50% { transform: scale(1.03); } } .ds-flow-txt { position: relative; z-index: 2; font-weight: 700; font-size: 1.1rem; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Compass",
+    "overview": "Keelstone reads as an instrument you consult in a high-stakes moment, not a wellness app you browse when idle. The palette does the pointing: a grounded, unremarkable teal covers nearly everything, and a single warm gold appears only where it means something, a streak, an active moment, the orb you breathe with. Nothing shouts. The interface stays quiet on purpose so the one gold signal, or the one line of coaching text, is what you actually notice.\n\nThe system is calm and grounded rather than clinical. Cards sit on a soft neutral canvas with gentle two-layer shadows, never stark white-on-white and never a hard drop shadow. Corners are consistently rounded, and every interactive press scales down rather than lifting up, an understated, physical acknowledgment rather than a flourish. One typeface, Manrope, carries the entire hierarchy through weight alone.\n\nThis restraint is deliberate: the same coach who wrote every exercise script is, in effect, the same hand that drew every icon. Nothing in the system feels licensed or generic; it feels like one person's tool, kept in your pocket.",
+    "keyCharacteristics": [
+      "Deep slate teal as the dominant, almost invisible color; warm gold reserved for the few things that deserve attention",
+      "Soft, ambient two-layer shadows on card surfaces only; buttons and chips stay flat and use press-scale instead of elevation",
+      "Fully mirrored light/dark themes, every token has a considered dark counterpart",
+      "One typeface (Manrope) for the entire hierarchy, differentiated by weight and size",
+      "Hand-drawn single-stroke line icons plus a signature concentric-rings mark used as logo, favicon, and breathing orb"
+    ],
+    "rules": [
+      { "name": "The Rare Gold Rule", "body": "Compass Gold appears in only a handful of places per screen, ideally one. Its rarity is what makes it register as \"this matters\" rather than decoration.", "section": "colors" },
+      { "name": "The One Typeface Rule", "body": "Manrope covers headline through label. Do not introduce a second family; weight and size already carry the full range this system needs.", "section": "typography" },
+      { "name": "The No-Lift Rule", "body": "Interactive elements never elevate on press; they scale down. Reserve shadow entirely for static, resting surfaces.", "section": "elevation" },
+      { "name": "The On-Color Rule", "body": "Never write color: #fff or color: #000 directly on a --blue or --sand background. Use --on-blue / --on-accent so text stays legible when the surface's brightness flips between themes.", "section": "colors" }
+    ],
+    "dos": [
+      "Do keep Compass Gold rare, one clear focal use per screen, per the Rare Gold Rule.",
+      "Do use the four category colors only for category wayfinding, never as a substitute brand color.",
+      "Do give every new component a considered dark-mode counterpart at the same time as the light one.",
+      "Do use scale-based press feedback (0.96 buttons, 0.985 cards) for every interactive element.",
+      "Do write user-facing copy without em dashes.",
+      "Do use --on-blue / --on-accent for text on --blue or --sand fills, per the On-Color Rule.",
+      "Do collapse a screen's third-and-later secondary tool into a Tool Row list instead of another full stacked card."
+    ],
+    "donts": [
+      "Don't add a second typeface.",
+      "Don't put a shadow on an interactive element at rest.",
+      "Don't give the Flow Overlay a card radius or a bounded width.",
+      "Don't fork visual treatment by audience (athlete vs. student vs. leader).",
+      "Don't show more than one Compass Gold button on screen at once."
+    ]
+  }
+}

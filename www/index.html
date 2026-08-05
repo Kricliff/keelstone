@@ -36,6 +36,23 @@
     --cat-fokus: #2a78d6; --cat-ro: #1baf7a; --cat-selvtillit: #4a3aa7; --cat-restitusjon: #e34948;
     --nav-bg: rgba(255,255,255,0.82);
     --scrim: rgba(18,40,58,0.5);
+    /* Text color to use on top of a var(--blue) surface. White in light mode
+       (blue is dark, 8.9:1); --blue lightens for legibility in dark mode, so
+       white text on it there drops to ~2.8:1 (WCAG AA fail) without this. */
+    --on-blue: #ffffff;
+    /* Text color for var(--sand) surfaces. Sand sits mid-brightness in both
+       themes, so white text never clears 4.5:1 (1.8-2:1 measured); a fixed
+       near-black clears AA comfortably in both. */
+    --on-accent: #141918;
+    /* heroCard's gradient is intentionally always a dark teal panel with
+       white text (see DESIGN.md), independent of --blue/--blue-d, which
+       lighten in dark mode for legibility elsewhere. Fixed, not themed. */
+    --hero-grad-1: #2F4F4F;
+    --hero-grad-2: #1f3636;
+    /* Destructive-action red. Fixed across themes; white text on it clears
+       4.5:1 (4.91:1) regardless of light/dark, so it doesn't need an
+       --on-danger counterpart the way --blue/--sand do. */
+    --danger: #b9503c;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -47,6 +64,7 @@
       --cat-fokus: #3987e5; --cat-ro: #199e70; --cat-selvtillit: #9085e9; --cat-restitusjon: #e66767;
       --nav-bg: rgba(28,36,34,0.82);
       --scrim: rgba(0,0,0,0.6);
+      --on-blue: #141918;
     }
   }
   :root[data-theme="dark"] {
@@ -58,6 +76,7 @@
     --cat-fokus: #3987e5; --cat-ro: #199e70; --cat-selvtillit: #9085e9; --cat-restitusjon: #e66767;
     --nav-bg: rgba(28,36,34,0.82);
     --scrim: rgba(0,0,0,0.6);
+    --on-blue: #141918;
   }
   :root[data-theme="light"] {
     --blue: #2F4F4F; --blue-d: #1f3636; --blue-light: #e4ecea;
@@ -68,6 +87,7 @@
     --cat-fokus: #2a78d6; --cat-ro: #1baf7a; --cat-selvtillit: #4a3aa7; --cat-restitusjon: #e34948;
     --nav-bg: rgba(255,255,255,0.82);
     --scrim: rgba(18,40,58,0.5);
+    --on-blue: #ffffff;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; }
@@ -82,11 +102,12 @@
   .card { background: var(--card); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); margin-bottom: 14px; transition: transform 0.15s ease, box-shadow 0.15s ease; }
   .card:active { transform: scale(0.985); }
   .cardLabel { font-size: 0.76rem; color: var(--text-soft); font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
-  .btn { display: inline-block; border: none; border-radius: 12px; padding: 11px 18px; font-size: 0.95rem; font-weight: 600; cursor: pointer; background: var(--blue); color: #fff; font-family: inherit; transition: transform 0.12s ease; }
-  .btn:active { background: var(--blue-d); transform: scale(0.96); }
-  .btn.sand { background: var(--sand); color: #fff; }
+  .btn { display: inline-block; border: none; border-radius: 12px; padding: 11px 18px; font-size: 0.95rem; font-weight: 600; cursor: pointer; background: var(--blue); color: var(--on-blue); font-family: inherit; transition: transform 0.1s ease; }
+  .btn:active { background: var(--blue-d); color: #fff; transform: scale(0.96); }
+  .btn.sand { background: var(--sand); color: var(--on-accent); }
   .btn.secondary { background: var(--blue-light); color: var(--blue-d); }
   .btn.ghost { background: transparent; color: var(--blue-d); padding: 8px 10px; }
+  .btn.danger { background: var(--danger); color: #fff; }
   .btn.small { padding: 7px 12px; font-size: 0.85rem; }
   .btn.full { width: 100%; text-align: center; }
   .btn:disabled { opacity: 0.5; cursor: default; }
@@ -95,25 +116,30 @@
   .brand .mark { width: 30px; height: 30px; border-radius: 8px; background: var(--blue); color: var(--sand); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; flex-shrink: 0; }
   .streakBadge { background: var(--sand-light); color: var(--sand); border-radius: 999px; padding: 6px 12px; font-size: 0.82rem; font-weight: 700; display: flex; align-items: center; gap: 5px; }
   nav { position: absolute; bottom: 0; left: 0; right: 0; background: var(--nav-bg); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-top: 1px solid var(--border); display: flex; padding: 6px 4px calc(8px + env(safe-area-inset-bottom)); }
-  nav button { flex: 1; background: none; border: none; font-family: inherit; font-size: 0.68rem; color: var(--text-soft); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 0; transition: transform 0.1s ease; }
+  nav button { flex: 1; background: none; border: none; font-family: inherit; font-size: 0.72rem; color: var(--text-soft); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 0; transition: transform 0.1s ease; }
   nav button:active { transform: scale(0.93); }
-  nav button .ico { display: flex; align-items: center; justify-content: center; line-height: 1; border-radius: 8px; padding: 6px 14px; transition: background 0.18s; }
+  nav button .ico { display: flex; align-items: center; justify-content: center; line-height: 1; border-radius: 8px; padding: 6px 14px; transition: background 0.16s; }
   nav button.active { color: var(--blue-d); font-weight: 700; }
   nav button.active .ico { background: var(--blue-light); }
   .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 6px; }
   .chips button { border: 1px solid var(--border); background: var(--card); border-radius: 999px; padding: 7px 14px; font-size: 0.82rem; font-family: inherit; cursor: pointer; white-space: nowrap; color: var(--text-soft); transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.1s ease; }
   .chips button:active { transform: scale(0.94); }
-  .chips button.active { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 600; }
+  .chips button.active { background: var(--blue); border-color: var(--blue); color: var(--on-blue); font-weight: 600; }
   .exCard { display: flex; align-items: center; gap: 12px; cursor: pointer; }
   .exIcon { width: 46px; height: 46px; border-radius: 12px; background: var(--blue-light); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
   .exCard .meta { flex: 1; min-width: 0; }
   .exCard .meta b { font-size: 0.95rem; display: block; }
   .exCard .meta span { font-size: 0.8rem; color: var(--text-soft); }
+  .toolRow { display: flex; align-items: center; gap: 12px; width: 100%; background: none; border: none; border-bottom: 1px solid var(--border); padding: 12px 0; font-family: inherit; text-align: left; cursor: pointer; color: var(--text); transition: transform 0.1s ease; }
+  .toolRow:last-child { border-bottom: none; padding-bottom: 2px; }
+  .toolRow:first-child { padding-top: 2px; }
+  .toolRow:active { transform: scale(0.98); }
+  .toolRow .chev { color: var(--text-soft); flex-shrink: 0; }
   .lockDot { display: flex; align-items: center; color: var(--text-soft); flex-shrink: 0; }
-  .favBtn { background: none; border: none; display: inline-flex; align-items: center; justify-content: center; color: var(--sand); cursor: pointer; padding: 4px; flex-shrink: 0; }
+  .favBtn { background: none; border: none; display: inline-flex; align-items: center; justify-content: center; color: var(--sand); cursor: pointer; min-width: 44px; min-height: 44px; flex-shrink: 0; }
   .tag { display: inline-block; font-size: 0.7rem; font-weight: 700; background: var(--blue-light); color: var(--blue-d); border-radius: 999px; padding: 3px 9px; margin-right: 5px; }
   .tag.sand { background: var(--sand-light); color: var(--sand); }
-  .heroCard { background: linear-gradient(135deg, var(--blue), var(--blue-d)); color: #fff; }
+  .heroCard { background: linear-gradient(135deg, var(--hero-grad-1), var(--hero-grad-2)); color: #fff; }
   .heroCard .tag { background: rgba(255,255,255,0.18); color: #fff; }
   .heroCard p { font-size: 1.02rem; font-weight: 600; margin: 8px 0 12px; }
   .statRow { display: flex; gap: 10px; margin-bottom: 14px; }
@@ -134,9 +160,8 @@
   .journalEntry p { font-size: 0.9rem; margin-bottom: 6px; line-height: 1.4; }
   .journalEntry b { font-size: 0.82rem; color: var(--blue-d); }
   .backRow { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-  .backRow button:first-child { background: var(--card); border: 1px solid var(--border); border-radius: 999px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; color: var(--text); }
+  .backRow button:first-child { background: var(--card); border: 1px solid var(--border); border-radius: 999px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; color: var(--text); }
   .manus { font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap; background: var(--card); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
-  audio { width: 100%; margin: 10px 0; }
   .audioFallback { background: var(--sand-light); color: var(--sand); border-radius: 10px; padding: 10px 12px; font-size: 0.82rem; margin: 10px 0; display: flex; align-items: flex-start; gap: 8px; }
   .playerBar { height: 6px; background: var(--border); border-radius: 6px; overflow: hidden; margin: 14px 0; }
   .playerBarFill { height: 100%; width: 0%; background: var(--blue); transition: width 1s linear; }
@@ -170,24 +195,27 @@
   .toggleRow input[type=time] { width: auto; padding: 6px 10px; }
   .switch { position: relative; width: 44px; height: 26px; background: var(--border); border-radius: 999px; cursor: pointer; flex-shrink: 0; }
   .switch.on { background: var(--blue); }
-  .switch .dot { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform 0.18s; }
+  .switch .dot { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform 0.16s; }
   .switch.on .dot { transform: translateX(18px); }
   .qBlock { margin-bottom: 14px; }
   .qBlock label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--blue-d); }
-  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 9px; overflow: hidden; flex-shrink: 0; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; flex-shrink: 0; }
   .seg button { border: none; background: var(--card); padding: 6px 14px; font-size: 0.8rem; font-family: inherit; color: var(--text-soft); cursor: pointer; transition: background 0.16s ease, color 0.16s ease; }
-  .seg button.on { background: var(--blue); color: #fff; }
+  .seg button.on { background: var(--blue); color: var(--on-blue); }
   .segFull { display: flex; width: 100%; margin-bottom: 18px; }
   .segFull button { flex: 1; padding: 9px 0; }
   .onbCard { display: flex; align-items: center; gap: 14px; cursor: pointer; }
+  .onbCard .meta { flex: 1; min-width: 0; }
+  .onbCard .meta b { font-size: 0.95rem; display: block; }
+  .onbCard .meta span { font-size: 0.85rem; color: var(--text-soft); }
   .goalGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; width: 100%; margin-top: 10px; }
   .goalBtn { display: flex; align-items: center; gap: 7px; border: 1px solid var(--border); background: var(--card); border-radius: 10px; padding: 9px 10px; font-size: 0.82rem; font-family: inherit; color: var(--text-soft); cursor: pointer; transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.1s ease; }
   .goalBtn:active { transform: scale(0.96); }
-  .goalBtn.on { background: var(--blue); border-color: var(--blue); color: #fff; }
-  #splash { position: absolute; inset: 0; z-index: 100; background: var(--blue-d); display: flex; align-items: center; justify-content: center; flex-direction: column; animation: splashExit 0.45s ease 2.55s both; pointer-events: none; }
-  #splashRing1 { transform-origin: 50px 50px; opacity: 0; animation: splashRing1In 0.6s cubic-bezier(0.34, 1.35, 0.64, 1) 0.1s both; }
-  #splashRing2 { transform-origin: 50px 50px; opacity: 0; animation: splashRing2In 0.6s cubic-bezier(0.34, 1.35, 0.64, 1) 0.28s both; }
-  #splashDot { transform-origin: 50px 50px; opacity: 0; animation: splashDotIn 0.45s cubic-bezier(0.34, 1.35, 0.64, 1) 0.5s both; }
+  .goalBtn.on { background: var(--blue); border-color: var(--blue); color: var(--on-blue); }
+  #splash { position: absolute; inset: 0; z-index: 100; background: var(--blue-d); display: flex; align-items: center; justify-content: center; flex-direction: column; animation: splashExit 0.4s cubic-bezier(0.16,1,0.3,1) 2.5s both; pointer-events: none; }
+  #splashRing1 { transform-origin: 50px 50px; opacity: 0; animation: splashRing1In 0.55s cubic-bezier(0.16,1,0.3,1) 0.1s both; }
+  #splashRing2 { transform-origin: 50px 50px; opacity: 0; animation: splashRing2In 0.55s cubic-bezier(0.16,1,0.3,1) 0.28s both; }
+  #splashDot { transform-origin: 50px 50px; opacity: 0; animation: splashDotIn 0.45s cubic-bezier(0.16,1,0.3,1) 0.5s both; }
   #splashWord { font-family: "Manrope", -apple-system, sans-serif; font-size: 1.5rem; font-weight: 700; color: #fff; letter-spacing: 0.14em; margin-top: 18px; opacity: 0; animation: splashWordIn 0.5s ease 0.85s both; }
   #splashTagline { font-family: "Manrope", -apple-system, sans-serif; font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-top: 9px; opacity: 0; text-align: center; max-width: 230px; line-height: 1.45; animation: splashWordIn 0.4s ease 1.15s both; }
   @keyframes splashRing1In { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 0.35; } }
@@ -195,11 +223,16 @@
   @keyframes splashDotIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   @keyframes splashWordIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
   @keyframes splashExit { to { opacity: 0; } }
+  /* Returning users (already onboarded) get a brief hold + fade instead of the
+     full first-run entrance choreography, see init at the bottom of this file. */
+  #splash.quick { animation: splashExit 0.3s cubic-bezier(0.16,1,0.3,1) 0.3s both; }
+  #splash.quick #splashRing1, #splash.quick #splashRing2, #splash.quick #splashDot,
+  #splash.quick #splashWord, #splash.quick #splashTagline { animation: none; opacity: 1; }
   #breathOverlay { position: absolute; inset: 0; background: radial-gradient(circle at 50% 36%, var(--blue), var(--blue-d) 78%); z-index: 40; display: none; flex-direction: column; align-items: center; color: #eaf1f5; padding: calc(20px + env(safe-area-inset-top)) 20px 20px; overflow: hidden; opacity: 0; transform: scale(0.96); transition: opacity 0.28s cubic-bezier(0.16,1,0.3,1), transform 0.28s cubic-bezier(0.16,1,0.3,1); }
   #breathOverlay.show { display: flex; }
   #breathOverlay.open { opacity: 1; transform: none; }
   #breathOverlay .closeRow { width: 100%; display: flex; justify-content: space-between; align-items: center; z-index: 5; }
-  #breathOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; flex-shrink: 0; transition: transform 0.1s ease; }
+  #breathOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 44px; height: 44px; font-size: 1rem; cursor: pointer; flex-shrink: 0; transition: transform 0.1s ease; }
   #breathOverlay .closeRow button:active { transform: scale(0.9); }
   #breathOverlay .routineTitle { font-size: 0.85rem; opacity: 0.85; }
   #breathStage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; width: 100%; position: relative; }
@@ -220,13 +253,13 @@
   #breathOverlay .btnRow { display: flex; gap: 10px; }
   #breathOverlay .btnRow button { flex: 1; padding: 12px; border-radius: 12px; font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; transition: transform 0.1s ease; }
   #breathOverlay .btnRow button:active { transform: scale(0.96); }
-  #breathOverlay .bStart { background: var(--sand); color: #fff; }
+  #breathOverlay .bStart { background: var(--sand); color: var(--on-accent); }
   #breathOverlay .bEnd { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.4); }
   #yogaOverlay { position: absolute; inset: 0; background: radial-gradient(circle at 50% 30%, var(--blue), var(--blue-d) 80%); z-index: 40; display: none; flex-direction: column; align-items: center; color: #eaf1f5; padding: calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom)); overflow: hidden; opacity: 0; transform: scale(0.96); transition: opacity 0.28s cubic-bezier(0.16,1,0.3,1), transform 0.28s cubic-bezier(0.16,1,0.3,1); }
   #yogaOverlay.show { display: flex; }
   #yogaOverlay.open { opacity: 1; transform: none; }
   #yogaOverlay .closeRow { width: 100%; display: flex; justify-content: space-between; align-items: center; z-index: 5; }
-  #yogaOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; flex-shrink: 0; transition: transform 0.1s ease-out; }
+  #yogaOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 44px; height: 44px; font-size: 1rem; cursor: pointer; flex-shrink: 0; transition: transform 0.1s ease-out; }
   #yogaOverlay .closeRow button:active { transform: scale(0.96); }
   #yogaOverlay .routineTitle { font-size: 0.85rem; opacity: 0.85; }
   #yogaStage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; width: 100%; }
@@ -234,7 +267,7 @@
   @keyframes yogaPoseIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   .yogaPoseContent.yogaPoseEnter { animation: yogaPoseIn 0.2s cubic-bezier(0.16,1,0.3,1) both; }
   @keyframes yogaDoneIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-  .doneCard.yogaDoneEnter { animation: yogaDoneIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both; }
+  .doneCard.yogaDoneEnter { animation: yogaDoneIn 0.3s cubic-bezier(0.16,1,0.3,1) both; }
   .yogaArtWrap { width: 190px; height: 200px; display: flex; align-items: center; justify-content: center; }
   .yogaGlyph { animation: yogaGlyphPulse 3.2s ease-in-out infinite; transform-origin: 50% 50%; filter: drop-shadow(0 0 14px rgba(217,178,92,0.35)); }
   @keyframes yogaGlyphPulse { 0%, 100% { transform: scale(0.92); opacity: 0.8; } 50% { transform: scale(1.03); opacity: 1; } }
@@ -252,13 +285,13 @@
   #yogaOverlay .btnRow { display: flex; gap: 10px; width: 100%; max-width: 340px; padding-bottom: 10px; }
   #yogaOverlay .btnRow button { flex: 1; padding: 12px; border-radius: 12px; font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; transition: transform 0.1s ease-out; }
   #yogaOverlay .btnRow button:active { transform: scale(0.96); }
-  #yogaOverlay .yPause { background: var(--sand); color: #fff; }
+  #yogaOverlay .yPause { background: var(--sand); color: var(--on-accent); }
   #yogaOverlay .ySkip { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.4); }
   #ritualOverlay { position: absolute; inset: 0; background: radial-gradient(circle at 50% 34%, var(--blue), var(--blue-d) 78%); z-index: 40; display: none; flex-direction: column; align-items: center; color: #eaf1f5; padding: calc(20px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom)); overflow: hidden; text-align: center; opacity: 0; transform: scale(0.96); transition: opacity 0.28s cubic-bezier(0.16,1,0.3,1), transform 0.28s cubic-bezier(0.16,1,0.3,1); }
   #ritualOverlay.show { display: flex; }
   #ritualOverlay.open { opacity: 1; transform: none; }
   #ritualOverlay .closeRow { width: 100%; display: flex; justify-content: flex-end; z-index: 5; }
-  #ritualOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; transition: transform 0.1s ease; }
+  #ritualOverlay .closeRow button { background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 999px; width: 44px; height: 44px; font-size: 1rem; cursor: pointer; transition: transform 0.1s ease; }
   #ritualOverlay .closeRow button:active { transform: scale(0.9); }
   #ritualStage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; width: 100%; }
   .ritualLabel { font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.7; }
@@ -277,6 +310,7 @@
     .yogaDot { transition: none; }
     .bParticle { animation: none; display: none; }
     #splashRing1, #splashRing2, #splashDot, #splashWord, #splashTagline { animation: none; opacity: 1; }
+    #splash { animation: splashExit 0.2s linear 0.3s both; }
     .modalWrap, .modalSheet, #breathOverlay, #yogaOverlay, #ritualOverlay {
       transition-property: opacity;
       transition-duration: 0.15s;
@@ -313,12 +347,12 @@
   <nav>
     <button data-view="home" class="active"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 L12 4 L20 11"/><path d="M6 10 V20 H18 V10"/><path d="M10 20 V14 H14 V20"/></svg></span><span data-nav="home"></span></button>
     <button data-view="explore"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5 L13 13 L8.5 15.5 L11 11 Z" fill="currentColor" stroke="none"/></svg></span><span data-nav="explore"></span></button>
-    <button data-view="progress"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 V14 M10 20 V9 M16 20 V12 M4 20 H20"/><path d="M14 6 L20 6 L20 12"/><path d="M4 14 L10 9 L14 12 L20 6"/></svg></span><span data-nav="progress"></span></button>
+    <button data-view="progress"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17 L9.5 11 L13 14 L20 5"/><circle cx="20" cy="5" r="1.7" fill="currentColor" stroke="none"/></svg></span><span data-nav="progress"></span></button>
     <button data-view="profile"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20 C4 15.5 7.5 13 12 13 C16.5 13 20 15.5 20 20"/></svg></span><span data-nav="profile"></span></button>
   </nav>
 
   <div id="breathOverlay">
-    <div class="closeRow"><span class="routineTitle" id="breathTitle"></span><button onclick="stopBreathing()">✕</button></div>
+    <div class="closeRow"><span class="routineTitle" id="breathTitle"></span><button onclick="stopBreathing()" aria-label="${t('closeBtn')}">✕</button></div>
     <div id="breathStage">
       <div class="orbWrap">
         <div class="aura" id="aura2"></div><div class="aura" id="aura1"></div>
@@ -339,13 +373,13 @@
   </div>
 
   <div id="yogaOverlay">
-    <div class="closeRow"><span class="routineTitle" id="yogaRoutineTitle"></span><div style="display:flex;gap:8px"><button onclick="toggleYogaSound()" id="yogaSoundBtn" aria-label="sound"></button><button onclick="closeYoga()">✕</button></div></div>
+    <div class="closeRow"><span class="routineTitle" id="yogaRoutineTitle"></span><div style="display:flex;gap:8px"><button onclick="toggleYogaSound()" id="yogaSoundBtn" aria-label="${state.yogaSoundOn ? t('soundOnLabel') : t('soundOffLabel')}"></button><button onclick="closeYoga()" aria-label="${t('closeBtn')}">✕</button></div></div>
     <div id="yogaStage"></div>
     <div class="btnRow" id="yogaBtnRow"></div>
   </div>
 
   <div id="ritualOverlay">
-    <div class="closeRow"><button onclick="closeRitual()">✕</button></div>
+    <div class="closeRow"><button onclick="closeRitual()" aria-label="${t('closeBtn')}">✕</button></div>
     <div id="ritualStage"></div>
   </div>
 
@@ -388,6 +422,7 @@ const T = {
     backupBtn: 'Sikkerhetskopier', restoreBackupBtn: 'Gjenopprett',
     backupDesc: 'Kopier denne sikkerhetskopien og oppbevar den trygt (Notater, e-post eller Filer). Hvis du sletter eller installerer appen på nytt, limer du den inn under Gjenopprett for å få dataene tilbake.',
     copyBackupBtn: 'Kopier sikkerhetskopi', shareBtn: 'Del…', closeBtn: 'Lukk',
+    favAdd: 'Legg til i favoritter', favRemove: 'Fjern fra favoritter', soundOnLabel: 'Skru av lyd', soundOffLabel: 'Skru på lyd', backBtn: 'Tilbake',
     restoreDesc: 'Lim inn en sikkerhetskopi du lagret tidligere. Dette erstatter alle data som er i appen nå.',
     restorePlaceholder: 'Lim inn sikkerhetskopien her', restoreReplaceBtn: 'Gjenopprett og erstatt', cancelBtn: 'Avbryt',
     backupCopied: 'Sikkerhetskopi kopiert. Oppbevar den trygt.', dataRestored: 'Data gjenopprettet.',
@@ -397,7 +432,7 @@ const T = {
     accountLoggedInAs: 'Innlogget som', createAccountBtn: 'Opprett konto', loginBtn: 'Logg inn', logoutBtn: 'Logg ut',
     deleteAccountBtn: 'Slett konto', deleteAccountConfirm: 'Dette sletter kontoen din og all skylagret data permanent. Dette kan ikke angres. Er du sikker?',
     emailLabel: 'E-post', passwordLabel: 'Passord', signupTitle: 'Opprett konto', loginTitle: 'Logg inn',
-    authSubmitBtn: 'Fortsett', forgotPasswordBtn: 'Glemt passord?',
+    authSubmitBtn: 'Fortsett', forgotPasswordBtn: 'Glemt passord?', loadingBtn: 'Vent litt…',
     switchToLogin: 'Har du allerede en konto? Logg inn', switchToSignup: 'Ny bruker? Opprett konto',
     authMissingFields: 'Fyll ut e-post og passord.', passwordResetSent: 'Vi har sendt deg en e-post for å tilbakestille passordet.',
     accountCreated: 'Konto opprettet.', loggedIn: 'Innlogget.', loggedOut: 'Logget ut.', accountDeleted: 'Kontoen din er slettet.',
@@ -435,6 +470,7 @@ const T = {
     yogaTitle: 'Yoga', yogaDesc: 'Lette, animerte yogaøkter du kan følge steg for steg.', yogaPosesLabel: 'positurer',
     yogaStart: 'Start økten', yogaPause: 'Pause', yogaResume: 'Fortsett', yogaSkip: 'Neste', yogaClose: 'Lukk',
     yogaDoneTitle: 'Økt fullført', yogaDoneMsg: 'Bra jobbet. Fremgangen din er lagret.',
+    moreToolsTitle: 'Flere verktøy', ritualRowSet: 'Sett opp et fast ritual', goalRowSet: 'Sett et prosessmål',
     ritualTitle: 'Ditt ritual', ritualSetupDesc: 'Lag et fast ritual du kan gjennomføre rett før en konkurranse, eksamen eller presentasjon: ett mantra, en kort pusteøvelse og et fokuspunkt.',
     ritualSetupBtn: 'Sett opp ritualet ditt', ritualEditBtn: 'Rediger', ritualStartBtn: 'Start ritual',
     ritualMantraLabel: 'Ditt mantra', ritualFocusLabel: 'Fokuspunkt', ritualSaveBtn: 'Lagre ritual', ritualDeleteBtn: 'Fjern ritual',
@@ -490,6 +526,7 @@ const T = {
     backupBtn: 'Back up', restoreBackupBtn: 'Restore',
     backupDesc: 'Copy this backup and keep it somewhere safe (Notes, email, or Files). If you delete or reinstall the app, paste it back under Restore to get your data back.',
     copyBackupBtn: 'Copy backup', shareBtn: 'Share…', closeBtn: 'Close',
+    favAdd: 'Add to favorites', favRemove: 'Remove from favorites', soundOnLabel: 'Mute sound', soundOffLabel: 'Unmute sound', backBtn: 'Back',
     restoreDesc: 'Paste a backup you saved earlier. This replaces all data currently in the app.',
     restorePlaceholder: 'Paste your backup here', restoreReplaceBtn: 'Restore and replace', cancelBtn: 'Cancel',
     backupCopied: 'Backup copied. Save it somewhere safe.', dataRestored: 'Data restored.',
@@ -499,7 +536,7 @@ const T = {
     accountLoggedInAs: 'Logged in as', createAccountBtn: 'Create account', loginBtn: 'Log in', logoutBtn: 'Log out',
     deleteAccountBtn: 'Delete account', deleteAccountConfirm: 'This permanently deletes your account and all cloud-stored data. This cannot be undone. Are you sure?',
     emailLabel: 'Email', passwordLabel: 'Password', signupTitle: 'Create account', loginTitle: 'Log in',
-    authSubmitBtn: 'Continue', forgotPasswordBtn: 'Forgot password?',
+    authSubmitBtn: 'Continue', forgotPasswordBtn: 'Forgot password?', loadingBtn: 'One moment…',
     switchToLogin: 'Already have an account? Log in', switchToSignup: 'New here? Create an account',
     authMissingFields: 'Fill in email and password.', passwordResetSent: "We've sent you an email to reset your password.",
     accountCreated: 'Account created.', loggedIn: 'Logged in.', loggedOut: 'Logged out.', accountDeleted: 'Your account has been deleted.',
@@ -533,6 +570,7 @@ const T = {
     yogaTitle: 'Yoga', yogaDesc: 'Light, animated yoga sessions you can follow step by step.', yogaPosesLabel: 'poses',
     yogaStart: 'Start session', yogaPause: 'Pause', yogaResume: 'Resume', yogaSkip: 'Next', yogaClose: 'Close',
     yogaDoneTitle: 'Session complete', yogaDoneMsg: 'Great work. Your progress is saved.',
+    moreToolsTitle: 'More tools', ritualRowSet: 'Set up a fixed ritual', goalRowSet: 'Set a process goal',
     ritualTitle: 'Your ritual', ritualSetupDesc: 'Build a fixed ritual you can run right before a competition, exam, or presentation: one mantra, a short breathing exercise, and a focus cue.',
     ritualSetupBtn: 'Set up your ritual', ritualEditBtn: 'Edit', ritualStartBtn: 'Start ritual',
     ritualMantraLabel: 'Your mantra', ritualFocusLabel: 'Focus cue', ritualSaveBtn: 'Save ritual', ritualDeleteBtn: 'Remove ritual',
@@ -562,16 +600,16 @@ function t(k) { return T[state.lang][k]; }
 /* ---------- Data ---------- */
 const CATEGORIES = {
   no: [
-    { id: 'fokus', label: 'Fokus' },
-    { id: 'ro', label: 'Ro' },
-    { id: 'selvtillit', label: 'Selvtillit' },
-    { id: 'restitusjon', label: 'Restitusjon' },
+    { id: 'fokus', label: 'Fokus', desc: 'Konsentrasjon rett før det gjelder' },
+    { id: 'ro', label: 'Ro', desc: 'Roe deg ned under press' },
+    { id: 'selvtillit', label: 'Selvtillit', desc: 'Bygg tro på deg selv' },
+    { id: 'restitusjon', label: 'Restitusjon', desc: 'Kom deg etter en krevende innsats' },
   ],
   en: [
-    { id: 'fokus', label: 'Focus' },
-    { id: 'ro', label: 'Calm' },
-    { id: 'selvtillit', label: 'Confidence' },
-    { id: 'restitusjon', label: 'Recovery' },
+    { id: 'fokus', label: 'Focus', desc: 'Concentration right before it counts' },
+    { id: 'ro', label: 'Calm', desc: 'Settle down under pressure' },
+    { id: 'selvtillit', label: 'Confidence', desc: 'Build belief in yourself' },
+    { id: 'restitusjon', label: 'Recovery', desc: 'Recover after a demanding effort' },
   ],
 };
 
@@ -945,7 +983,7 @@ function renderOnboarding() {
       <p class="sub">${t('onbSub')}</p>
       ${goals.map(g => `<div class="card onbCard" onclick="pickGoal('${g.id}')">
         <div class="exIcon">${icon(g.id, 22)}</div>
-        <div class="meta"><b>${g.label}</b></div>
+        <div class="meta"><b>${g.label}</b><span>${g.desc}</span></div>
         <div class="lockDot">${icon('chevron', 18)}</div>
       </div>`).join('')}
       <button class="btn ghost full" style="margin-top:8px" onclick="skipOnboarding()">${t('onbSkip')}</button>
@@ -1005,33 +1043,23 @@ function renderHome() {
       <p style="margin-bottom:10px;font-size:0.9rem;color:var(--text-soft)">${t('quickBreathDesc')}</p>
       <button class="btn full sand" onclick="startBreathing('box')">${t('startBreathBtn')}</button>
     </div>
-    <h2>${t('ritualTitle')}</h2>
-    ${state.ritual
-      ? `<div class="card">
-          <p style="margin-bottom:10px;font-size:0.9rem;color:var(--text-soft)">${escapeHtml(state.ritual.mantra)}</p>
-          <button class="btn full sand" onclick="startRitual()">${t('ritualStartBtn')}</button>
-          <button class="btn ghost full" style="margin-top:6px" onclick="showRitualSetup()">${t('ritualEditBtn')}</button>
-        </div>`
-      : `<div class="card">
-          <p style="margin-bottom:10px;font-size:0.9rem;color:var(--text-soft)">${t('ritualSetupDesc')}</p>
-          <button class="btn full secondary" onclick="showRitualSetup()">${t('ritualSetupBtn')}</button>
-        </div>`}
-    <h2>${t('goalCardTitle')}</h2>
-    ${state.mainGoal
-      ? `<div class="card">
-          <span class="tag sand">${t('goalProcessBadge')}</span>
-          <b style="display:block;margin-top:8px">${escapeHtml(state.mainGoal.title)}</b>
-          <p style="margin:6px 0 10px;font-size:0.9rem;color:var(--text-soft)">${escapeHtml(state.mainGoal.process)}</p>
-          <button class="btn ghost full" onclick="showGoalSetup()">${t('goalEditBtn')}</button>
-        </div>`
-      : `<div class="card">
-          <p style="margin-bottom:10px;font-size:0.9rem;color:var(--text-soft)">${t('goalSetupDesc')}</p>
-          <button class="btn full secondary" onclick="showGoalSetup()">${t('goalSetupBtn')}</button>
-        </div>`}
-    <h2>${t('reframeCardTitle')}</h2>
+    <h2>${t('moreToolsTitle')}</h2>
     <div class="card">
-      <p style="margin-bottom:10px;font-size:0.9rem;color:var(--text-soft)">${t('reframeCardDesc')}</p>
-      <button class="btn full secondary" onclick="showReframeModal()">${t('reframeBtn')}</button>
+      <button class="toolRow" onclick="${state.ritual ? 'startRitual()' : 'showRitualSetup()'}">
+        <span class="exIcon">${icon('heart', 20)}</span>
+        <span class="meta"><b>${t('ritualTitle')}</b><span>${state.ritual ? escapeHtml(state.ritual.mantra) : t('ritualRowSet')}</span></span>
+        <span class="chev">${icon('chevron', 18)}</span>
+      </button>
+      <button class="toolRow" onclick="showGoalSetup()">
+        <span class="exIcon">${icon('selvtillit', 20)}</span>
+        <span class="meta"><b>${t('goalCardTitle')}</b><span>${state.mainGoal ? escapeHtml(state.mainGoal.title) : t('goalRowSet')}</span></span>
+        <span class="chev">${icon('chevron', 18)}</span>
+      </button>
+      <button class="toolRow" onclick="showReframeModal()">
+        <span class="exIcon">${icon('ro', 20)}</span>
+        <span class="meta"><b>${t('reframeCardTitle')}</b><span>${t('reframeCardDesc')}</span></span>
+        <span class="chev">${icon('chevron', 18)}</span>
+      </button>
     </div>
   `;
 }
@@ -1069,7 +1097,7 @@ function exCardHtml(e) {
   return `<div class="card exCard" onclick="${locked ? 'showProModal()' : `openExercise('${e.id}')`}" style="${locked ? 'opacity:0.72' : ''}">
     <div class="exIcon">${icon(cat.id, 22)}</div>
     <div class="meta"><b>${escapeHtml(e.title)}</b><span>${cat.label}</span></div>
-    <button class="favBtn" onclick="event.stopPropagation();toggleFavorite('${e.id}')" aria-label="favorite">${icon(fav ? 'heart-filled' : 'heart', 19)}</button>
+    <button class="favBtn" onclick="event.stopPropagation();toggleFavorite('${e.id}')" aria-label="${fav ? t('favRemove') : t('favAdd')}">${icon(fav ? 'heart-filled' : 'heart', 19)}</button>
     <div class="lockDot">${locked ? icon('lock', 17) : icon('chevron', 17)}</div>
   </div>`;
 }
@@ -1158,14 +1186,13 @@ function renderExerciseDetail(id) {
   const fav = state.favorites.includes(id);
   return `
     <div class="backRow">
-      <button onclick="closeExercise()">${icon('back', 18)}</button>
+      <button onclick="closeExercise()" aria-label="${t('backBtn')}">${icon('back', 18)}</button>
       <b style="display:inline-flex;align-items:center;gap:6px">${icon(cat.id, 18)} ${cat.label}</b>
-      <button class="favBtn" style="margin-left:auto" onclick="toggleFavorite('${id}');renderPlayerFav('${id}')" id="playerFavBtn">${icon(fav ? 'heart-filled' : 'heart', 23)}</button>
+      <button class="favBtn" style="margin-left:auto" onclick="toggleFavorite('${id}');renderPlayerFav('${id}')" id="playerFavBtn" aria-label="${fav ? t('favRemove') : t('favAdd')}">${icon(fav ? 'heart-filled' : 'heart', 23)}</button>
     </div>
     <h1>${escapeHtml(e.title)}</h1>
     <div class="playerBar"><div class="playerBarFill" id="playerFill"></div></div>
     <div class="audioFallback">${icon('headphones', 18)}<span>${t('audioSoon')}</span></div>
-    <audio controls preload="none" src="assets/audio/${state.lang}/${e.id}.mp3"></audio>
     <div class="manus">${escapeHtml(e.manus)}</div>
     <div style="height:14px"></div>
     ${doneToday
@@ -1175,7 +1202,10 @@ function renderExerciseDetail(id) {
 }
 function renderPlayerFav(id) {
   const btn = document.getElementById('playerFavBtn');
-  if (btn) btn.innerHTML = icon(state.favorites.includes(id) ? 'heart-filled' : 'heart', 23);
+  if (!btn) return;
+  const fav = state.favorites.includes(id);
+  btn.innerHTML = icon(fav ? 'heart-filled' : 'heart', 23);
+  btn.setAttribute('aria-label', fav ? t('favRemove') : t('favAdd'));
 }
 function openExercise(id) {
   currentExerciseId = id;
@@ -1535,8 +1565,8 @@ function showContactModal() {
     <p class="sub">${t('contactDesc')}</p>
     <p style="font-size:0.85rem;margin:-8px 0 14px"><a href="${COACH_WEBSITE}" target="_blank" style="color:var(--blue)">www.cliffordcoaching.no</a></p>
     <div class="qBlock"><label>${t('contactName')}</label><input type="text" id="cName"></div>
-    <div class="qBlock"><label>${t('contactPhone')}</label><input type="text" id="cPhone"></div>
-    <div class="qBlock"><label>${t('contactEmail')}</label><input type="text" id="cEmail"></div>
+    <div class="qBlock"><label>${t('contactPhone')}</label><input type="tel" id="cPhone" autocomplete="tel"></div>
+    <div class="qBlock"><label>${t('contactEmail')}</label><input type="email" id="cEmail" autocomplete="email"></div>
     <div class="qBlock"><label>${t('contactReason')}</label><textarea id="cReason" rows="3"></textarea></div>
     <p class="sub" style="font-size:0.78rem">${t('contactNote')}</p>
     <button class="btn full sand" onclick="submitContact()">${t('contactSubmit')}</button>
@@ -1548,9 +1578,10 @@ function showRitualSetup() {
   document.getElementById('modalSheet').innerHTML = `
     <h2>${t('ritualTitle')}</h2>
     <p class="sub">${t('ritualSetupDesc')}</p>
-    <div class="qBlock"><label>${t('ritualMantraLabel')}</label><input type="text" id="rMantra" value="${escapeHtml(r.mantra)}"></div>
+    ${state.ritual ? `<button class="btn full sand" onclick="closeModal();startRitual()">${t('ritualStartBtn')}</button>` : ''}
+    <div class="qBlock" style="margin-top:${state.ritual ? '16px' : '0'}"><label>${t('ritualMantraLabel')}</label><input type="text" id="rMantra" value="${escapeHtml(r.mantra)}"></div>
     <div class="qBlock"><label>${t('ritualFocusLabel')}</label><textarea id="rFocus" rows="2">${escapeHtml(r.focusNote)}</textarea></div>
-    <button class="btn full sand" onclick="saveRitual()">${t('ritualSaveBtn')}</button>
+    <button class="btn full ${state.ritual ? 'secondary' : 'sand'}" onclick="saveRitual()">${t('ritualSaveBtn')}</button>
     ${state.ritual ? `<button class="btn full ghost" style="margin-top:8px" onclick="deleteRitual()">${t('ritualDeleteBtn')}</button>` : ''}
   `;
   openModalWrap();
@@ -1565,6 +1596,7 @@ function saveRitual() {
   render();
 }
 function deleteRitual() {
+  if (!confirm(t('deleteConfirm'))) return;
   state.ritual = null;
   save();
   closeModal();
@@ -1596,6 +1628,7 @@ function saveGoal() {
   render();
 }
 function deleteGoal() {
+  if (!confirm(t('deleteConfirm'))) return;
   state.mainGoal = null;
   save();
   closeModal();
@@ -1627,7 +1660,7 @@ function showRestoreModal() {
     <h2>${t('restoreFromBackupLabel')}</h2>
     <p class="sub">${t('restoreDesc')}</p>
     <textarea id="restoreText" rows="6" placeholder="${t('restorePlaceholder')}" style="width:100%;font-family:monospace;font-size:0.78rem"></textarea>
-    <button class="btn full" style="margin-top:12px;background:#b9503c" onclick="confirmRestoreBackup()">${t('restoreReplaceBtn')}</button>
+    <button class="btn full danger" style="margin-top:12px" onclick="confirmRestoreBackup()">${t('restoreReplaceBtn')}</button>
     <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('cancelBtn')}</button>
   `;
   openModalWrap();
@@ -1703,7 +1736,7 @@ function showProModal() {
     <p class="sub">${t('modalSub')}</p>
     <div class="card"><span class="tag sand">${t('trialBadge')}</span><b style="display:block;margin-top:8px">${t('planName')}</b><p style="font-size:0.85rem;color:var(--text-soft);margin-top:4px">${t('planDesc')}</p></div>
     <p class="sub" style="font-size:0.78rem">${t('trialNote')}</p>
-    <button class="btn full sand" onclick="purchasePro()">${t('startPro')}</button>
+    <button class="btn full sand" onclick="purchasePro(this)">${t('startPro')}</button>
     <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('notNow')}</button>
   `;
   openModalWrap();
@@ -1742,7 +1775,15 @@ async function initRevenueCat() {
     render();
   } catch (e) { console.warn('RevenueCat:', e); }
 }
-async function purchasePro() {
+function withLoadingButton(btn, fn) {
+  if (!btn) return fn();
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = t('loadingBtn');
+  return Promise.resolve(fn()).finally(() => { btn.disabled = false; btn.innerHTML = original; });
+}
+async function purchasePro(btn) {
+  return withLoadingButton(btn, async () => {
   try {
     const Purchases = window.Capacitor?.Plugins?.Purchases;
     if (!Purchases) { toast(t('purchaseInAppOnly')); return; }
@@ -1753,6 +1794,7 @@ async function purchasePro() {
     IS_PRO = !!customerInfo.entitlements.active['pro'];
     if (IS_PRO) { hapticSuccess(); closeModal(); toast(t('proWelcome')); render(); }
   } catch (e) { console.warn('purchasePro:', e); }
+  });
 }
 async function restorePurchases() {
   try {
@@ -1809,16 +1851,17 @@ function showAuthModal(mode) {
     <h2>${mode === 'signup' ? t('signupTitle') : t('loginTitle')}</h2>
     <div class="qBlock"><label>${t('emailLabel')}</label><input type="email" id="authEmail" autocomplete="email"></div>
     <div class="qBlock"><label>${t('passwordLabel')}</label><input type="password" id="authPassword" autocomplete="${mode === 'signup' ? 'new-password' : 'current-password'}"></div>
-    <button class="btn full sand" onclick="submitAuth('${mode}')">${t('authSubmitBtn')}</button>
+    <button class="btn full sand" onclick="submitAuth('${mode}', this)">${t('authSubmitBtn')}</button>
     ${mode === 'login' ? `<button class="btn full ghost" style="margin-top:8px" onclick="doForgotPassword()">${t('forgotPasswordBtn')}</button>` : ''}
     <button class="btn full ghost" style="margin-top:8px" onclick="showAuthModal('${mode === 'signup' ? 'login' : 'signup'}')">${mode === 'signup' ? t('switchToLogin') : t('switchToSignup')}</button>
   `;
   openModalWrap();
 }
-async function submitAuth(mode) {
+async function submitAuth(mode, btn) {
   const email = (document.getElementById('authEmail').value || '').trim();
   const password = document.getElementById('authPassword').value || '';
   if (!email || !password) { toast(t('authMissingFields')); return; }
+  return withLoadingButton(btn, async () => {
   try {
     if (mode === 'signup') {
       const emailCred = firebase.auth.EmailAuthProvider.credential(email, password);
@@ -1839,6 +1882,7 @@ async function submitAuth(mode) {
     closeModal();
     render();
   } catch (e) { console.warn('submitAuth:', e); toast(authErrorMessage(e)); }
+  });
 }
 async function doForgotPassword() {
   const email = (document.getElementById('authEmail').value || '').trim();
@@ -1859,7 +1903,7 @@ function showDeleteAccountModal() {
   document.getElementById('modalSheet').innerHTML = `
     <h2>${t('deleteAccountBtn')}</h2>
     <p class="sub">${t('deleteAccountConfirm')}</p>
-    <button class="btn full" style="margin-top:12px;background:#b9503c" onclick="confirmDeleteAccount()">${t('deleteAccountBtn')}</button>
+    <button class="btn full danger" style="margin-top:12px" onclick="confirmDeleteAccount()">${t('deleteAccountBtn')}</button>
     <button class="btn full ghost" style="margin-top:8px" onclick="closeModal()">${t('cancelBtn')}</button>
   `;
   openModalWrap();
@@ -2075,7 +2119,10 @@ function toggleYogaSound() {
   state.yogaSoundOn = !state.yogaSoundOn;
   save();
   const btn = document.getElementById('yogaSoundBtn');
-  if (btn) btn.innerHTML = icon(state.yogaSoundOn ? 'soundOn' : 'soundOff', 16);
+  if (btn) {
+    btn.innerHTML = icon(state.yogaSoundOn ? 'soundOn' : 'soundOff', 16);
+    btn.setAttribute('aria-label', state.yogaSoundOn ? t('soundOnLabel') : t('soundOffLabel'));
+  }
 }
 function openYoga(id) {
   const routine = yogaRoutines().find(r => r.id === id);
@@ -2084,7 +2131,10 @@ function openYoga(id) {
   yogaState = { routine, idx: 0, remaining: routine.poses[0].sec, paused: false, timer: null, done: false, intro: true };
   openOverlay('yogaOverlay');
   const soundBtn = document.getElementById('yogaSoundBtn');
-  if (soundBtn) soundBtn.innerHTML = icon(state.yogaSoundOn ? 'soundOn' : 'soundOff', 16);
+  if (soundBtn) {
+    soundBtn.innerHTML = icon(state.yogaSoundOn ? 'soundOn' : 'soundOff', 16);
+    soundBtn.setAttribute('aria-label', state.yogaSoundOn ? t('soundOnLabel') : t('soundOffLabel'));
+  }
   renderYogaStage();
 }
 function startYogaSession() {
@@ -2273,7 +2323,17 @@ initRevenueCat();
 initCloudBackup();
 (function() {
   const sp = document.getElementById('splash');
-  if (sp) setTimeout(() => sp.remove(), 3000);
+  if (!sp) return;
+  // Returning users have already seen the full entrance; give them a brief
+  // hold + fade instead of forcing the ~3s first-run choreography on every
+  // single open (the app is a situational, quick-access tool, not a launch
+  // moment worth re-watching each time).
+  if (state.onboarded) {
+    sp.classList.add('quick');
+    setTimeout(() => sp.remove(), 700);
+  } else {
+    setTimeout(() => sp.remove(), 3000);
+  }
 })();
 </script>
 </body>
